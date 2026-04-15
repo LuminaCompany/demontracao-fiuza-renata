@@ -9,8 +9,50 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TagsRouteImport } from './routes/tags'
+import { Route as MensagensRapidasRouteImport } from './routes/mensagens-rapidas'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as ContatosRouteImport } from './routes/contatos'
+import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as AtendimentosRouteImport } from './routes/atendimentos'
+import { Route as AtendentesRouteImport } from './routes/atendentes'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TagsRoute = TagsRouteImport.update({
+  id: '/tags',
+  path: '/tags',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MensagensRapidasRoute = MensagensRapidasRouteImport.update({
+  id: '/mensagens-rapidas',
+  path: '/mensagens-rapidas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContatosRoute = ContatosRouteImport.update({
+  id: '/contatos',
+  path: '/contatos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
+  id: '/configuracoes',
+  path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtendimentosRoute = AtendimentosRouteImport.update({
+  id: '/atendimentos',
+  path: '/atendimentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AtendentesRoute = AtendentesRouteImport.update({
+  id: '/atendentes',
+  path: '/atendentes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +61,130 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/atendentes': typeof AtendentesRoute
+  '/atendimentos': typeof AtendimentosRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contatos': typeof ContatosRoute
+  '/dashboard': typeof DashboardRoute
+  '/mensagens-rapidas': typeof MensagensRapidasRoute
+  '/tags': typeof TagsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/atendentes': typeof AtendentesRoute
+  '/atendimentos': typeof AtendimentosRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contatos': typeof ContatosRoute
+  '/dashboard': typeof DashboardRoute
+  '/mensagens-rapidas': typeof MensagensRapidasRoute
+  '/tags': typeof TagsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/atendentes': typeof AtendentesRoute
+  '/atendimentos': typeof AtendimentosRoute
+  '/configuracoes': typeof ConfiguracoesRoute
+  '/contatos': typeof ContatosRoute
+  '/dashboard': typeof DashboardRoute
+  '/mensagens-rapidas': typeof MensagensRapidasRoute
+  '/tags': typeof TagsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/atendentes'
+    | '/atendimentos'
+    | '/configuracoes'
+    | '/contatos'
+    | '/dashboard'
+    | '/mensagens-rapidas'
+    | '/tags'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/atendentes'
+    | '/atendimentos'
+    | '/configuracoes'
+    | '/contatos'
+    | '/dashboard'
+    | '/mensagens-rapidas'
+    | '/tags'
+  id:
+    | '__root__'
+    | '/'
+    | '/atendentes'
+    | '/atendimentos'
+    | '/configuracoes'
+    | '/contatos'
+    | '/dashboard'
+    | '/mensagens-rapidas'
+    | '/tags'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AtendentesRoute: typeof AtendentesRoute
+  AtendimentosRoute: typeof AtendimentosRoute
+  ConfiguracoesRoute: typeof ConfiguracoesRoute
+  ContatosRoute: typeof ContatosRoute
+  DashboardRoute: typeof DashboardRoute
+  MensagensRapidasRoute: typeof MensagensRapidasRoute
+  TagsRoute: typeof TagsRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tags': {
+      id: '/tags'
+      path: '/tags'
+      fullPath: '/tags'
+      preLoaderRoute: typeof TagsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mensagens-rapidas': {
+      id: '/mensagens-rapidas'
+      path: '/mensagens-rapidas'
+      fullPath: '/mensagens-rapidas'
+      preLoaderRoute: typeof MensagensRapidasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contatos': {
+      id: '/contatos'
+      path: '/contatos'
+      fullPath: '/contatos'
+      preLoaderRoute: typeof ContatosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/configuracoes': {
+      id: '/configuracoes'
+      path: '/configuracoes'
+      fullPath: '/configuracoes'
+      preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atendimentos': {
+      id: '/atendimentos'
+      path: '/atendimentos'
+      fullPath: '/atendimentos'
+      preLoaderRoute: typeof AtendimentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/atendentes': {
+      id: '/atendentes'
+      path: '/atendentes'
+      fullPath: '/atendentes'
+      preLoaderRoute: typeof AtendentesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +197,13 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AtendentesRoute: AtendentesRoute,
+  AtendimentosRoute: AtendimentosRoute,
+  ConfiguracoesRoute: ConfiguracoesRoute,
+  ContatosRoute: ContatosRoute,
+  DashboardRoute: DashboardRoute,
+  MensagensRapidasRoute: MensagensRapidasRoute,
+  TagsRoute: TagsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
