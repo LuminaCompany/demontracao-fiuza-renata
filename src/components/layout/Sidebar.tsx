@@ -11,6 +11,8 @@ import {
   Moon,
   ChevronRight,
   Building2,
+  Bot,
+  Clock,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
@@ -18,11 +20,21 @@ import { useState } from "react";
 import { AccountSwitcherDialog } from "./AccountSwitcherDialog";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+const gestorNavItems = [
   { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
   { to: "/contatos", icon: Users, label: "Contatos" },
   { to: "/atendentes", icon: UserCheck, label: "Atendentes" },
+  { to: "/tags", icon: Tag, label: "Tags" },
+  { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
+  { to: "/automacao-ia", icon: Bot, label: "Automação IA" },
+  { to: "/horarios", icon: Clock, label: "Horários" },
+  { to: "/configuracoes", icon: Settings, label: "Configurações" },
+];
+
+const atendenteNavItems = [
+  { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
+  { to: "/contatos", icon: Users, label: "Contatos" },
   { to: "/tags", icon: Tag, label: "Tags" },
   { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
   { to: "/configuracoes", icon: Settings, label: "Configurações" },
@@ -33,6 +45,7 @@ export function Sidebar() {
   const { theme, toggleTheme } = useTheme();
   const { currentAccount } = useAuth();
   const [accountOpen, setAccountOpen] = useState(false);
+  const navItems = currentAccount.role === "gestor" ? gestorNavItems : atendenteNavItems;
 
   return (
     <>

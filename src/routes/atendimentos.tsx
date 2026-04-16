@@ -341,18 +341,22 @@ function AtendimentosPage() {
               }
               if (msg.sender === "ai") {
                 return (
-                  <div key={msg.id} className="flex justify-center">
-                    <div className="max-w-[380px] rounded-2xl border border-violet-200/80 bg-violet-50/80 dark:border-violet-800/40 dark:bg-violet-950/30 px-4 py-3">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <Bot className="h-3.5 w-3.5 text-violet-500" />
+                  <div key={msg.id} className="flex justify-end">
+                    <div className="max-w-[68%]">
+                      <div className="flex items-center justify-end gap-1.5 mb-1 pr-1">
+                        <Bot className="h-3 w-3 text-violet-500" />
                         <span className="text-[10px] font-semibold text-violet-600 dark:text-violet-400">
                           {msg.senderName ?? "IA Estrutural"}
                         </span>
                       </div>
-                      <p className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed">
-                        {msg.content.replace(/\*\*/g, "")}
-                      </p>
-                      <p className="mt-1.5 text-right text-[10px] text-muted-foreground">{msg.time}</p>
+                      <div className="rounded-2xl rounded-tr-sm border border-violet-200/80 bg-violet-50/80 dark:border-violet-800/40 dark:bg-violet-950/30 px-4 py-2.5 shadow-sm">
+                        <p className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed">
+                          {msg.content.replace(/\*\*/g, "")}
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-end gap-1 mt-1 pr-1">
+                        <span className="text-[10px] text-muted-foreground">{msg.time}</span>
+                      </div>
                     </div>
                   </div>
                 );
