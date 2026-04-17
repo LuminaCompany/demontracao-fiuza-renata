@@ -100,6 +100,16 @@ export function Sidebar() {
           })}
         </nav>
 
+        {/* Powered by Synapse */}
+        <div className="px-4 py-2 flex items-center justify-center gap-1.5">
+          <span className="text-[9px] text-sidebar-foreground/25 font-medium tracking-wide uppercase">
+            Powered by
+          </span>
+          <span className="text-[9px] font-bold text-sidebar-foreground/40 tracking-wider uppercase">
+            Synapse
+          </span>
+        </div>
+
         {/* Bottom: theme toggle + account */}
         <div className="border-t border-sidebar-border px-3 py-3 space-y-1">
           {/* Theme toggle */}
