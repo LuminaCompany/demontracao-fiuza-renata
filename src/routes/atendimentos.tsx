@@ -1,63 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect } from "react";
 import {
-  Search,
-  Filter,
-  MessageSquare,
-  Phone,
-  Mail,
-  Tag as TagIcon,
-  ChevronDown,
-  Send,
-  Paperclip,
-  Smile,
-  MoreVertical,
-  Bot,
-  CheckCheck,
-  Check,
-  Clock,
-  Star,
-  ShoppingBag,
-  StickyNote,
-  X,
-  Sparkles,
-  UserCircle,
-  Circle,
+  Search, Filter, MessageSquare, Phone, Mail,
+  Tag as TagIcon, ChevronDown, Send, Paperclip, Smile,
+  MoreVertical, Bot, CheckCheck, Check,
+  Star, ShoppingBag, StickyNote, X, Sparkles, UserCircle, Circle,
 } from "lucide-react";
 import { leads, tags, attendants, type Lead, type LeadStatus } from "@/data/mock";
+import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/atendimentos")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    leadId: typeof search.leadId === "string" ? search.leadId : undefined,
+  }),
   component: AtendimentosPage,
 });
 
 const statusConfig: Record<LeadStatus, { label: string; color: string; dot: string }> = {
-  ativo: { label: "Ativo", color: "text-emerald-500", dot: "bg-emerald-500" },
-  pendente: { label: "Pendente", color: "text-amber-500", dot: "bg-amber-500" },
-  potencial: { label: "Potencial", color: "text-blue-500", dot: "bg-blue-500" },
+  ativo:      { label: "Ativo",      color: "text-emerald-500",    dot: "bg-emerald-500" },
+  pendente:   { label: "Pendente",   color: "text-amber-500",      dot: "bg-amber-500" },
+  potencial:  { label: "Potencial",  color: "text-blue-500",       dot: "bg-blue-500" },
   finalizado: { label: "Finalizado", color: "text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
 const tagColorMap: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  cyan: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
-  red: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  amber: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  green: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  blue:   "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  cyan:   "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+  red:    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  amber:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  green:  "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
   orange: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
   violet: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-  pink: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
-  teal: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+  pink:   "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+  teal:   "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
   yellow: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
 };
 
 function getInitials(name: string) {
-  return name
-    .split(" ")
-    .slice(0, 2)
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+  return name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
 }
 
 function getAttendant(id?: string) {
@@ -71,7 +52,19 @@ function getTag(id: string) {
 type TabFilter = "todos" | "ativo" | "pendente" | "potencial" | "finalizado";
 
 function AtendimentosPage() {
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const { currentAccount } = useAuth();
+  const { leadId } = Route.useSearch();
+
+  // Se for atendente, encontra o attendantId correspondente pelo email
+  const currentAttendantId =
+    currentAccount.role === "atendente"
+      ? attendants.find((a) => a.email === currentAccount.email)?.id
+      : undefined;
+
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(() => {
+    if (leadId) return leads.find((l) => l.id === leadId) ?? null;
+    return null;
+  });
   const [tab, setTab] = useState<TabFilter>("todos");
   const [search, setSearch] = useState("");
   const [filterAttendant, setFilterAttendant] = useState<string>("todos");
@@ -86,32 +79,48 @@ function AtendimentosPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [selectedLead?.messages]);
 
-  const filteredLeads = allLeads.filter((lead) => {
+  // Quando chegar um leadId via URL, seleciona o lead correspondente
+  useEffect(() => {
+    if (leadId) {
+      const found = allLeads.find((l) => l.id === leadId);
+      if (found) setSelectedLead(found);
+    }
+  }, [leadId]);
+
+  // Leads visíveis para o usuário atual
+  const visibleLeads = currentAttendantId
+    ? allLeads.filter((l) => l.attendantId === currentAttendantId)
+    : allLeads;
+
+  const filteredLeads = visibleLeads.filter((lead) => {
     if (tab !== "todos" && lead.status !== tab) return false;
-    if (search && !lead.name.toLowerCase().includes(search.toLowerCase()) &&
-        !lead.phone.includes(search)) return false;
+    if (search && !lead.name.toLowerCase().includes(search.toLowerCase()) && !lead.phone.includes(search)) return false;
     if (filterAttendant !== "todos" && lead.attendantId !== filterAttendant) return false;
     if (filterTag !== "todos" && !lead.tagIds.includes(filterTag)) return false;
     return true;
   });
 
   const tabCounts: Record<TabFilter, number> = {
-    todos: allLeads.length,
-    ativo: allLeads.filter((l) => l.status === "ativo").length,
-    pendente: allLeads.filter((l) => l.status === "pendente").length,
-    potencial: allLeads.filter((l) => l.status === "potencial").length,
-    finalizado: allLeads.filter((l) => l.status === "finalizado").length,
+    todos:      visibleLeads.length,
+    ativo:      visibleLeads.filter((l) => l.status === "ativo").length,
+    pendente:   visibleLeads.filter((l) => l.status === "pendente").length,
+    potencial:  visibleLeads.filter((l) => l.status === "potencial").length,
+    finalizado: visibleLeads.filter((l) => l.status === "finalizado").length,
   };
 
   function handleSendMessage() {
     if (!newMessage.trim() || !selectedLead) return;
+    const senderName =
+      currentAccount.role === "atendente"
+        ? currentAccount.name
+        : getAttendant(selectedLead.attendantId)?.name ?? "Atendente";
     const updatedLeads = allLeads.map((l) => {
       if (l.id !== selectedLead.id) return l;
       const msg = {
         id: `m${Date.now()}`,
         content: newMessage.trim(),
         sender: "attendant" as const,
-        senderName: "Claudia",
+        senderName,
         time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
         status: "sent" as const,
       };
@@ -126,7 +135,7 @@ function AtendimentosPage() {
 
   return (
     <div className="flex h-full overflow-hidden">
-      {/* ── LEFT: Lead List ── */}
+      {/* ── ESQUERDA: Lista de leads ── */}
       <div className="flex w-[290px] flex-none flex-col border-r border-border bg-card/50 overflow-hidden">
         {/* Header */}
         <div className="px-4 pt-4 pb-3 border-b border-border space-y-3">
@@ -146,7 +155,6 @@ function AtendimentosPage() {
             </button>
           </div>
 
-          {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -157,19 +165,21 @@ function AtendimentosPage() {
             />
           </div>
 
-          {/* Advanced filters */}
           {showFilters && (
             <div className="space-y-2 pt-1">
-              <select
-                value={filterAttendant}
-                onChange={(e) => setFilterAttendant(e.target.value)}
-                className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              >
-                <option value="todos">Todos os atendentes</option>
-                {attendants.map((a) => (
-                  <option key={a.id} value={a.id}>{a.name}</option>
-                ))}
-              </select>
+              {/* Filtro por atendente só para gestores */}
+              {currentAccount.role === "gestor" && (
+                <select
+                  value={filterAttendant}
+                  onChange={(e) => setFilterAttendant(e.target.value)}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                >
+                  <option value="todos">Todos os atendentes</option>
+                  {attendants.map((a) => (
+                    <option key={a.id} value={a.id}>{a.name}</option>
+                  ))}
+                </select>
+              )}
               <select
                 value={filterTag}
                 onChange={(e) => setFilterTag(e.target.value)}
@@ -229,7 +239,6 @@ function AtendimentosPage() {
                     isSelected && "bg-primary/8 border-l-2 border-l-primary",
                   )}
                 >
-                  {/* Avatar */}
                   <div className="relative flex-none mt-0.5">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/40 text-xs font-bold text-primary">
                       {getInitials(lead.name)}
@@ -237,29 +246,19 @@ function AtendimentosPage() {
                     <span className={cn("absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-card", status.dot)} />
                   </div>
 
-                  {/* Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="truncate text-[13px] font-semibold text-foreground">
-                        {lead.name}
-                      </span>
-                      <span className="flex-none text-[10px] text-muted-foreground">
-                        {lead.lastMessageTime}
-                      </span>
+                      <span className="truncate text-[13px] font-semibold text-foreground">{lead.name}</span>
+                      <span className="flex-none text-[10px] text-muted-foreground">{lead.lastMessageTime}</span>
                     </div>
-                    <p className="truncate text-[12px] text-muted-foreground mt-0.5">
-                      {lead.lastMessage}
-                    </p>
+                    <p className="truncate text-[12px] text-muted-foreground mt-0.5">{lead.lastMessage}</p>
                     <div className="flex items-center justify-between mt-1.5">
                       <div className="flex items-center gap-1">
                         {lead.tagIds.slice(0, 2).map((tid) => {
                           const tag = getTag(tid);
                           if (!tag) return null;
                           return (
-                            <span
-                              key={tid}
-                              className={cn("rounded px-1.5 py-0.5 text-[9px] font-medium", tagColorMap[tag.color])}
-                            >
+                            <span key={tid} className={cn("rounded px-1.5 py-0.5 text-[9px] font-medium", tagColorMap[tag.color])}>
                               {tag.name}
                             </span>
                           );
@@ -290,7 +289,7 @@ function AtendimentosPage() {
         </div>
       </div>
 
-      {/* ── MIDDLE: Chat ── */}
+      {/* ── CENTRO: Chat ── */}
       {selectedLead ? (
         <div className="flex flex-1 flex-col overflow-hidden bg-background">
           {/* Chat header */}
@@ -305,14 +304,15 @@ function AtendimentosPage() {
               )} />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-[14px] font-bold text-foreground leading-tight truncate">
-                {selectedLead.name}
-              </h2>
+              <h2 className="text-[14px] font-bold text-foreground leading-tight truncate">{selectedLead.name}</h2>
               <p className="text-[11px] text-muted-foreground">
                 {selectedLead.phone}
                 {currentAttendant && (
                   <span className="ml-2">
-                    · Atendido por <span className="font-medium" style={{ color: currentAttendant.color }}>{currentAttendant.name}</span>
+                    · Atendido por{" "}
+                    <span className="font-medium" style={{ color: currentAttendant.color }}>
+                      {currentAttendant.name}
+                    </span>
                   </span>
                 )}
               </p>
@@ -378,9 +378,13 @@ function AtendimentosPage() {
                 );
               }
               // attendant
+              const senderLabel = msg.senderName ?? currentAttendant?.name ?? "Atendente";
               return (
                 <div key={msg.id} className="flex justify-end">
                   <div className="max-w-[68%]">
+                    <div className="flex items-center justify-end gap-1.5 mb-1 pr-1">
+                      <span className="text-[10px] font-semibold text-muted-foreground">{senderLabel}</span>
+                    </div>
                     <div className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 shadow-sm">
                       <p className="text-[13px] text-primary-foreground whitespace-pre-wrap leading-relaxed">
                         {msg.content}
@@ -415,10 +419,7 @@ function AtendimentosPage() {
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSendMessage();
-                      }
+                      if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
                     }}
                     placeholder="Digite uma mensagem..."
                     rows={1}
@@ -458,7 +459,7 @@ function AtendimentosPage() {
         </div>
       )}
 
-      {/* ── RIGHT: Lead Info ── */}
+      {/* ── DIREITA: Info do lead ── */}
       {selectedLead && (
         <div className="flex w-[270px] flex-none flex-col border-l border-border bg-card/50 overflow-y-auto">
           {/* Contact card */}
@@ -466,17 +467,15 @@ function AtendimentosPage() {
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/50 text-base font-bold text-primary ring-4 ring-primary/10">
               {getInitials(selectedLead.name)}
             </div>
-            <h3 className="mt-3 text-[14px] font-bold text-foreground leading-tight">
-              {selectedLead.name}
-            </h3>
+            <h3 className="mt-3 text-[14px] font-bold text-foreground leading-tight">{selectedLead.name}</h3>
             {selectedLead.company && (
               <p className="text-xs text-muted-foreground mt-0.5">{selectedLead.company}</p>
             )}
             <span className={cn(
               "mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium",
-              selectedLead.status === "ativo" && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-              selectedLead.status === "pendente" && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-              selectedLead.status === "potencial" && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+              selectedLead.status === "ativo"      && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+              selectedLead.status === "pendente"   && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+              selectedLead.status === "potencial"  && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
               selectedLead.status === "finalizado" && "bg-muted text-muted-foreground",
             )}>
               <span className={cn("h-1.5 w-1.5 rounded-full", statusConfig[selectedLead.status].dot)} />
@@ -510,18 +509,13 @@ function AtendimentosPage() {
           {/* Tags */}
           {selectedLead.tagIds.length > 0 && (
             <div className="px-4 py-3 border-b border-border">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                Tags
-              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Tags</p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedLead.tagIds.map((tid) => {
                   const tag = getTag(tid);
                   if (!tag) return null;
                   return (
-                    <span
-                      key={tid}
-                      className={cn("rounded-full px-2.5 py-1 text-[11px] font-medium flex items-center gap-1", tagColorMap[tag.color])}
-                    >
+                    <span key={tid} className={cn("rounded-full px-2.5 py-1 text-[11px] font-medium flex items-center gap-1", tagColorMap[tag.color])}>
                       <TagIcon className="h-2.5 w-2.5" />
                       {tag.name}
                     </span>
@@ -533,9 +527,7 @@ function AtendimentosPage() {
 
           {/* Stats */}
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-              Histórico
-            </p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Histórico</p>
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-background border border-border p-3 text-center">
                 <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground mx-auto mb-1" />
@@ -555,9 +547,7 @@ function AtendimentosPage() {
             {selectedLead.lastPurchase && (
               <div className="mt-2 rounded-xl bg-background border border-border p-3">
                 <p className="text-[10px] text-muted-foreground">Última compra</p>
-                <p className="text-[12px] font-medium text-foreground mt-0.5 leading-tight">
-                  {selectedLead.lastPurchase}
-                </p>
+                <p className="text-[12px] font-medium text-foreground mt-0.5 leading-tight">{selectedLead.lastPurchase}</p>
                 {selectedLead.lastPurchaseValue && (
                   <p className="text-[11px] text-primary font-semibold mt-0.5">
                     R$ {selectedLead.lastPurchaseValue.toLocaleString("pt-BR")}
@@ -570,9 +560,7 @@ function AtendimentosPage() {
           {/* Notes */}
           {selectedLead.notes && (
             <div className="px-4 py-3 border-b border-border">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-                Notas
-              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Notas</p>
               <div className="flex gap-2">
                 <StickyNote className="h-3.5 w-3.5 flex-none text-muted-foreground mt-0.5" />
                 <p className="text-[12px] text-foreground leading-relaxed">{selectedLead.notes}</p>
@@ -589,14 +577,9 @@ function AtendimentosPage() {
               >
                 <div className="flex items-center gap-1.5">
                   <Sparkles className="h-3.5 w-3.5 text-violet-500" />
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    Resumo IA
-                  </p>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Resumo IA</p>
                 </div>
-                <ChevronDown className={cn(
-                  "h-3.5 w-3.5 text-muted-foreground transition-transform",
-                  showSummary && "rotate-180",
-                )} />
+                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", showSummary && "rotate-180")} />
               </button>
               {showSummary && (
                 <div className="mt-3 rounded-xl border border-violet-200/80 bg-violet-50/50 dark:border-violet-800/30 dark:bg-violet-950/20 px-3 py-3">

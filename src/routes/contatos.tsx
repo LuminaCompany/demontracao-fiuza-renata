@@ -1,16 +1,8 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  Search,
-  Phone,
-  Mail,
-  Tag as TagIcon,
-  ShoppingBag,
-  Star,
-  Filter,
-  UserPlus,
-  ChevronUp,
-  ChevronDown,
+  Search, Phone, Mail, Tag as TagIcon, ShoppingBag, Star,
+  Filter, UserPlus, ChevronUp, ChevronDown,
 } from "lucide-react";
 import { leads, tags, attendants } from "@/data/mock";
 import { cn } from "@/lib/utils";
@@ -20,30 +12,27 @@ export const Route = createFileRoute("/contatos")({
 });
 
 const tagColorMap: Record<string, string> = {
-  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  cyan: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
-  red: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  amber: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  green: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  blue:   "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  cyan:   "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+  red:    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  amber:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  green:  "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
   orange: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
   violet: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-  pink: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
-  teal: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+  pink:   "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+  teal:   "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
   yellow: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
 };
 
 const statusBadge: Record<string, string> = {
-  ativo: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-  pendente: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-  potencial: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+  ativo:      "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  pendente:   "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  potencial:  "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   finalizado: "bg-muted text-muted-foreground",
 };
 
 const statusLabel: Record<string, string> = {
-  ativo: "Ativo",
-  pendente: "Pendente",
-  potencial: "Potencial",
-  finalizado: "Finalizado",
+  ativo: "Ativo", pendente: "Pendente", potencial: "Potencial", finalizado: "Finalizado",
 };
 
 function getInitials(name: string) {
@@ -51,6 +40,7 @@ function getInitials(name: string) {
 }
 
 function ContatosPage() {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "totalSpent" | "totalPurchases">("totalSpent");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
@@ -80,6 +70,10 @@ function ContatosPage() {
     return sortDir === "asc"
       ? <ChevronUp className="h-3 w-3 text-primary" />
       : <ChevronDown className="h-3 w-3 text-primary" />;
+  }
+
+  function openLead(leadId: string) {
+    navigate({ to: "/atendimentos", search: { leadId } });
   }
 
   return (
@@ -121,42 +115,24 @@ function ContatosPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/40">
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Contato
-                </th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Status
-                </th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Telefone
-                </th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Tags
-                </th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Última Compra
-                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Contato</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Status</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Telefone</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Tags</th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Última Compra</th>
                 <th
                   className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => handleSort("totalSpent")}
                 >
-                  <div className="flex items-center gap-1">
-                    Total Gasto
-                    <SortIcon col="totalSpent" />
-                  </div>
+                  <div className="flex items-center gap-1">Total Gasto <SortIcon col="totalSpent" /></div>
                 </th>
                 <th
                   className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
                   onClick={() => handleSort("totalPurchases")}
                 >
-                  <div className="flex items-center gap-1">
-                    Compras
-                    <SortIcon col="totalPurchases" />
-                  </div>
+                  <div className="flex items-center gap-1">Compras <SortIcon col="totalPurchases" /></div>
                 </th>
-                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                  Atendente
-                </th>
+                <th className="text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">Atendente</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -165,16 +141,18 @@ function ContatosPage() {
                 return (
                   <tr
                     key={lead.id}
+                    onClick={() => openLead(lead.id)}
                     className="hover:bg-accent/40 transition-colors cursor-pointer group"
+                    title="Ver atendimento"
                   >
-                    {/* Contact */}
+                    {/* Contato */}
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/40 text-xs font-bold text-primary">
                           {getInitials(lead.name)}
                         </div>
                         <div>
-                          <p className="font-semibold text-foreground text-[13px] leading-tight">
+                          <p className="font-semibold text-foreground text-[13px] leading-tight group-hover:text-primary transition-colors">
                             {lead.name}
                           </p>
                           {lead.email ? (
@@ -196,7 +174,7 @@ function ContatosPage() {
                       </span>
                     </td>
 
-                    {/* Phone */}
+                    {/* Telefone */}
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-1.5 text-[13px] text-foreground">
                         <Phone className="h-3 w-3 text-muted-foreground" />
@@ -211,10 +189,7 @@ function ContatosPage() {
                           const tag = tags.find((t) => t.id === tid);
                           if (!tag) return null;
                           return (
-                            <span
-                              key={tid}
-                              className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium", tagColorMap[tag.color])}
-                            >
+                            <span key={tid} className={cn("rounded-full px-2 py-0.5 text-[10px] font-medium", tagColorMap[tag.color])}>
                               {tag.name}
                             </span>
                           );
@@ -227,17 +202,13 @@ function ContatosPage() {
                       </div>
                     </td>
 
-                    {/* Last purchase */}
+                    {/* Última compra */}
                     <td className="px-4 py-3.5">
                       {lead.lastPurchase ? (
                         <div>
-                          <p className="text-[12px] text-foreground leading-tight max-w-[160px] truncate">
-                            {lead.lastPurchase}
-                          </p>
+                          <p className="text-[12px] text-foreground leading-tight max-w-[160px] truncate">{lead.lastPurchase}</p>
                           {lead.lastPurchaseValue && (
-                            <p className="text-[11px] text-primary font-medium">
-                              R$ {lead.lastPurchaseValue.toLocaleString("pt-BR")}
-                            </p>
+                            <p className="text-[11px] text-primary font-medium">R$ {lead.lastPurchaseValue.toLocaleString("pt-BR")}</p>
                           )}
                         </div>
                       ) : (
@@ -245,21 +216,19 @@ function ContatosPage() {
                       )}
                     </td>
 
-                    {/* Total spent */}
+                    {/* Total gasto */}
                     <td className="px-4 py-3.5">
                       {lead.totalSpent > 0 ? (
                         <div className="flex items-center gap-1">
                           <Star className="h-3 w-3 text-amber-500" />
-                          <span className="text-[13px] font-semibold text-foreground">
-                            R$ {lead.totalSpent.toLocaleString("pt-BR")}
-                          </span>
+                          <span className="text-[13px] font-semibold text-foreground">R$ {lead.totalSpent.toLocaleString("pt-BR")}</span>
                         </div>
                       ) : (
                         <span className="text-[12px] text-muted-foreground/50">—</span>
                       )}
                     </td>
 
-                    {/* Purchases count */}
+                    {/* Compras */}
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-1.5">
                         <ShoppingBag className="h-3 w-3 text-muted-foreground" />
@@ -267,7 +236,7 @@ function ContatosPage() {
                       </div>
                     </td>
 
-                    {/* Attendant */}
+                    {/* Atendente */}
                     <td className="px-4 py-3.5">
                       {attendant ? (
                         <div className="flex items-center gap-2">
