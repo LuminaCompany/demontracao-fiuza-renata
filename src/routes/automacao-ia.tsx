@@ -498,11 +498,10 @@ function TriagemSection() {
             <div>
               <label className="text-[12px] font-semibold text-foreground">Modo de distribuição</label>
               <p className="text-[11px] text-muted-foreground mb-2">Como os leads são distribuídos quando o cliente não escolher um atendente específico.</p>
-              <div className="grid grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: "escolha", label: "Escolha do cliente", desc: "Cliente seleciona" },
-                  { value: "automatico", label: "Automático (menor fila)", desc: "IA distribui" },
-                  { value: "sequencial", label: "Sequencial", desc: "Revezamento" },
+                  { value: "automatico", label: "Automático", desc: "(revezamento)" },
                 ].map(opt => (
                   <label key={opt.value} className="cursor-pointer">
                     <input type="radio" name="dist_mode" defaultChecked={opt.value === "escolha"} className="peer sr-only" />
@@ -531,28 +530,10 @@ function OutrasAutomacoesSection() {
       enabled: true,
     },
     {
-      id: "oa2",
-      title: "Sugestão de resposta",
-      desc: "A IA sugere respostas com base no contexto da conversa.",
-      enabled: false,
-    },
-    {
-      id: "oa3",
-      title: "Detecção de sentimento",
-      desc: "A IA analisa o tom das mensagens e alerta sobre clientes insatisfeitos.",
-      enabled: false,
-    },
-    {
       id: "oa4",
       title: "Classificação automática de leads",
       desc: "A IA classifica leads como potencial, ativo ou finalizado com base nas mensagens.",
       enabled: true,
-    },
-    {
-      id: "oa5",
-      title: "Transcrição de áudios",
-      desc: "Áudios enviados pelos clientes são transcritos automaticamente pela IA.",
-      enabled: false,
     },
   ]);
 

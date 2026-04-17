@@ -157,7 +157,6 @@ function ConfiguracoesPage() {
               { title: "Mensagem não respondida", desc: "Alertar após 30 minutos sem resposta.", enabled: true },
               { title: "Atendimento transferido", desc: "Notificar quando um atendimento for transferido para você.", enabled: false },
               ...(isGestor ? [
-                { title: "Relatório diário", desc: "Receber resumo do dia com métricas e destaques.", enabled: true },
                 { title: "Atendente offline", desc: "Alertar quando um atendente ficar indisponível durante o horário de trabalho.", enabled: false },
               ] : []),
             ].map((item) => (
