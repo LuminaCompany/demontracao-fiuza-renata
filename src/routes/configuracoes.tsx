@@ -46,7 +46,7 @@ function ConfiguracoesPage() {
                 <div>
                   <label className="text-[12px] font-medium text-muted-foreground">Nome da empresa</label>
                   <input
-                    defaultValue="Estrutural Vidros"
+                    defaultValue="Fiuza"
                     className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
                   />
                 </div>

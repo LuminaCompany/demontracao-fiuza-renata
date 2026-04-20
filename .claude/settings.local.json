@@ -17,7 +17,12 @@
       "Read(//c/Users/Lucas/AppData/Local/**)",
       "Bash(cmd.exe /c \"cd \\\\\"C:\\\\\\\\Projetos Synapse\\\\\\\\blank-canvas-app\\\\\" && bun run build\")",
       "Bash(cmd.exe /c \"cd /d \\\\\"C:\\\\Projetos Synapse\\\\blank-canvas-app\\\\\" && npx tsc --noEmit 2>&1\")",
-      "Bash(cmd.exe *)"
+      "Bash(cmd.exe *)",
+      "Bash(bun.exe run *)",
+      "Bash(where bun *)",
+      "Bash(where node *)",
+      "Bash(cmd /c \"cd /d \\\\\"e:\\\\Automação\\\\Projetos Lumina\\\\demo-fiuza-renata\\\\\" && npx tsc --noEmit 2>&1\")",
+      "Bash(cmd /c \"cd /d \\\\\"e:\\\\Automação\\\\Projetos Lumina\\\\demo-fiuza-renata\\\\\" && node_modules\\\\.bin\\\\tsc --noEmit 2>&1\")"
     ]
   }
 }

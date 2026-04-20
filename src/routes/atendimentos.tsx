@@ -3,13 +3,14 @@ import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
 import {
   Search, Filter, MessageSquare, Phone, Mail,
   Tag as TagIcon, ChevronDown, Send, Paperclip, Smile,
-  MoreVertical, Bot, CheckCheck, Check,
-  Star, ShoppingBag, StickyNote, Sparkles, UserCircle, Circle,
-  Users2, Calendar, Bell, Plus, X, Clock, Trash2,
+  MoreVertical, CheckCheck, Check,
+  Star, ShoppingBag, StickyNote, UserCircle, Circle,
+  Users2, Bell, X, Clock, AlertCircle, FileText,
 } from "lucide-react";
 import {
   leads, tags, attendants, accounts,
   type Lead, type LeadStatus, type Account, type Message,
+  type AtendimentoStage, STAGE_LABELS, STAGE_ORDER,
 } from "@/data/mock";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -21,7 +22,19 @@ export const Route = createFileRoute("/atendimentos")({
   component: AtendimentosPage,
 });
 
-// ── Constants ─────────────────────────────────────────────────────
+// ── Stage config ──────────────────────────────────────────────────
+const stageConfig: Record<AtendimentoStage, { color: string; bg: string; dot: string }> = {
+  novo_contato:          { color: "text-sky-600 dark:text-sky-400",     bg: "bg-sky-100 dark:bg-sky-900/30",       dot: "bg-sky-500" },
+  em_orcamento:          { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30",   dot: "bg-amber-500" },
+  proposta_enviada:      { color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/30", dot: "bg-violet-500" },
+  aguardando_aprovacao:  { color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30", dot: "bg-orange-500" },
+  pagamento_pendente:    { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30",   dot: "bg-amber-500" },
+  em_producao:           { color: "text-primary",                        bg: "bg-primary/10",                       dot: "bg-primary" },
+  instalacao_agendada:   { color: "text-teal-600 dark:text-teal-400",   bg: "bg-teal-100 dark:bg-teal-900/30",    dot: "bg-teal-500" },
+  pos_venda:             { color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30", dot: "bg-emerald-500" },
+};
+
+// ── Status config ─────────────────────────────────────────────────
 const statusConfig: Record<LeadStatus, { label: string; color: string; dot: string }> = {
   ativo:      { label: "Ativo",      color: "text-emerald-500",    dot: "bg-emerald-500" },
   pendente:   { label: "Pendente",   color: "text-amber-500",      dot: "bg-amber-500" },
@@ -42,7 +55,7 @@ const tagColorMap: Record<string, string> = {
   yellow: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
 };
 
-// ── Helpers ────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────
 function getInitials(name: string) {
   return name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
 }
@@ -50,8 +63,7 @@ function getInitials(name: string) {
 // ── Types ─────────────────────────────────────────────────────────
 type TabFilter = "todos" | "ativo" | "pendente" | "potencial" | "finalizado";
 
-interface ScheduledMsg { id: string; date: string; time: string; msg: string }
-interface Reminder     { id: string; date: string; time: string; note: string }
+interface Reminder { id: string; date: string; time: string; note: string }
 
 // ── Mock internal chat data ───────────────────────────────────────
 const initialInternalChats: Record<string, Message[]> = {
@@ -66,30 +78,12 @@ const initialInternalChats: Record<string, Message[]> = {
   ],
 };
 
-// ── Memoized sub-components ───────────────────────────────────────
+// ── Message bubble ────────────────────────────────────────────────
 const MessageBubble = memo(function MessageBubble({ msg, currentAttendant }: { msg: Message; currentAttendant: typeof attendants[0] | null | undefined }) {
   if (msg.sender === "system") {
     return (
       <div className="flex justify-center">
         <span className="rounded-full bg-muted px-3 py-1 text-[11px] text-muted-foreground">{msg.content}</span>
-      </div>
-    );
-  }
-  if (msg.sender === "ai") {
-    return (
-      <div className="flex justify-end">
-        <div className="max-w-[68%]">
-          <div className="flex items-center justify-end gap-1.5 mb-1 pr-1">
-            <Bot className="h-3 w-3 text-violet-500" />
-            <span className="text-[10px] font-semibold text-violet-600 dark:text-violet-400">{msg.senderName ?? "IA Estrutural"}</span>
-          </div>
-          <div className="rounded-2xl rounded-tr-sm border border-violet-200/80 bg-violet-50/80 dark:border-violet-800/40 dark:bg-violet-950/30 px-4 py-2.5 shadow-sm">
-            <p className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed">{msg.content.replace(/\*\*/g, "")}</p>
-          </div>
-          <div className="flex justify-end mt-1 pr-1">
-            <span className="text-[10px] text-muted-foreground">{msg.time}</span>
-          </div>
-        </div>
       </div>
     );
   }
@@ -129,92 +123,6 @@ const MessageBubble = memo(function MessageBubble({ msg, currentAttendant }: { m
   );
 });
 
-// ── Scheduled message panel ───────────────────────────────────────
-const SchedulerPanel = memo(function SchedulerPanel({
-  scheduledMsgs,
-  onAdd,
-  onRemove,
-}: {
-  scheduledMsgs: ScheduledMsg[];
-  onAdd: (date: string, time: string, msg: string) => void;
-  onRemove: (id: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [msg, setMsg] = useState("");
-
-  function handleAdd() {
-    if (!date || !time || !msg.trim()) return;
-    onAdd(date, time, msg.trim());
-    setDate(""); setTime(""); setMsg(""); setOpen(false);
-  }
-
-  return (
-    <div className="px-4 py-3 border-b border-border">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between"
-      >
-        <div className="flex items-center gap-1.5">
-          <Calendar className="h-3.5 w-3.5 text-blue-500" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Mensagem Programada</p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {scheduledMsgs.length > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[9px] font-bold text-white">{scheduledMsgs.length}</span>
-          )}
-          <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
-        </div>
-      </button>
-
-      {open && (
-        <div className="mt-3 space-y-2.5">
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-[10px] text-muted-foreground">Data</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            </div>
-            <div>
-              <label className="text-[10px] text-muted-foreground">Hora</label>
-              <input type="time" value={time} onChange={e => setTime(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground">Mensagem</label>
-            <textarea value={msg} onChange={e => setMsg(e.target.value)} rows={2}
-              placeholder="Digite a mensagem a ser enviada..."
-              className="mt-0.5 w-full resize-none rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          </div>
-          <button onClick={handleAdd}
-            disabled={!date || !time || !msg.trim()}
-            className="w-full rounded-xl bg-blue-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-blue-600 transition-colors disabled:opacity-40">
-            Programar Envio
-          </button>
-          {scheduledMsgs.length > 0 && (
-            <div className="space-y-1.5 pt-1">
-              {scheduledMsgs.map(s => (
-                <div key={s.id} className="flex items-start gap-2 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-200/60 dark:border-blue-800/30 p-2">
-                  <Clock className="h-3 w-3 text-blue-500 flex-none mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-semibold text-blue-600 dark:text-blue-400">{s.date} às {s.time}</p>
-                    <p className="text-[10px] text-foreground truncate">{s.msg}</p>
-                  </div>
-                  <button onClick={() => onRemove(s.id)} className="text-muted-foreground hover:text-destructive flex-none">
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
-
 // ── Reminder panel ────────────────────────────────────────────────
 const ReminderPanel = memo(function ReminderPanel({
   reminders,
@@ -238,10 +146,7 @@ const ReminderPanel = memo(function ReminderPanel({
 
   return (
     <div className="px-4 py-3 border-b border-border">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between"
-      >
+      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between">
         <div className="flex items-center gap-1.5">
           <Bell className="h-3.5 w-3.5 text-amber-500" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Lembrete</p>
@@ -301,6 +206,77 @@ const ReminderPanel = memo(function ReminderPanel({
   );
 });
 
+// ── Stage panel ───────────────────────────────────────────────────
+function StagePanel({ lead }: { lead: Lead }) {
+  if (!lead.stage) return null;
+  const cfg = stageConfig[lead.stage];
+  const stageIndex = STAGE_ORDER.indexOf(lead.stage);
+  const totalSteps = STAGE_ORDER.length;
+
+  return (
+    <div className="px-4 pt-4 pb-4 border-b border-border">
+      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+        Etapa do Atendimento
+      </p>
+
+      {/* Current stage badge */}
+      <div className={cn("flex items-center gap-2 rounded-xl px-3 py-2.5", cfg.bg)}>
+        <span className={cn("h-2 w-2 rounded-full flex-none", cfg.dot)} />
+        <span className={cn("text-[13px] font-bold leading-tight", cfg.color)}>
+          {STAGE_LABELS[lead.stage]}
+        </span>
+      </div>
+
+      {/* Progress bar */}
+      <div className="mt-3">
+        <div className="flex gap-1">
+          {STAGE_ORDER.map((_, i) => (
+            <div
+              key={i}
+              className={cn(
+                "h-1.5 flex-1 rounded-full transition-all",
+                i <= stageIndex ? cfg.dot : "bg-muted",
+              )}
+            />
+          ))}
+        </div>
+        <div className="flex justify-between mt-1">
+          <span className="text-[9px] text-muted-foreground">Início</span>
+          <span className="text-[9px] text-muted-foreground">{stageIndex + 1}/{totalSteps}</span>
+          <span className="text-[9px] text-muted-foreground">Pós-venda</span>
+        </div>
+      </div>
+
+      {/* Pending items */}
+      {lead.pendingItems && lead.pendingItems.length > 0 && (
+        <div className="mt-3">
+          <div className="flex items-center gap-1.5 mb-2">
+            <AlertCircle className="h-3 w-3 text-amber-500" />
+            <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
+              Pendências ({lead.pendingItems.length})
+            </p>
+          </div>
+          <div className="space-y-1.5">
+            {lead.pendingItems.map((item, i) => (
+              <div key={i} className="flex items-start gap-2 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 px-2.5 py-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 flex-none mt-1.5" />
+                <p className="text-[11px] text-foreground leading-snug">{item}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {lead.pendingItems && lead.pendingItems.length === 0 && (
+        <div className="mt-3 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/30 px-2.5 py-2 flex items-center gap-2">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 flex-none" />
+          <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Sem pendências</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Main page ─────────────────────────────────────────────────────
 function AtendimentosPage() {
   const { currentAccount } = useAuth();
@@ -320,6 +296,7 @@ function AtendimentosPage() {
   const [search, setSearch] = useState("");
   const [filterAttendant, setFilterAttendant] = useState("todos");
   const [filterTag, setFilterTag] = useState("todos");
+  const [filterStage, setFilterStage] = useState("todos");
   const [showFilters, setShowFilters] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [allLeads, setAllLeads] = useState<Lead[]>(leads);
@@ -331,8 +308,7 @@ function AtendimentosPage() {
   const [internalChats, setInternalChats] = useState<Record<string, Message[]>>(initialInternalChats);
   const [internalMsg, setInternalMsg] = useState("");
 
-  // Per-lead extras
-  const [scheduledMsgs, setScheduledMsgs] = useState<Record<string, ScheduledMsg[]>>({});
+  // Per-lead reminders
   const [reminders, setReminders] = useState<Record<string, Reminder[]>>({});
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -361,9 +337,10 @@ function AtendimentosPage() {
       if (search && !lead.name.toLowerCase().includes(search.toLowerCase()) && !lead.phone.includes(search)) return false;
       if (filterAttendant !== "todos" && lead.attendantId !== filterAttendant) return false;
       if (filterTag !== "todos" && !lead.tagIds.includes(filterTag)) return false;
+      if (filterStage !== "todos" && lead.stage !== filterStage) return false;
       return true;
     }),
-    [visibleLeads, tab, search, filterAttendant, filterTag]
+    [visibleLeads, tab, search, filterAttendant, filterTag, filterStage]
   );
 
   const tabCounts = useMemo(() => ({
@@ -412,20 +389,6 @@ function AtendimentosPage() {
     }));
     setInternalMsg("");
   }, [internalMsg, selectedInternalUser, currentAccount]);
-
-  const addScheduledMsg = useCallback((leadId: string, date: string, time: string, msg: string) => {
-    setScheduledMsgs((prev) => ({
-      ...prev,
-      [leadId]: [...(prev[leadId] ?? []), { id: `s${Date.now()}`, date, time, msg }],
-    }));
-  }, []);
-
-  const removeScheduledMsg = useCallback((leadId: string, id: string) => {
-    setScheduledMsgs((prev) => ({
-      ...prev,
-      [leadId]: (prev[leadId] ?? []).filter((s) => s.id !== id),
-    }));
-  }, []);
 
   const addReminder = useCallback((leadId: string, date: string, time: string, note: string) => {
     setReminders((prev) => ({
@@ -515,6 +478,13 @@ function AtendimentosPage() {
                     <option value="todos">Todas as tags</option>
                     {tags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                   </select>
+                  <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <option value="todos">Todas as etapas</option>
+                    {Object.entries(STAGE_LABELS).map(([key, label]) => (
+                      <option key={key} value={key}>{label}</option>
+                    ))}
+                  </select>
                 </div>
               )}
             </>
@@ -543,7 +513,6 @@ function AtendimentosPage() {
         {/* List */}
         <div className="flex-1 overflow-y-auto divide-y divide-border">
           {internalChatMode ? (
-            // Chat interno: lista de usuários
             internalPeers.map((account) => {
               const msgs = internalChats[account.id] ?? [];
               const lastMsg = msgs[msgs.length - 1];
@@ -581,6 +550,8 @@ function AtendimentosPage() {
               const status = statusConfig[lead.status];
               const attendant = attendants.find((a) => a.id === lead.attendantId);
               const isSelected = selectedLead?.id === lead.id;
+              const stageCfg = lead.stage ? stageConfig[lead.stage] : null;
+              const hasPending = lead.pendingItems && lead.pendingItems.length > 0;
               return (
                 <button key={lead.id}
                   onClick={() => { setSelectedLead(lead); setShowSummary(false); }}
@@ -597,12 +568,23 @@ function AtendimentosPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
                       <span className="truncate text-[13px] font-semibold text-foreground">{lead.name}</span>
-                      <span className="flex-none text-[10px] text-muted-foreground">{lead.lastMessageTime}</span>
+                      <div className="flex items-center gap-1 flex-none">
+                        {hasPending && (
+                          <AlertCircle className="h-3 w-3 text-amber-500" title="Pendências" />
+                        )}
+                        <span className="text-[10px] text-muted-foreground">{lead.lastMessageTime}</span>
+                      </div>
                     </div>
                     <p className="truncate text-[12px] text-muted-foreground mt-0.5">{lead.lastMessage}</p>
-                    <div className="flex items-center justify-between mt-1.5">
-                      <div className="flex items-center gap-1">
-                        {lead.tagIds.slice(0, 2).map((tid) => {
+                    {/* Stage + tags row */}
+                    <div className="flex items-center justify-between mt-1.5 gap-1">
+                      <div className="flex items-center gap-1 min-w-0">
+                        {stageCfg && lead.stage && (
+                          <span className={cn("rounded px-1.5 py-0.5 text-[9px] font-semibold flex-none", stageCfg.bg, stageCfg.color)}>
+                            {STAGE_LABELS[lead.stage]}
+                          </span>
+                        )}
+                        {!lead.stage && lead.tagIds.slice(0, 1).map((tid) => {
                           const tag = tags.find((t) => t.id === tid);
                           return tag ? (
                             <span key={tid} className={cn("rounded px-1.5 py-0.5 text-[9px] font-medium", tagColorMap[tag.color])}>
@@ -611,7 +593,7 @@ function AtendimentosPage() {
                           ) : null;
                         })}
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-none">
                         {attendant && (
                           <span className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white ring-1 ring-white/30"
                             style={{ backgroundColor: attendant.color }} title={attendant.name}>
@@ -637,7 +619,6 @@ function AtendimentosPage() {
       {internalChatMode ? (
         selectedInternalUser ? (
           <div className="flex flex-1 flex-col overflow-hidden bg-background">
-            {/* Internal chat header */}
             <div className="flex items-center gap-3 border-b border-border bg-card/60 backdrop-blur-sm px-5 py-3.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
                 style={{ backgroundColor: selectedInternalUser.color }}>
@@ -652,16 +633,12 @@ function AtendimentosPage() {
                 Equipe
               </div>
             </div>
-
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
               {(internalChats[selectedInternalUser.id] ?? []).map((msg) => (
                 <MessageBubble key={msg.id} msg={msg} currentAttendant={null} />
               ))}
               <div ref={messagesEndRef} />
             </div>
-
-            {/* Input */}
             <div className="border-t border-border bg-card/60 px-4 py-3">
               <div className="flex items-end gap-2">
                 <div className="flex-1">
@@ -706,6 +683,11 @@ function AtendimentosPage() {
                 {currentAttendant && (
                   <span className="ml-2">
                     · Atendido por <span className="font-medium" style={{ color: currentAttendant.color }}>{currentAttendant.name}</span>
+                  </span>
+                )}
+                {selectedLead.stage && (
+                  <span className="ml-2 font-medium text-primary">
+                    · {STAGE_LABELS[selectedLead.stage]}
                   </span>
                 )}
               </p>
@@ -772,13 +754,16 @@ function AtendimentosPage() {
 
       {/* ── DIREITA: Info do lead ── */}
       {!internalChatMode && selectedLead && (
-        <div className="flex w-[270px] flex-none flex-col border-l border-border bg-card/50 overflow-y-auto">
+        <div className="flex w-[275px] flex-none flex-col border-l border-border bg-card/50 overflow-y-auto">
+          {/* ── Etapa do Atendimento (DESTAQUE) ── */}
+          <StagePanel lead={selectedLead} />
+
           {/* Contact card */}
-          <div className="px-4 pt-5 pb-4 border-b border-border text-center">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/50 text-base font-bold text-primary ring-4 ring-primary/10">
+          <div className="px-4 pt-4 pb-4 border-b border-border text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/50 text-sm font-bold text-primary ring-4 ring-primary/10">
               {getInitials(selectedLead.name)}
             </div>
-            <h3 className="mt-3 text-[14px] font-bold text-foreground leading-tight">{selectedLead.name}</h3>
+            <h3 className="mt-2.5 text-[14px] font-bold text-foreground leading-tight">{selectedLead.name}</h3>
             {selectedLead.company && <p className="text-xs text-muted-foreground mt-0.5">{selectedLead.company}</p>}
             <span className={cn(
               "mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium",
@@ -859,13 +844,6 @@ function AtendimentosPage() {
             )}
           </div>
 
-          {/* Mensagem Programada */}
-          <SchedulerPanel
-            scheduledMsgs={scheduledMsgs[selectedLead.id] ?? []}
-            onAdd={(d, t, m) => addScheduledMsg(selectedLead.id, d, t, m)}
-            onRemove={(id) => removeScheduledMsg(selectedLead.id, id)}
-          />
-
           {/* Lembrete */}
           <ReminderPanel
             reminders={reminders[selectedLead.id] ?? []}
@@ -884,35 +862,25 @@ function AtendimentosPage() {
             </div>
           )}
 
-          {/* Resumo por IA — sempre visível */}
-          <div className="px-4 py-3">
-            <button onClick={() => setShowSummary(!showSummary)} className="flex w-full items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Sparkles className="h-3.5 w-3.5 text-violet-500" />
-                <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Resumo por IA</p>
-              </div>
-              <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", showSummary && "rotate-180")} />
-            </button>
-            {showSummary && (
-              <div className="mt-3">
-                {selectedLead.aiSummary ? (
-                  <div className="rounded-xl border border-violet-200/80 bg-violet-50/50 dark:border-violet-800/30 dark:bg-violet-950/20 px-3 py-3">
-                    <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-wrap">
-                      {selectedLead.aiSummary.replace(/\*\*/g, "")}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="rounded-xl border border-dashed border-violet-300/60 dark:border-violet-700/40 bg-violet-50/30 dark:bg-violet-950/10 px-3 py-4 text-center">
-                    <Sparkles className="h-5 w-5 text-violet-400 mx-auto mb-2" />
-                    <p className="text-[11px] text-muted-foreground mb-2">Nenhum resumo gerado ainda</p>
-                    <button className="rounded-lg bg-violet-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-violet-600 transition-colors">
-                      Gerar Resumo com IA
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Resumo do Atendimento */}
+          {selectedLead.attendanceSummary && (
+            <div className="px-4 py-3">
+              <button onClick={() => setShowSummary(!showSummary)} className="flex w-full items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="h-3.5 w-3.5 text-primary" />
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Resumo do Atendimento</p>
+                </div>
+                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", showSummary && "rotate-180")} />
+              </button>
+              {showSummary && (
+                <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-3">
+                  <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-wrap">
+                    {selectedLead.attendanceSummary}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="h-4" />
         </div>

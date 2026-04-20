@@ -399,10 +399,10 @@ function DashboardPage() {
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-3 pb-2">
           {[
-            { label: "Taxa de Conversão", value: "68%",        icon: CheckCircle, color: "text-emerald-500" },
-            { label: "Leads do Mês",      value: "284",        icon: Users,       color: "text-blue-500" },
-            { label: "Ticket Médio",      value: "R$ 3.840",   icon: TrendingUp,  color: "text-primary" },
-            { label: "Satisfação Média",  value: "4,7 ⭐",     icon: Star,        color: "text-amber-500" },
+            { label: "Taxa de Conversão", value: "68%",      icon: CheckCircle, color: "text-emerald-500" },
+            { label: "Leads do Mês",      value: "284",      icon: Users,       color: "text-blue-500" },
+            { label: "Ticket Médio",      value: "R$ 3.840", icon: TrendingUp,  color: "text-primary" },
+            { label: "Tempo Médio Geral", value: "4,8min",   icon: Star,        color: "text-amber-500" },
           ].map((s) => (
             <div key={s.label} className="rounded-2xl border border-border bg-card p-4 flex items-center gap-3">
               <s.icon className={cn("h-8 w-8 flex-none", s.color)} />

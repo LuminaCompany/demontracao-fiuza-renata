@@ -62,7 +62,7 @@ export function AccountSwitcherDialog({ open, onOpenChange }: Props) {
         </div>
 
         <p className="text-center text-[11px] text-muted-foreground pt-1">
-          Estrutural Vidros CRM — Demonstração
+          Fiuza CRM — Demonstração
         </p>
       </DialogContent>
     </Dialog>

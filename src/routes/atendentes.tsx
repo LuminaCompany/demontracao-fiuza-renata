@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { attendants } from "@/data/mock";
 import {
-  MessageSquare, Clock, Star, TrendingUp, UserPlus,
-  ChevronDown, KeyRound, User, Trophy, Eye, EyeOff,
+  MessageSquare, Clock, TrendingUp, UserPlus,
+  ChevronDown, KeyRound, User, Trophy, Eye, EyeOff, BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -89,11 +89,11 @@ function AtendentesPage() {
               <p className="text-[12px] text-muted-foreground">{attendantOfMonth.department}</p>
               <div className="flex items-center gap-4 mt-1.5">
                 <span className="text-[12px] font-semibold text-amber-600 dark:text-amber-400">
-                  {attendantOfMonth.totalMonth} atendimentos no mês
+                  {attendantOfMonth.totalMonth} vendas no mês
                 </span>
                 <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                  <Star className="h-3 w-3 text-amber-500" />
-                  {attendantOfMonth.rating}
+                  <Clock className="h-3 w-3 text-blue-400" />
+                  {attendantOfMonth.avgResponseTime}min médio
                 </span>
               </div>
             </div>
@@ -157,7 +157,7 @@ function AtendentesPage() {
                     <div className="rounded-xl bg-background border border-border p-3">
                       <div className="flex items-center gap-1.5 mb-1">
                         <TrendingUp className="h-3 w-3 text-emerald-500" />
-                        <span className="text-[10px] text-muted-foreground">Hoje</span>
+                        <span className="text-[10px] text-muted-foreground">Vendas Hoje</span>
                       </div>
                       <p className="text-xl font-bold text-foreground">{a.totalToday}</p>
                     </div>
@@ -170,10 +170,10 @@ function AtendentesPage() {
                     </div>
                     <div className="rounded-xl bg-background border border-border p-3">
                       <div className="flex items-center gap-1.5 mb-1">
-                        <Star className="h-3 w-3 text-amber-500" />
-                        <span className="text-[10px] text-muted-foreground">Avaliação</span>
+                        <BarChart2 className="h-3 w-3 text-primary" />
+                        <span className="text-[10px] text-muted-foreground">Vendas/Mês</span>
                       </div>
-                      <p className="text-xl font-bold text-foreground">{a.rating}</p>
+                      <p className="text-xl font-bold text-foreground">{a.totalMonth}</p>
                     </div>
                   </div>
 

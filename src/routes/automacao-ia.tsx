@@ -227,7 +227,7 @@ function FidelizacaoSection() {
       desc: "Mensagem enviada após a conclusão de um atendimento",
       delay: "3",
       delayUnit: "dias",
-      message: "Olá, [Nome]! 🌟 Esperamos que esteja satisfeito(a) com o serviço da Estrutural Vidros! Qualquer dúvida, estamos à disposição. Nos avalie! ⭐",
+      message: "Olá, [Nome]! 🌟 Esperamos que esteja satisfeito(a) com o serviço da Fiuza! Qualquer dúvida, estamos à disposição. Nos avalie! ⭐",
       enabled: true,
     },
     {
@@ -247,7 +247,7 @@ function FidelizacaoSection() {
       desc: "Parabenize seus clientes no aniversário",
       delay: "0",
       delayUnit: "dias",
-      message: "Feliz aniversário, [Nome]! 🎉🎂 A equipe Estrutural Vidros deseja um dia especial para você! Como presente, temos uma condição exclusiva disponível hoje.",
+      message: "Feliz aniversário, [Nome]! 🎉🎂 A equipe Fiuza deseja um dia especial para você! Como presente, temos uma condição exclusiva disponível hoje.",
       enabled: false,
     },
     {
@@ -376,7 +376,7 @@ function TriagemSection() {
   const [enabled, setEnabled] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [greetingMsg, setGreetingMsg] = useState(
-    "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?"
+    "Olá! Bem-vindo à **Fiuza** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?"
   );
   const [attendantList, setAttendantList] = useState(
     attendants

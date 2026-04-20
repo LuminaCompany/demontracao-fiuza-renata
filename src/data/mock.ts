@@ -1,14 +1,46 @@
-// ── Estrutural Vidros — Mock Data ───────────────────────────────
+// ── Fiuza — Mock Data ─────────────────────────────────────────────
 // Todos os dados são fictícios para fins de demonstração.
 
 export type LeadStatus = "ativo" | "pendente" | "potencial" | "finalizado";
 export type AttendantStatus = "online" | "offline" | "busy";
-export type MessageSender = "client" | "attendant" | "ai" | "system";
+export type MessageSender = "client" | "attendant" | "system";
+
+export type AtendimentoStage =
+  | "novo_contato"
+  | "em_orcamento"
+  | "proposta_enviada"
+  | "aguardando_aprovacao"
+  | "pagamento_pendente"
+  | "em_producao"
+  | "instalacao_agendada"
+  | "pos_venda";
+
+export const STAGE_LABELS: Record<AtendimentoStage, string> = {
+  novo_contato:          "Novo Contato",
+  em_orcamento:          "Em Orçamento",
+  proposta_enviada:      "Proposta Enviada",
+  aguardando_aprovacao:  "Aguardando Aprovação",
+  pagamento_pendente:    "Pagamento Pendente",
+  em_producao:           "Em Produção",
+  instalacao_agendada:   "Instalação Agendada",
+  pos_venda:             "Pós-venda",
+};
+
+export const STAGE_ORDER: AtendimentoStage[] = [
+  "novo_contato",
+  "em_orcamento",
+  "proposta_enviada",
+  "aguardando_aprovacao",
+  "pagamento_pendente",
+  "em_producao",
+  "instalacao_agendada",
+  "pos_venda",
+];
 
 export interface Tag {
   id: string;
   name: string;
-  color: string; // tailwind color name
+  color: string;
 }
 
 export interface Attendant {
@@ -23,7 +55,6 @@ export interface Attendant {
   totalToday: number;
   totalMonth: number;
   avgResponseTime: number; // minutos
-  rating: number;
   color: string;
 }
 
@@ -44,6 +75,9 @@ export interface Lead {
   company?: string;
   address?: string;
   status: LeadStatus;
+  stage?: AtendimentoStage;
+  pendingItems?: string[];
+  attendanceSummary?: string;
   tagIds: string[];
   attendantId?: string;
   lastMessage: string;
@@ -56,7 +90,6 @@ export interface Lead {
   lastPurchaseValue?: number;
   totalPurchases: number;
   totalSpent: number;
-  aiSummary?: string;
 }
 
 export interface Account {
@@ -71,14 +104,14 @@ export interface Account {
 // ── Tags ─────────────────────────────────────────────────────────
 export const tags: Tag[] = [
   { id: "t1", name: "Orçamento", color: "blue" },
-  { id: "t2", name: "Vidro Temperado", color: "cyan" },
+  { id: "t2", name: "Alta Prioridade", color: "red" },
   { id: "t3", name: "Urgente", color: "red" },
   { id: "t4", name: "Retorno", color: "amber" },
   { id: "t5", name: "Instalação", color: "green" },
   { id: "t6", name: "Garantia", color: "orange" },
-  { id: "t7", name: "Box Banheiro", color: "violet" },
-  { id: "t8", name: "Espelho", color: "pink" },
-  { id: "t9", name: "Janela", color: "teal" },
+  { id: "t7", name: "Novo Cliente", color: "violet" },
+  { id: "t8", name: "Follow-up", color: "pink" },
+  { id: "t9", name: "Proposta", color: "teal" },
   { id: "t10", name: "VIP", color: "yellow" },
 ];
 
@@ -88,7 +121,7 @@ export const attendants: Attendant[] = [
     id: "a1",
     name: "Amarildo",
     initials: "AM",
-    email: "amarildo@estruturalvidros.com.br",
+    email: "amarildo@fiuza.com.br",
     phone: "61 9 8801-2233",
     department: "Vendas",
     status: "online",
@@ -96,14 +129,13 @@ export const attendants: Attendant[] = [
     totalToday: 22,
     totalMonth: 187,
     avgResponseTime: 3.2,
-    rating: 4.8,
     color: "#f59e0b",
   },
   {
     id: "a2",
     name: "Andrilene",
     initials: "AN",
-    email: "andrilene@estruturalvidros.com.br",
+    email: "andrilene@fiuza.com.br",
     phone: "61 9 9912-4455",
     department: "Vendas",
     status: "online",
@@ -111,14 +143,13 @@ export const attendants: Attendant[] = [
     totalToday: 15,
     totalMonth: 134,
     avgResponseTime: 5.1,
-    rating: 4.6,
     color: "#ec4899",
   },
   {
     id: "a3",
     name: "Clayton",
     initials: "CL",
-    email: "clayton@estruturalvidros.com.br",
+    email: "clayton@fiuza.com.br",
     phone: "61 9 9745-6677",
     department: "Vendas",
     status: "online",
@@ -126,14 +157,13 @@ export const attendants: Attendant[] = [
     totalToday: 31,
     totalMonth: 220,
     avgResponseTime: 2.8,
-    rating: 4.9,
     color: "#3b82f6",
   },
   {
     id: "a4",
     name: "Michael",
     initials: "MI",
-    email: "michael@estruturalvidros.com.br",
+    email: "michael@fiuza.com.br",
     phone: "61 9 8823-8899",
     department: "Vendas",
     status: "busy",
@@ -141,14 +171,13 @@ export const attendants: Attendant[] = [
     totalToday: 9,
     totalMonth: 98,
     avgResponseTime: 7.4,
-    rating: 4.3,
     color: "#8b5cf6",
   },
   {
     id: "a5",
     name: "Michele",
     initials: "MC",
-    email: "michele@estruturalvidros.com.br",
+    email: "michele@fiuza.com.br",
     phone: "61 9 9034-1122",
     department: "Gestão / Vendas",
     status: "online",
@@ -156,14 +185,13 @@ export const attendants: Attendant[] = [
     totalToday: 8,
     totalMonth: 72,
     avgResponseTime: 4.0,
-    rating: 4.7,
     color: "#10b981",
   },
   {
     id: "a6",
     name: "Nayara",
     initials: "NY",
-    email: "nayara@estruturalvidros.com.br",
+    email: "nayara@fiuza.com.br",
     phone: "61 9 9234-5566",
     department: "Vendas",
     status: "online",
@@ -171,14 +199,13 @@ export const attendants: Attendant[] = [
     totalToday: 26,
     totalMonth: 198,
     avgResponseTime: 3.5,
-    rating: 4.7,
     color: "#f97316",
   },
   {
     id: "a7",
     name: "Raquel",
     initials: "RQ",
-    email: "raquel@estruturalvidros.com.br",
+    email: "raquel@fiuza.com.br",
     phone: "61 9 9345-6677",
     department: "Financeiro",
     status: "online",
@@ -186,14 +213,13 @@ export const attendants: Attendant[] = [
     totalToday: 17,
     totalMonth: 145,
     avgResponseTime: 4.2,
-    rating: 4.5,
     color: "#06b6d4",
   },
   {
     id: "a8",
     name: "Jaqueline",
     initials: "JQ",
-    email: "jaqueline@estruturalvidros.com.br",
+    email: "jaqueline@fiuza.com.br",
     phone: "61 9 9456-7788",
     department: "Vendas",
     status: "busy",
@@ -201,14 +227,13 @@ export const attendants: Attendant[] = [
     totalToday: 13,
     totalMonth: 112,
     avgResponseTime: 5.8,
-    rating: 4.4,
     color: "#84cc16",
   },
   {
     id: "a9",
     name: "Nathalia",
     initials: "NT",
-    email: "nathalia@estruturalvidros.com.br",
+    email: "nathalia@fiuza.com.br",
     phone: "61 9 9567-8899",
     department: "Vendas",
     status: "offline",
@@ -216,14 +241,13 @@ export const attendants: Attendant[] = [
     totalToday: 7,
     totalMonth: 88,
     avgResponseTime: 6.1,
-    rating: 4.2,
     color: "#e11d48",
   },
   {
     id: "a10",
     name: "Mirce",
     initials: "MR",
-    email: "mirce@estruturalvidros.com.br",
+    email: "mirce@fiuza.com.br",
     phone: "61 9 9678-9900",
     department: "Suporte",
     status: "offline",
@@ -231,14 +255,13 @@ export const attendants: Attendant[] = [
     totalToday: 5,
     totalMonth: 64,
     avgResponseTime: 4.8,
-    rating: 4.3,
     color: "#14b8a6",
   },
   {
     id: "a11",
     name: "Diretoria",
     initials: "DI",
-    email: "diretoria@estruturalvidros.com.br",
+    email: "diretoria@fiuza.com.br",
     phone: "61 9 9789-0011",
     department: "Gestão",
     status: "offline",
@@ -246,14 +269,13 @@ export const attendants: Attendant[] = [
     totalToday: 2,
     totalMonth: 18,
     avgResponseTime: 15.0,
-    rating: 5.0,
     color: "#1d4ed8",
   },
   {
     id: "a12",
     name: "Reserva",
     initials: "RE",
-    email: "reserva@estruturalvidros.com.br",
+    email: "reserva@fiuza.com.br",
     phone: "61 9 9890-1122",
     department: "Geral",
     status: "offline",
@@ -261,14 +283,13 @@ export const attendants: Attendant[] = [
     totalToday: 0,
     totalMonth: 12,
     avgResponseTime: 8.0,
-    rating: 4.0,
     color: "#6b7280",
   },
   {
     id: "a13",
     name: "Marlene",
     initials: "ML",
-    email: "marlene@estruturalvidros.com.br",
+    email: "marlene@fiuza.com.br",
     phone: "61 9 9901-2233",
     department: "Vendas",
     status: "online",
@@ -276,14 +297,13 @@ export const attendants: Attendant[] = [
     totalToday: 11,
     totalMonth: 93,
     avgResponseTime: 5.0,
-    rating: 4.5,
     color: "#a855f7",
   },
   {
     id: "a14",
     name: "Jardel",
     initials: "JD",
-    email: "jardel@estruturalvidros.com.br",
+    email: "jardel@fiuza.com.br",
     phone: "61 9 9012-3344",
     department: "Gestão",
     status: "online",
@@ -291,7 +311,6 @@ export const attendants: Attendant[] = [
     totalToday: 6,
     totalMonth: 44,
     avgResponseTime: 9.0,
-    rating: 4.8,
     color: "#dc2626",
   },
 ];
@@ -303,7 +322,7 @@ export const accounts: Account[] = [
     name: "Michele",
     role: "gestor",
     initials: "MC",
-    email: "michele@estruturalvidros.com.br",
+    email: "michele@fiuza.com.br",
     color: "#10b981",
   },
   {
@@ -311,7 +330,7 @@ export const accounts: Account[] = [
     name: "Jardel",
     role: "gestor",
     initials: "JD",
-    email: "jardel@estruturalvidros.com.br",
+    email: "jardel@fiuza.com.br",
     color: "#dc2626",
   },
   {
@@ -319,7 +338,7 @@ export const accounts: Account[] = [
     name: "Amarildo",
     role: "atendente",
     initials: "AM",
-    email: "amarildo@estruturalvidros.com.br",
+    email: "amarildo@fiuza.com.br",
     color: "#f59e0b",
   },
   {
@@ -327,7 +346,7 @@ export const accounts: Account[] = [
     name: "Andrilene",
     role: "atendente",
     initials: "AN",
-    email: "andrilene@estruturalvidros.com.br",
+    email: "andrilene@fiuza.com.br",
     color: "#ec4899",
   },
   {
@@ -335,7 +354,7 @@ export const accounts: Account[] = [
     name: "Clayton",
     role: "atendente",
     initials: "CL",
-    email: "clayton@estruturalvidros.com.br",
+    email: "clayton@fiuza.com.br",
     color: "#3b82f6",
   },
 ];
@@ -345,15 +364,14 @@ export const quickMessages = [
   {
     id: "qm1",
     title: "Boas-vindas",
-    content:
-      "Olá! Bem-vindo à Estrutural Vidros 🏗️ Como posso ajudar você hoje?",
+    content: "Olá! Bem-vindo à Fiuza 😊 Como posso ajudar você hoje?",
     category: "Abertura",
   },
   {
     id: "qm2",
     title: "Orçamento em análise",
     content:
-      "Oi! Seu orçamento está em análise pela nossa equipe técnica. Retornaremos em breve com os valores.",
+      "Oi! Seu orçamento está em análise pela nossa equipe. Retornaremos em breve com os valores.",
     category: "Orçamento",
   },
   {
@@ -395,16 +413,21 @@ export const quickMessages = [
 
 // ── Leads / Conversas ─────────────────────────────────────────────
 export const leads: Lead[] = [
-  // ── Lead 1: Novo lead — fluxo de IA selecionando atendente ──
+  // ── Lead 1: Potencial — novo contato ──
   {
     id: "l1",
     name: "João Pedro Silva",
     phone: "61 9 9801-2345",
     email: "joao.pedro@gmail.com",
     status: "potencial",
+    stage: "novo_contato",
+    pendingItems: [
+      "Retornar mensagem do cliente",
+      "Enviar opções de box de banheiro com preços",
+    ],
     tagIds: ["t1", "t7"],
     attendantId: "a1",
-    lastMessage: "Amarildo",
+    lastMessage: "Oi, quero fazer um orçamento para box de banheiro",
     lastMessageTime: "09:47",
     unreadCount: 1,
     totalPurchases: 0,
@@ -421,37 +444,14 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Para te atender melhor, com qual de nossos atendentes você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "09:44",
-      },
-      {
-        id: "m3",
-        content: "Amarildo",
-        sender: "client",
-        time: "09:47",
-        status: "read",
-      },
-      {
-        id: "m4",
-        content:
-          "Perfeito! Conectando você com **Amarildo** agora... 🔄\nUm momento, por favor!",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "09:47",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Amarildo (Vendas)",
+        content: "Atendimento recebido — Amarildo (Vendas)",
         sender: "system",
-        time: "09:47",
+        time: "09:44",
       },
     ],
   },
 
-  // ── Lead 2: Ativo — conversa em andamento ──
+  // ── Lead 2: Ativo — aguardando aprovação de pagamento ──
   {
     id: "l2",
     name: "Ana Paula Almeida",
@@ -459,7 +459,12 @@ export const leads: Lead[] = [
     email: "ana.paula@outlook.com",
     company: "Residencial Almeida",
     status: "ativo",
-    tagIds: ["t1", "t2", "t7"],
+    stage: "aguardando_aprovacao",
+    pendingItems: [
+      "Aguardando confirmação de pagamento via PIX",
+      "Confirmar dados para emissão de nota fiscal",
+    ],
+    tagIds: ["t1", "t9", "t10"],
     attendantId: "a1",
     lastMessage: "Essas medidas estão perfeitas, quando fica pronto?",
     lastMessageTime: "14:32",
@@ -480,67 +485,44 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
+        content: "Atendimento recebido — Amarildo (Vendas)",
+        sender: "system",
         time: "10:15",
       },
       {
         id: "m3",
-        content: "Amarildo",
-        sender: "client",
-        time: "10:16",
-        status: "read",
-      },
-      {
-        id: "m4",
         content:
-          "Perfeito! Transferindo para **Amarildo** agora... 🔄",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "10:16",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Amarildo (Vendas)",
-        sender: "system",
-        time: "10:16",
-      },
-      {
-        id: "m6",
-        content:
-          "Oi Ana Paula! Aqui é o Amarildo 😊 Que ótimo que entrou em contato! Para fazer o orçamento do box, você pode me passar as medidas do seu banheiro?",
+          "Oi Ana Paula! Aqui é o Amarildo 😊 Para fazer o orçamento do box, você pode me passar as medidas do seu banheiro?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "10:18",
         status: "read",
       },
       {
-        id: "m7",
+        id: "m4",
         content: "Claro! O box tem 90cm de largura e 200cm de altura",
         sender: "client",
         time: "10:22",
         status: "read",
       },
       {
-        id: "m8",
+        id: "m5",
         content:
-          "Perfeito! Temos ótimas opções. Vou montar o orçamento:\n\n📋 **Box Vidro Temperado 8mm** — R$ 2.800\n📋 **Box Vidro Temperado 10mm** — R$ 3.400\n\nAmbos com perfil de alumínio e instalação inclusa. Qual prefere?",
+          "Perfeito! Temos ótimas opções. Vou montar o orçamento:\n\nBox Vidro Temperado 8mm — R$ 2.800\nBox Vidro Temperado 10mm — R$ 3.400\n\nAmbos com perfil de alumínio e instalação inclusa. Qual prefere?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "10:35",
         status: "read",
       },
       {
-        id: "m9",
+        id: "m6",
         content: "Prefiro o de 8mm. Quais são as formas de pagamento?",
         sender: "client",
         time: "10:38",
         status: "read",
       },
       {
-        id: "m10",
+        id: "m7",
         content:
           "Aceitamos PIX com 5% de desconto (R$ 2.660), cartão em até 12x ou boleto. O prazo de fabricação é de 7 dias úteis após aprovação.",
         sender: "attendant",
@@ -549,23 +531,23 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m11",
+        id: "m8",
         content: "Vou pagar no PIX! Me manda os dados",
         sender: "client",
         time: "14:28",
         status: "read",
       },
       {
-        id: "m12",
+        id: "m9",
         content:
-          "Ótimo! Chave PIX: estruturalvidros@estruturalvidros.com.br\nValor: R$ 2.660,00\nTitular: Estrutural Vidros LTDA\n\nApós o pagamento me envia o comprovante 🙏",
+          "Ótimo! Chave PIX: fiuza@fiuza.com.br\nValor: R$ 2.660,00\nTitular: Fiuza LTDA\n\nApós o pagamento me envia o comprovante 🙏",
         sender: "attendant",
         senderName: "Amarildo",
         time: "14:30",
         status: "read",
       },
       {
-        id: "m13",
+        id: "m10",
         content: "Essas medidas estão perfeitas, quando fica pronto?",
         sender: "client",
         time: "14:32",
@@ -574,13 +556,18 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 3: Ativo — Andrilene, janelas ──
+  // ── Lead 3: Ativo — proposta enviada, visita a confirmar ──
   {
     id: "l3",
     name: "Maria das Graças Costa",
     phone: "61 9 8834-5566",
     email: "maria.graca@yahoo.com.br",
     status: "ativo",
+    stage: "proposta_enviada",
+    pendingItems: [
+      "Confirmar visita técnica — quinta-feira de manhã",
+      "Aguardar aprovação do orçamento após visita",
+    ],
     tagIds: ["t9", "t1"],
     attendantId: "a2",
     lastMessage: "Pode ser na quinta-feira de manhã?",
@@ -601,34 +588,12 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
+        content: "Atendimento recebido — Andrilene (Vendas)",
+        sender: "system",
         time: "08:30",
       },
       {
         id: "m3",
-        content: "Andrilene",
-        sender: "client",
-        time: "08:31",
-        status: "read",
-      },
-      {
-        id: "m4",
-        content: "Perfeito! Transferindo para **Andrilene** agora... 🔄",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "08:31",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Andrilene (Vendas)",
-        sender: "system",
-        time: "08:31",
-      },
-      {
-        id: "m6",
         content:
           "Olá Maria! Sou a Andrilene 😊 Que tipo de janela você está pensando? Correr, guilhotina ou de abrir?",
         sender: "attendant",
@@ -637,14 +602,14 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m7",
+        id: "m4",
         content: "De correr, tenho 3 janelas. Cada uma tem 1,20m x 1,00m",
         sender: "client",
         time: "09:02",
         status: "read",
       },
       {
-        id: "m8",
+        id: "m5",
         content:
           "Ótimo! Para janelas de correr 2 folhas nessas medidas, temos a opção em alumínio com vidro 6mm: R$ 780,00 cada. As 3 sairiam por R$ 2.340,00 com instalação. Posso te mandar uma visita técnica para confirmar medidas?",
         sender: "attendant",
@@ -653,7 +618,7 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m9",
+        id: "m6",
         content: "Pode ser na quinta-feira de manhã?",
         sender: "client",
         time: "11:20",
@@ -662,15 +627,21 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 4: Pendente — sem resposta ──
+  // ── Lead 4: Pendente — urgente, sem resposta ──
   {
     id: "l4",
     name: "Carlos Eduardo Faria",
     phone: "61 9 9990-0012",
     status: "pendente",
+    stage: "novo_contato",
+    pendingItems: [
+      "URGENTE: cliente aguarda resposta há mais de 2h",
+      "Atribuir atendente disponível imediatamente",
+      "Verificar disponibilidade para serviço emergencial",
+    ],
     tagIds: ["t3", "t1"],
-    lastMessage: "Preciso urgente de um vidro quebrado para minha porta",
-    lastMessageTime: "07:15",
+    lastMessage: "Alguém vai me atender?",
+    lastMessageTime: "09:00",
     unreadCount: 3,
     totalPurchases: 0,
     totalSpent: 0,
@@ -685,42 +656,13 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "07:15",
-      },
-      {
-        id: "m3",
-        content: "Qualquer um, é urgente!",
-        sender: "client",
-        time: "07:16",
-        status: "delivered",
-      },
-      {
-        id: "m4",
-        content:
-          "Perfeito! Transferindo para **Michael** (Vendas) agora... 🔄",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "07:16",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Michael (Vendas)",
-        sender: "system",
-        time: "07:16",
-      },
-      {
-        id: "m6",
         content: "Preciso de uma resposta rápida, ta quebrando vento aqui",
         sender: "client",
         time: "08:30",
         status: "delivered",
       },
       {
-        id: "m7",
+        id: "m3",
         content: "Alguém vai me atender?",
         sender: "client",
         time: "09:00",
@@ -729,13 +671,18 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 5: Ativo — Nayara, suporte/garantia ──
+  // ── Lead 5: Ativo — garantia, aguardando foto ──
   {
     id: "l5",
     name: "Fernanda Oliveira",
     phone: "61 9 9112-3344",
     email: "fernanda.oli@gmail.com",
     status: "ativo",
+    stage: "em_orcamento",
+    pendingItems: [
+      "Aguardando foto do problema para acionar garantia",
+      "Após foto: acionar equipe técnica para vistoria",
+    ],
     tagIds: ["t6", "t5"],
     attendantId: "a3",
     lastMessage: "Vou te mandar a foto agora",
@@ -756,43 +703,21 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
+        content: "Atendimento recebido — Clayton (Vendas)",
+        sender: "system",
         time: "13:40",
       },
       {
         id: "m3",
-        content: "Nayara, suporte",
-        sender: "client",
-        time: "13:41",
-        status: "read",
-      },
-      {
-        id: "m4",
-        content: "Perfeito! Transferindo para **Nayara** (Suporte) agora... 🔄",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "13:41",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Nayara (Suporte)",
-        sender: "system",
-        time: "13:41",
-      },
-      {
-        id: "m6",
         content:
-          "Oi Fernanda! Aqui é a Nayara 😊 Entendo, isso está dentro da garantia sim! Você pode me mandar uma foto do problema para eu acionar nossa equipe técnica?",
+          "Oi Fernanda! Aqui é o Clayton 😊 Isso está dentro da garantia sim! Você pode me mandar uma foto do problema para eu acionar nossa equipe técnica?",
         sender: "attendant",
-        senderName: "Nayara",
+        senderName: "Clayton",
         time: "13:43",
         status: "read",
       },
       {
-        id: "m7",
+        id: "m4",
         content: "Vou te mandar a foto agora",
         sender: "client",
         time: "13:55",
@@ -801,7 +726,7 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 6: Finalizado com resumo de IA ──
+  // ── Lead 6: Finalizado ──
   {
     id: "l6",
     name: "Roberto Campos",
@@ -810,7 +735,11 @@ export const leads: Lead[] = [
     company: "Campos Construções",
     address: "QI 25 Lote 5, Guará II, Brasília-DF",
     status: "finalizado",
-    tagIds: ["t2", "t7", "t5", "t10"],
+    stage: "pos_venda",
+    pendingItems: [],
+    attendanceSummary:
+      "Cliente Roberto Campos da empresa Campos Construções entrou em contato solicitando orçamento para box de banheiro temperado 10mm e espelho para projeto residencial em Guará II.\n\nProdutos adquiridos:\n• Box Vidro Temperado 10mm (80x200cm) — R$ 3.800\n• Espelho com moldura (120x80cm) — R$ 1.400\nTotal: R$ 5.200 (pago via PIX)\n\nCliente foi atendido pelo Amarildo. Solicitou 2 visitas técnicas para confirmação de medidas. Aprovação do orçamento no mesmo dia. Fabricação concluída em 6 dias úteis. Instalação realizada sem intercorrências.\n\nPróxima ação: Contato de follow-up em 30 dias para verificar satisfação e possível indicação.",
+    tagIds: ["t9", "t5", "t10"],
     attendantId: "a1",
     lastMessage: "Produto entregue e instalado com sucesso ✅",
     lastMessageTime: "Ontem",
@@ -820,8 +749,6 @@ export const leads: Lead[] = [
     lastPurchase: "Box Vidro Temperado 10mm + Espelho",
     lastPurchaseValue: 5200,
     createdAt: "2023-08-12",
-    aiSummary:
-      "**Resumo do Atendimento — gerado por IA**\n\nCliente Roberto Campos da empresa Campos Construções entrou em contato solicitando orçamento para box de banheiro temperado 10mm e espelho para projeto residencial em Guará II.\n\n**Produtos adquiridos:**\n• Box Vidro Temperado 10mm (80x200cm) — R$ 3.800\n• Espelho com moldura (120x80cm) — R$ 1.400\n**Total:** R$ 5.200 (pago via PIX)\n\n**Histórico do atendimento:**\nCliente foi atendido pelo Amarildo. Solicitou 2 visitas técnicas para confirmação de medidas. Aprovação do orçamento no mesmo dia. Fabricação concluída em 6 dias úteis. Instalação realizada sem intercorrências.\n\n**Próxima ação:** Contato de follow-up em 30 dias para verificar satisfação e possível indicação.",
     messages: [
       {
         id: "m1",
@@ -831,13 +758,13 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m5",
-        content: "Atendimento transferido para Amarildo (Vendas)",
+        id: "m2",
+        content: "Atendimento recebido — Amarildo (Vendas)",
         sender: "system",
         time: "14:01",
       },
       {
-        id: "m6",
+        id: "m3",
         content:
           "Roberto! Aqui é o Amarildo. Que ótimo! Me passa as medidas que faço o orçamento 🙂",
         sender: "attendant",
@@ -846,30 +773,30 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m7",
+        id: "m4",
         content: "Box: 80x200cm. Espelho: 120x80cm",
         sender: "client",
         time: "14:10",
         status: "read",
       },
       {
-        id: "m8",
+        id: "m5",
         content:
-          "Orçamento:\n📋 Box 10mm — R$ 3.800\n📋 Espelho — R$ 1.400\n**Total: R$ 5.200** (PIX com 5% desc: R$ 4.940)",
+          "Orçamento:\nBox 10mm — R$ 3.800\nEspelho — R$ 1.400\nTotal: R$ 5.200 (PIX com 5% desc: R$ 4.940)",
         sender: "attendant",
         senderName: "Amarildo",
         time: "14:25",
         status: "read",
       },
       {
-        id: "m9",
+        id: "m6",
         content: "Aprovado! Vou pagar no PIX agora",
         sender: "client",
         time: "14:28",
         status: "read",
       },
       {
-        id: "m10",
+        id: "m7",
         content: "Produto entregue e instalado com sucesso ✅",
         sender: "system",
         time: "16:00",
@@ -877,13 +804,18 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 7: Potencial — novo ──
+  // ── Lead 7: Potencial — espelhos decorativos ──
   {
     id: "l7",
     name: "Patricia Mendes Rocha",
     phone: "61 9 9956-7788",
     status: "potencial",
-    tagIds: ["t8"],
+    stage: "novo_contato",
+    pendingItems: [
+      "Iniciar atendimento sobre espelhos decorativos",
+      "Enviar catálogo de modelos e preços",
+    ],
+    tagIds: ["t1", "t7"],
     lastMessage: "Tenho interesse em espelhos decorativos",
     lastMessageTime: "10:05",
     unreadCount: 1,
@@ -898,25 +830,22 @@ export const leads: Lead[] = [
         time: "10:05",
         status: "delivered",
       },
-      {
-        id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "10:05",
-      },
     ],
   },
 
-  // ── Lead 8: Ativo — Michael ──
+  // ── Lead 8: Ativo — instalação agendada ──
   {
     id: "l8",
     name: "Lucas Ferreira Braga",
     phone: "61 9 8867-9900",
     email: "lucas.braga@hotmail.com",
     status: "ativo",
-    tagIds: ["t2", "t5"],
+    stage: "instalacao_agendada",
+    pendingItems: [
+      "Instalação agendada: sexta-feira às 14h",
+      "Confirmar endereço com o cliente no dia anterior",
+    ],
+    tagIds: ["t5", "t9"],
     attendantId: "a4",
     lastMessage: "Ok, agendado para sexta!",
     lastMessageTime: "16:10",
@@ -928,13 +857,13 @@ export const leads: Lead[] = [
     createdAt: "2024-03-28",
     messages: [
       {
-        id: "m5",
-        content: "Atendimento transferido para Michael (Vendas)",
+        id: "m1",
+        content: "Atendimento recebido — Michael (Vendas)",
         sender: "system",
         time: "15:30",
       },
       {
-        id: "m6",
+        id: "m2",
         content:
           "Lucas! Aqui é o Michael. Você quer agendar a instalação do vidro da mesa, certo?",
         sender: "attendant",
@@ -943,14 +872,14 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m7",
+        id: "m3",
         content: "Isso! Pode ser essa semana?",
         sender: "client",
         time: "16:00",
         status: "read",
       },
       {
-        id: "m8",
+        id: "m4",
         content:
           "Pode ser sexta-feira às 14h. Nosso técnico Clayton estará aí. Confirma?",
         sender: "attendant",
@@ -959,7 +888,7 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m9",
+        id: "m5",
         content: "Ok, agendado para sexta!",
         sender: "client",
         time: "16:10",
@@ -968,13 +897,18 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 9: Ativo — Amarildo, cliente recorrente ──
+  // ── Lead 9: Ativo — cliente recorrente, aguardando OK ──
   {
     id: "l9",
     name: "Sandra Lima Pereira",
     phone: "61 9 9023-4455",
     email: "sandra.lima@gmail.com",
     status: "ativo",
+    stage: "aguardando_aprovacao",
+    pendingItems: [
+      "Aguardando confirmação de pedido do box 8mm",
+      "Após confirmação: gerar pedido e prazo de entrega",
+    ],
     tagIds: ["t10", "t1", "t4"],
     attendantId: "a1",
     lastMessage: "Excelente! Mesmo modelo da última vez",
@@ -987,7 +921,7 @@ export const leads: Lead[] = [
     createdAt: "2023-06-15",
     messages: [
       {
-        id: "m6",
+        id: "m1",
         content:
           "Oi Sandra, cliente VIP! Aqui é o Amarildo! Como posso ajudar hoje? 😊",
         sender: "attendant",
@@ -996,14 +930,14 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m7",
+        id: "m2",
         content: "Amarildo! Quero mais um box igual ao que comprei no ano passado para o outro banheiro",
         sender: "client",
         time: "09:25",
         status: "read",
       },
       {
-        id: "m8",
+        id: "m3",
         content:
           "Claro! Box Vidro Temperado 8mm com perfil cromado, R$ 2.800. Mesmo modelo e instalação inclusa. Confirma?",
         sender: "attendant",
@@ -1012,7 +946,7 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m9",
+        id: "m4",
         content: "Excelente! Mesmo modelo da última vez",
         sender: "client",
         time: "09:30",
@@ -1021,13 +955,17 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 10: Finalizado com resumo de IA ──
+  // ── Lead 10: Finalizado ──
   {
     id: "l10",
     name: "Marcos Henrique Alves",
     phone: "61 9 8890-1122",
     status: "finalizado",
-    tagIds: ["t9", "t5"],
+    stage: "pos_venda",
+    pendingItems: [],
+    attendanceSummary:
+      "Cliente Marcos Henrique entrou em contato para substituição das janelas da sala. Atendido pela Andrilene.\n\nProduto adquirido:\n• Janela de Correr 3 Folhas Alumínio (2,00x1,20m) — R$ 3.600\nForma de pagamento: Cartão de crédito 6x\n\nCliente pesquisou preços antes, escolheu a Fiuza pelo prazo e qualidade. Instalação realizada em 8 dias úteis pelo técnico Clayton. Zero problemas relatados.\n\nSatisfação: Cliente elogiou o atendimento e sinalizou possível interesse em trocar portas no segundo semestre.",
+    tagIds: ["t5", "t4"],
     attendantId: "a2",
     lastMessage: "Obrigado! Ficou perfeito 🙌",
     lastMessageTime: "Há 2 dias",
@@ -1037,17 +975,15 @@ export const leads: Lead[] = [
     lastPurchase: "Janela de Correr 3 Folhas",
     lastPurchaseValue: 3600,
     createdAt: "2023-12-01",
-    aiSummary:
-      "**Resumo do Atendimento — gerado por IA**\n\nCliente Marcos Henrique entrou em contato para substituição das janelas da sala. Atendido pela Andrilene.\n\n**Produto adquirido:**\n• Janela de Correr 3 Folhas Alumínio (2,00x1,20m) — R$ 3.600\n**Forma de pagamento:** Cartão de crédito 6x\n\n**Histórico:** Cliente pesquisou preços antes, escolheu a Estrutural pelo prazo e qualidade. Instalação realizada em 8 dias úteis pelo técnico Clayton. Zero problemas relatados.\n\n**Satisfação:** Cliente deu nota 5 estrelas e sinalizou possível interesse em trocar portas no segundo semestre.",
     messages: [
       {
-        id: "m5",
-        content: "Atendimento transferido para Andrilene (Vendas)",
+        id: "m1",
+        content: "Atendimento recebido — Andrilene (Vendas)",
         sender: "system",
         time: "10:00",
       },
       {
-        id: "m6",
+        id: "m2",
         content: "Marcos, tudo certo com a janela?",
         sender: "attendant",
         senderName: "Andrilene",
@@ -1055,7 +991,7 @@ export const leads: Lead[] = [
         status: "read",
       },
       {
-        id: "m7",
+        id: "m3",
         content: "Obrigado! Ficou perfeito 🙌",
         sender: "client",
         time: "15:10",
@@ -1064,12 +1000,17 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 11: Pendente ──
+  // ── Lead 11: Pendente — sem atendimento ──
   {
     id: "l11",
     name: "Beatriz Santos Melo",
     phone: "61 9 9778-3344",
     status: "pendente",
+    stage: "novo_contato",
+    pendingItems: [
+      "Retornar mensagem da cliente (desde ontem)",
+      "Iniciar atendimento sobre portas de vidro temperado",
+    ],
     tagIds: ["t1"],
     lastMessage: "Quero saber sobre portas de vidro",
     lastMessageTime: "Ontem",
@@ -1085,44 +1026,21 @@ export const leads: Lead[] = [
         time: "17:30",
         status: "delivered",
       },
-      {
-        id: "m2",
-        content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "17:30",
-      },
-      {
-        id: "m3",
-        content: "Amarildo",
-        sender: "client",
-        time: "17:32",
-        status: "delivered",
-      },
-      {
-        id: "m4",
-        content: "Perfeito! Transferindo para **Amarildo** agora... 🔄",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "17:32",
-      },
-      {
-        id: "m5",
-        content: "Atendimento transferido para Amarildo (Vendas)",
-        sender: "system",
-        time: "17:32",
-      },
     ],
   },
 
-  // ── Lead 12: Potencial — fluxo de IA ──
+  // ── Lead 12: Potencial — sacada ──
   {
     id: "l12",
     name: "Gustavo Alves Moreira",
     phone: "61 9 9334-5566",
     status: "potencial",
-    tagIds: ["t1", "t2"],
+    stage: "em_orcamento",
+    pendingItems: [
+      "Solicitar medidas da sacada para orçamento",
+      "Enviar opções de fechamento em vidro",
+    ],
+    tagIds: ["t1", "t7"],
     lastMessage: "Olá! Preciso de orçamento para sacada",
     lastMessageTime: "08:50",
     unreadCount: 1,
@@ -1139,11 +1057,18 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
+        content: "Atendimento recebido",
+        sender: "system",
+        time: "08:51",
+      },
+      {
+        id: "m3",
         content:
-          "Olá! Bem-vindo à **Estrutural Vidros** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?\n\n• Amarildo — Vendas\n• Andrilene — Vendas\n• Clayton — Vendas\n• Michael — Vendas\n• Nayara — Suporte",
-        sender: "ai",
-        senderName: "IA Estrutural",
-        time: "08:50",
+          "Oi Gustavo! Aqui é o Amarildo 😊 Para montar o orçamento do fechamento de sacada, você pode me passar as medidas? Largura e altura aproximadas.",
+        sender: "attendant",
+        senderName: "Amarildo",
+        time: "08:55",
+        status: "read",
       },
     ],
   },

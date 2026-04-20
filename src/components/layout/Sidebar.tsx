@@ -11,7 +11,6 @@ import {
   Moon,
   ChevronRight,
   Building2,
-  Bot,
   Clock,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
@@ -27,7 +26,6 @@ const gestorNavItems = [
   { to: "/atendentes", icon: UserCheck, label: "Atendentes" },
   { to: "/tags", icon: Tag, label: "Tags" },
   { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
-  { to: "/automacao-ia", icon: Bot, label: "Automação IA" },
   { to: "/horarios", icon: Clock, label: "Horários" },
   { to: "/configuracoes", icon: Settings, label: "Configurações" },
 ];
@@ -56,9 +54,9 @@ export function Sidebar() {
             <Building2 className="h-4.5 w-4.5 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-bold text-white leading-tight">Estrutural</p>
+            <p className="truncate text-[13px] font-bold text-white leading-tight">Fiuza</p>
             <p className="truncate text-[10px] text-sidebar-foreground/50 leading-tight">
-              Vidros • CRM
+              CRM
             </p>
           </div>
         </div>
@@ -100,13 +98,13 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Powered by Synapse */}
+        {/* Powered by Lumina */}
         <div className="px-4 py-2 flex items-center justify-center gap-1.5">
           <span className="text-[9px] text-sidebar-foreground/25 font-medium tracking-wide uppercase">
             Powered by
           </span>
           <span className="text-[9px] font-bold text-sidebar-foreground/40 tracking-wider uppercase">
-            Synapse
+            Lumina
           </span>
         </div>
 
