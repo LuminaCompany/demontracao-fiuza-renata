@@ -1,16 +1,44 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
 import {
-  Search, Filter, MessageSquare, Phone, Mail,
-  Tag as TagIcon, ChevronDown, Send, Paperclip, Smile,
-  MoreVertical, CheckCheck, Check,
-  Star, ShoppingBag, StickyNote, UserCircle, Circle,
-  Users2, Bell, X, Clock, AlertCircle, FileText,
+  Search,
+  Filter,
+  MessageSquare,
+  Phone,
+  Mail,
+  MapPin,
+  Tag as TagIcon,
+  ChevronDown,
+  Send,
+  Paperclip,
+  Smile,
+  MoreVertical,
+  CheckCheck,
+  Check,
+  Star,
+  ShoppingBag,
+  StickyNote,
+  UserCircle,
+  Circle,
+  Users2,
+  Bell,
+  X,
+  Clock,
+  AlertCircle,
+  FileText,
 } from "lucide-react";
 import {
-  leads, tags, attendants, accounts,
-  type Lead, type LeadStatus, type Account, type Message,
-  type AtendimentoStage, STAGE_LABELS, STAGE_ORDER,
+  leads,
+  tags,
+  attendants,
+  accounts,
+  type Lead,
+  type LeadStatus,
+  type Account,
+  type Message,
+  type AtendimentoStage,
+  STAGE_LABELS,
+  STAGE_ORDER,
 } from "@/data/mock";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -24,66 +52,141 @@ export const Route = createFileRoute("/atendimentos")({
 
 // ── Stage config ──────────────────────────────────────────────────
 const stageConfig: Record<AtendimentoStage, { color: string; bg: string; dot: string }> = {
-  novo_contato:          { color: "text-sky-600 dark:text-sky-400",     bg: "bg-sky-100 dark:bg-sky-900/30",       dot: "bg-sky-500" },
-  em_orcamento:          { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30",   dot: "bg-amber-500" },
-  proposta_enviada:      { color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-100 dark:bg-violet-900/30", dot: "bg-violet-500" },
-  aguardando_aprovacao:  { color: "text-orange-600 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30", dot: "bg-orange-500" },
-  pagamento_pendente:    { color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-100 dark:bg-amber-900/30",   dot: "bg-amber-500" },
-  em_producao:           { color: "text-primary",                        bg: "bg-primary/10",                       dot: "bg-primary" },
-  instalacao_agendada:   { color: "text-teal-600 dark:text-teal-400",   bg: "bg-teal-100 dark:bg-teal-900/30",    dot: "bg-teal-500" },
-  pos_venda:             { color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-100 dark:bg-emerald-900/30", dot: "bg-emerald-500" },
+  novo_contato: {
+    color: "text-sky-600 dark:text-sky-400",
+    bg: "bg-sky-100 dark:bg-sky-900/30",
+    dot: "bg-sky-500",
+  },
+  em_orcamento: {
+    color: "text-amber-600 dark:text-amber-400",
+    bg: "bg-amber-100 dark:bg-amber-900/30",
+    dot: "bg-amber-500",
+  },
+  proposta_enviada: {
+    color: "text-violet-600 dark:text-violet-400",
+    bg: "bg-violet-100 dark:bg-violet-900/30",
+    dot: "bg-violet-500",
+  },
+  aguardando_aprovacao: {
+    color: "text-orange-600 dark:text-orange-400",
+    bg: "bg-orange-100 dark:bg-orange-900/30",
+    dot: "bg-orange-500",
+  },
+  pagamento_pendente: {
+    color: "text-amber-600 dark:text-amber-400",
+    bg: "bg-amber-100 dark:bg-amber-900/30",
+    dot: "bg-amber-500",
+  },
+  em_producao: { color: "text-primary", bg: "bg-primary/10", dot: "bg-primary" },
+  instalacao_agendada: {
+    color: "text-teal-600 dark:text-teal-400",
+    bg: "bg-teal-100 dark:bg-teal-900/30",
+    dot: "bg-teal-500",
+  },
+  pos_venda: {
+    color: "text-emerald-600 dark:text-emerald-400",
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    dot: "bg-emerald-500",
+  },
 };
 
 // ── Status config ─────────────────────────────────────────────────
 const statusConfig: Record<LeadStatus, { label: string; color: string; dot: string }> = {
-  ativo:      { label: "Ativo",      color: "text-emerald-500",    dot: "bg-emerald-500" },
-  pendente:   { label: "Pendente",   color: "text-amber-500",      dot: "bg-amber-500" },
-  potencial:  { label: "Potencial",  color: "text-blue-500",       dot: "bg-blue-500" },
+  ativo: { label: "Ativo", color: "text-emerald-500", dot: "bg-emerald-500" },
+  pendente: { label: "Pendente", color: "text-amber-500", dot: "bg-amber-500" },
+  potencial: { label: "Potencial", color: "text-blue-500", dot: "bg-blue-500" },
   finalizado: { label: "Finalizado", color: "text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
 const tagColorMap: Record<string, string> = {
-  blue:   "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  cyan:   "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
-  red:    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  amber:  "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
-  green:  "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
+  blue: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  cyan: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300",
+  red: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  amber: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  green: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300",
   orange: "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300",
   violet: "bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300",
-  pink:   "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
-  teal:   "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
+  pink: "bg-pink-100 text-pink-700 dark:bg-pink-900/40 dark:text-pink-300",
+  teal: "bg-teal-100 text-teal-700 dark:bg-teal-900/40 dark:text-teal-300",
   yellow: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-300",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────
 function getInitials(name: string) {
-  return name.split(" ").slice(0, 2).map((n) => n[0]).join("").toUpperCase();
+  return name
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 }
 
 // ── Types ─────────────────────────────────────────────────────────
 type TabFilter = "todos" | "ativo" | "pendente" | "potencial" | "finalizado";
 
-interface Reminder { id: string; date: string; time: string; note: string }
+interface Reminder {
+  id: string;
+  date: string;
+  time: string;
+  note: string;
+}
 
 // ── Mock internal chat data ───────────────────────────────────────
 const initialInternalChats: Record<string, Message[]> = {
   acc1: [
-    { id: "ic1", content: "Boa tarde! Como está o fluxo de leads hoje?", sender: "client", time: "13:15" },
-    { id: "ic2", content: "Boa tarde! Tranquilo, 3 leads ativos no momento.", sender: "attendant", senderName: "Você", time: "13:16", status: "read" },
-    { id: "ic3", content: "Ótimo! Acompanhe o lead da Ana Paula com prioridade 🙏", sender: "client", time: "13:17" },
+    {
+      id: "ic1",
+      content: "Boa tarde! Como está o fluxo de leads hoje?",
+      sender: "client",
+      time: "13:15",
+    },
+    {
+      id: "ic2",
+      content: "Boa tarde! Tranquilo, 3 leads ativos no momento.",
+      sender: "attendant",
+      senderName: "Você",
+      time: "13:16",
+      status: "read",
+    },
+    {
+      id: "ic3",
+      content: "Ótimo! Acompanhe o lead da Ana Paula com prioridade 🙏",
+      sender: "client",
+      time: "13:17",
+    },
   ],
   acc3: [
-    { id: "ic4", content: "Você pode me ajudar com o orçamento do João Pedro?", sender: "client", time: "10:05" },
-    { id: "ic5", content: "Claro! Já estou preparando. Te mando em breve.", sender: "attendant", senderName: "Você", time: "10:06", status: "read" },
+    {
+      id: "ic4",
+      content: "Você pode me ajudar com o orçamento do João Pedro?",
+      sender: "client",
+      time: "10:05",
+    },
+    {
+      id: "ic5",
+      content: "Claro! Já estou preparando. Te mando em breve.",
+      sender: "attendant",
+      senderName: "Você",
+      time: "10:06",
+      status: "read",
+    },
   ],
 };
 
 // ── Message bubble ────────────────────────────────────────────────
-const MessageBubble = memo(function MessageBubble({ msg, currentAttendant }: { msg: Message; currentAttendant: typeof attendants[0] | null | undefined }) {
+const MessageBubble = memo(function MessageBubble({
+  msg,
+  currentAttendant,
+}: {
+  msg: Message;
+  currentAttendant: (typeof attendants)[0] | null | undefined;
+}) {
   if (msg.sender === "system") {
     return (
       <div className="flex justify-center">
-        <span className="rounded-full bg-muted px-3 py-1 text-[11px] text-muted-foreground">{msg.content}</span>
+        <span className="rounded-full bg-muted px-3 py-1 text-[11px] text-muted-foreground">
+          {msg.content}
+        </span>
       </div>
     );
   }
@@ -92,7 +195,9 @@ const MessageBubble = memo(function MessageBubble({ msg, currentAttendant }: { m
       <div className="flex justify-start">
         <div className="max-w-[68%]">
           <div className="rounded-2xl rounded-tl-sm bg-card border border-border px-4 py-2.5 shadow-xs">
-            <p className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+            <p className="text-[13px] text-foreground whitespace-pre-wrap leading-relaxed">
+              {msg.content}
+            </p>
           </div>
           <div className="flex mt-1 pl-1">
             <span className="text-[10px] text-muted-foreground">{msg.time}</span>
@@ -110,13 +215,19 @@ const MessageBubble = memo(function MessageBubble({ msg, currentAttendant }: { m
           <span className="text-[10px] font-semibold text-muted-foreground">{senderLabel}</span>
         </div>
         <div className="rounded-2xl rounded-tr-sm bg-primary px-4 py-2.5 shadow-sm">
-          <p className="text-[13px] text-primary-foreground whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+          <p className="text-[13px] text-primary-foreground whitespace-pre-wrap leading-relaxed">
+            {msg.content}
+          </p>
         </div>
         <div className="flex items-center justify-end gap-1 mt-1 pr-1">
           <span className="text-[10px] text-muted-foreground">{msg.time}</span>
-          {msg.status === "read" ? <CheckCheck className="h-3 w-3 text-primary" />
-            : msg.status === "delivered" ? <CheckCheck className="h-3 w-3 text-muted-foreground" />
-            : <Check className="h-3 w-3 text-muted-foreground" />}
+          {msg.status === "read" ? (
+            <CheckCheck className="h-3 w-3 text-primary" />
+          ) : msg.status === "delivered" ? (
+            <CheckCheck className="h-3 w-3 text-muted-foreground" />
+          ) : (
+            <Check className="h-3 w-3 text-muted-foreground" />
+          )}
         </div>
       </div>
     </div>
@@ -141,7 +252,10 @@ const ReminderPanel = memo(function ReminderPanel({
   function handleAdd() {
     if (!date || !time || !note.trim()) return;
     onAdd(date, time, note.trim());
-    setDate(""); setTime(""); setNote(""); setOpen(false);
+    setDate("");
+    setTime("");
+    setNote("");
+    setOpen(false);
   }
 
   return (
@@ -149,13 +263,22 @@ const ReminderPanel = memo(function ReminderPanel({
       <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between">
         <div className="flex items-center gap-1.5">
           <Bell className="h-3.5 w-3.5 text-amber-500" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Lembrete</p>
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Lembrete
+          </p>
         </div>
         <div className="flex items-center gap-1.5">
           {reminders.length > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white">{reminders.length}</span>
+            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white">
+              {reminders.length}
+            </span>
           )}
-          <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", open && "rotate-180")} />
+          <ChevronDown
+            className={cn(
+              "h-3.5 w-3.5 text-muted-foreground transition-transform",
+              open && "rotate-180",
+            )}
+          />
         </div>
       </button>
 
@@ -164,36 +287,58 @@ const ReminderPanel = memo(function ReminderPanel({
           <div className="grid grid-cols-2 gap-2">
             <div>
               <label className="text-[10px] text-muted-foreground">Data</label>
-              <input type="date" value={date} onChange={e => setDate(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </div>
             <div>
               <label className="text-[10px] text-muted-foreground">Hora</label>
-              <input type="time" value={time} onChange={e => setTime(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </div>
           </div>
           <div>
             <label className="text-[10px] text-muted-foreground">Anotação para você</label>
-            <textarea value={note} onChange={e => setNote(e.target.value)} rows={2}
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              rows={2}
               placeholder="Ex: Ligar para confirmar instalação..."
-              className="mt-0.5 w-full resize-none rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30" />
+              className="mt-0.5 w-full resize-none rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            />
           </div>
-          <button onClick={handleAdd}
+          <button
+            onClick={handleAdd}
             disabled={!date || !time || !note.trim()}
-            className="w-full rounded-xl bg-amber-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-amber-600 transition-colors disabled:opacity-40">
+            className="w-full rounded-xl bg-amber-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-amber-600 transition-colors disabled:opacity-40"
+          >
             Adicionar Lembrete
           </button>
           {reminders.length > 0 && (
             <div className="space-y-1.5 pt-1">
-              {reminders.map(r => (
-                <div key={r.id} className="flex items-start gap-2 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 p-2">
+              {reminders.map((r) => (
+                <div
+                  key={r.id}
+                  className="flex items-start gap-2 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 p-2"
+                >
                   <Bell className="h-3 w-3 text-amber-500 flex-none mt-0.5" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">{r.date} às {r.time}</p>
+                    <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                      {r.date} às {r.time}
+                    </p>
                     <p className="text-[10px] text-foreground">{r.note}</p>
                   </div>
-                  <button onClick={() => onRemove(r.id)} className="text-muted-foreground hover:text-destructive flex-none">
+                  <button
+                    onClick={() => onRemove(r.id)}
+                    className="text-muted-foreground hover:text-destructive flex-none"
+                  >
                     <X className="h-3 w-3" />
                   </button>
                 </div>
@@ -242,7 +387,9 @@ function StagePanel({ lead }: { lead: Lead }) {
         </div>
         <div className="flex justify-between mt-1">
           <span className="text-[9px] text-muted-foreground">Início</span>
-          <span className="text-[9px] text-muted-foreground">{stageIndex + 1}/{totalSteps}</span>
+          <span className="text-[9px] text-muted-foreground">
+            {stageIndex + 1}/{totalSteps}
+          </span>
           <span className="text-[9px] text-muted-foreground">Pós-venda</span>
         </div>
       </div>
@@ -258,7 +405,10 @@ function StagePanel({ lead }: { lead: Lead }) {
           </div>
           <div className="space-y-1.5">
             {lead.pendingItems.map((item, i) => (
-              <div key={i} className="flex items-start gap-2 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 px-2.5 py-2">
+              <div
+                key={i}
+                className="flex items-start gap-2 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 px-2.5 py-2"
+              >
                 <span className="h-1.5 w-1.5 rounded-full bg-amber-400 flex-none mt-1.5" />
                 <p className="text-[11px] text-foreground leading-snug">{item}</p>
               </div>
@@ -282,15 +432,16 @@ function AtendimentosPage() {
   const { currentAccount } = useAuth();
   const { leadId } = Route.useSearch();
 
-  const currentAttendantId = useMemo(() =>
-    currentAccount.role === "atendente"
-      ? attendants.find((a) => a.email === currentAccount.email)?.id
-      : undefined,
-    [currentAccount]
+  const currentAttendantId = useMemo(
+    () =>
+      currentAccount.role === "atendente"
+        ? attendants.find((a) => a.email === currentAccount.email)?.id
+        : undefined,
+    [currentAccount],
   );
 
   const [selectedLead, setSelectedLead] = useState<Lead | null>(() =>
-    leadId ? (leads.find((l) => l.id === leadId) ?? null) : null
+    leadId ? (leads.find((l) => l.id === leadId) ?? null) : null,
   );
   const [tab, setTab] = useState<TabFilter>("todos");
   const [search, setSearch] = useState("");
@@ -305,7 +456,8 @@ function AtendimentosPage() {
   // Chat interno
   const [internalChatMode, setInternalChatMode] = useState(false);
   const [selectedInternalUser, setSelectedInternalUser] = useState<Account | null>(null);
-  const [internalChats, setInternalChats] = useState<Record<string, Message[]>>(initialInternalChats);
+  const [internalChats, setInternalChats] =
+    useState<Record<string, Message[]>>(initialInternalChats);
   const [internalMsg, setInternalMsg] = useState("");
 
   // Per-lead reminders
@@ -320,42 +472,54 @@ function AtendimentosPage() {
   useEffect(() => {
     if (leadId) {
       const found = allLeads.find((l) => l.id === leadId);
-      if (found) { setSelectedLead(found); setInternalChatMode(false); }
+      if (found) {
+        setSelectedLead(found);
+        setInternalChatMode(false);
+      }
     }
   }, [leadId]);
 
-  const visibleLeads = useMemo(() =>
-    currentAttendantId
-      ? allLeads.filter((l) => l.attendantId === currentAttendantId)
-      : allLeads,
-    [allLeads, currentAttendantId]
+  const visibleLeads = useMemo(
+    () =>
+      currentAttendantId ? allLeads.filter((l) => l.attendantId === currentAttendantId) : allLeads,
+    [allLeads, currentAttendantId],
   );
 
-  const filteredLeads = useMemo(() =>
-    visibleLeads.filter((lead) => {
-      if (tab !== "todos" && lead.status !== tab) return false;
-      if (search && !lead.name.toLowerCase().includes(search.toLowerCase()) && !lead.phone.includes(search)) return false;
-      if (filterAttendant !== "todos" && lead.attendantId !== filterAttendant) return false;
-      if (filterTag !== "todos" && !lead.tagIds.includes(filterTag)) return false;
-      if (filterStage !== "todos" && lead.stage !== filterStage) return false;
-      return true;
+  const filteredLeads = useMemo(
+    () =>
+      visibleLeads.filter((lead) => {
+        if (tab !== "todos" && lead.status !== tab) return false;
+        if (
+          search &&
+          !lead.name.toLowerCase().includes(search.toLowerCase()) &&
+          !lead.phone.includes(search)
+        )
+          return false;
+        if (filterAttendant !== "todos" && lead.attendantId !== filterAttendant) return false;
+        if (filterTag !== "todos" && !lead.tagIds.includes(filterTag)) return false;
+        if (filterStage !== "todos" && lead.stage !== filterStage) return false;
+        return true;
+      }),
+    [visibleLeads, tab, search, filterAttendant, filterTag, filterStage],
+  );
+
+  const tabCounts = useMemo(
+    () => ({
+      todos: visibleLeads.length,
+      ativo: visibleLeads.filter((l) => l.status === "ativo").length,
+      pendente: visibleLeads.filter((l) => l.status === "pendente").length,
+      potencial: visibleLeads.filter((l) => l.status === "potencial").length,
+      finalizado: visibleLeads.filter((l) => l.status === "finalizado").length,
     }),
-    [visibleLeads, tab, search, filterAttendant, filterTag, filterStage]
+    [visibleLeads],
   );
-
-  const tabCounts = useMemo(() => ({
-    todos:      visibleLeads.length,
-    ativo:      visibleLeads.filter((l) => l.status === "ativo").length,
-    pendente:   visibleLeads.filter((l) => l.status === "pendente").length,
-    potencial:  visibleLeads.filter((l) => l.status === "potencial").length,
-    finalizado: visibleLeads.filter((l) => l.status === "finalizado").length,
-  }), [visibleLeads]);
 
   const handleSendMessage = useCallback(() => {
     if (!newMessage.trim() || !selectedLead) return;
-    const senderName = currentAccount.role === "atendente"
-      ? currentAccount.name
-      : (attendants.find((a) => a.id === selectedLead.attendantId)?.name ?? "Atendente");
+    const senderName =
+      currentAccount.role === "atendente"
+        ? currentAccount.name
+        : (attendants.find((a) => a.id === selectedLead.attendantId)?.name ?? "Atendente");
     const msg: Message = {
       id: `m${Date.now()}`,
       content: newMessage.trim(),
@@ -364,12 +528,23 @@ function AtendimentosPage() {
       time: new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
       status: "sent",
     };
-    setAllLeads((prev) => prev.map((l) =>
-      l.id === selectedLead.id
-        ? { ...l, messages: [...l.messages, msg], lastMessage: newMessage.trim(), unreadCount: 0 }
-        : l
-    ));
-    setSelectedLead((prev) => prev ? { ...prev, messages: [...prev.messages, msg], lastMessage: newMessage.trim(), unreadCount: 0 } : null);
+    setAllLeads((prev) =>
+      prev.map((l) =>
+        l.id === selectedLead.id
+          ? { ...l, messages: [...l.messages, msg], lastMessage: newMessage.trim(), unreadCount: 0 }
+          : l,
+      ),
+    );
+    setSelectedLead((prev) =>
+      prev
+        ? {
+            ...prev,
+            messages: [...prev.messages, msg],
+            lastMessage: newMessage.trim(),
+            unreadCount: 0,
+          }
+        : null,
+    );
     setNewMessage("");
   }, [newMessage, selectedLead, currentAccount]);
 
@@ -404,14 +579,14 @@ function AtendimentosPage() {
     }));
   }, []);
 
-  const currentAttendant = useMemo(() =>
-    selectedLead ? attendants.find((a) => a.id === selectedLead.attendantId) : null,
-    [selectedLead]
+  const currentAttendant = useMemo(
+    () => (selectedLead ? attendants.find((a) => a.id === selectedLead.attendantId) : null),
+    [selectedLead],
   );
 
-  const internalPeers = useMemo(() =>
-    accounts.filter((a) => a.id !== currentAccount.id),
-    [currentAccount.id]
+  const internalPeers = useMemo(
+    () => accounts.filter((a) => a.id !== currentAccount.id),
+    [currentAccount.id],
   );
 
   return (
@@ -426,7 +601,10 @@ function AtendimentosPage() {
             </h1>
             <div className="flex items-center gap-1 flex-none">
               <button
-                onClick={() => { setInternalChatMode(!internalChatMode); setSelectedInternalUser(null); }}
+                onClick={() => {
+                  setInternalChatMode(!internalChatMode);
+                  setSelectedInternalUser(null);
+                }}
                 className={cn(
                   "flex items-center gap-1 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors",
                   internalChatMode
@@ -467,22 +645,41 @@ function AtendimentosPage() {
               {showFilters && (
                 <div className="space-y-2 pt-1">
                   {currentAccount.role === "gestor" && (
-                    <select value={filterAttendant} onChange={(e) => setFilterAttendant(e.target.value)}
-                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <select
+                      value={filterAttendant}
+                      onChange={(e) => setFilterAttendant(e.target.value)}
+                      className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    >
                       <option value="todos">Todos os atendentes</option>
-                      {attendants.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+                      {attendants.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name}
+                        </option>
+                      ))}
                     </select>
                   )}
-                  <select value={filterTag} onChange={(e) => setFilterTag(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <select
+                    value={filterTag}
+                    onChange={(e) => setFilterTag(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  >
                     <option value="todos">Todas as tags</option>
-                    {tags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+                    {tags.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
                   </select>
-                  <select value={filterStage} onChange={(e) => setFilterStage(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <select
+                    value={filterStage}
+                    onChange={(e) => setFilterStage(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  >
                     <option value="todos">Todas as etapas</option>
                     {Object.entries(STAGE_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>{label}</option>
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -495,16 +692,25 @@ function AtendimentosPage() {
         {!internalChatMode && (
           <div className="flex gap-0.5 px-3 py-2 overflow-x-auto scrollbar-none border-b border-border">
             {(["todos", "ativo", "pendente", "potencial", "finalizado"] as TabFilter[]).map((t) => (
-              <button key={t} onClick={() => setTab(t)}
+              <button
+                key={t}
+                onClick={() => setTab(t)}
                 className={cn(
                   "flex-none rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors whitespace-nowrap",
-                  tab === t ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                )}>
+                  tab === t
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
+                )}
+              >
                 {t === "todos" ? "Todos" : statusConfig[t as LeadStatus].label}
-                <span className={cn(
-                  "ml-1 inline-flex items-center justify-center rounded-full w-4 h-4 text-[9px]",
-                  tab === t ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
-                )}>{tabCounts[t]}</span>
+                <span
+                  className={cn(
+                    "ml-1 inline-flex items-center justify-center rounded-full w-4 h-4 text-[9px]",
+                    tab === t ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {tabCounts[t]}
+                </span>
               </button>
             ))}
           </div>
@@ -518,11 +724,14 @@ function AtendimentosPage() {
               const lastMsg = msgs[msgs.length - 1];
               const isSelected = selectedInternalUser?.id === account.id;
               return (
-                <button key={account.id} onClick={() => setSelectedInternalUser(account)}
+                <button
+                  key={account.id}
+                  onClick={() => setSelectedInternalUser(account)}
                   className={cn(
                     "flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60",
                     isSelected && "bg-primary/8 border-l-2 border-l-primary",
-                  )}>
+                  )}
+                >
                   <div
                     className="flex h-9 w-9 flex-none items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
                     style={{ backgroundColor: account.color }}
@@ -531,11 +740,21 @@ function AtendimentosPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <span className="text-[13px] font-semibold text-foreground truncate">{account.name}</span>
-                      {lastMsg && <span className="text-[10px] text-muted-foreground flex-none">{lastMsg.time}</span>}
+                      <span className="text-[13px] font-semibold text-foreground truncate">
+                        {account.name}
+                      </span>
+                      {lastMsg && (
+                        <span className="text-[10px] text-muted-foreground flex-none">
+                          {lastMsg.time}
+                        </span>
+                      )}
                     </div>
                     <p className="text-[11px] text-muted-foreground capitalize">{account.role}</p>
-                    {lastMsg && <p className="text-[11px] text-muted-foreground truncate">{lastMsg.content}</p>}
+                    {lastMsg && (
+                      <p className="text-[11px] text-muted-foreground truncate">
+                        {lastMsg.content}
+                      </p>
+                    )}
                   </div>
                 </button>
               );
@@ -553,50 +772,82 @@ function AtendimentosPage() {
               const stageCfg = lead.stage ? stageConfig[lead.stage] : null;
               const hasPending = lead.pendingItems && lead.pendingItems.length > 0;
               return (
-                <button key={lead.id}
-                  onClick={() => { setSelectedLead(lead); setShowSummary(false); }}
+                <button
+                  key={lead.id}
+                  onClick={() => {
+                    setSelectedLead(lead);
+                    setShowSummary(false);
+                  }}
                   className={cn(
                     "flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60",
                     isSelected && "bg-primary/8 border-l-2 border-l-primary",
-                  )}>
+                  )}
+                >
                   <div className="relative flex-none mt-0.5">
                     <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/40 text-xs font-bold text-primary">
                       {getInitials(lead.name)}
                     </div>
-                    <span className={cn("absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-card", status.dot)} />
+                    <span
+                      className={cn(
+                        "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-card",
+                        status.dot,
+                      )}
+                    />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="truncate text-[13px] font-semibold text-foreground">{lead.name}</span>
+                      <span className="truncate text-[13px] font-semibold text-foreground">
+                        {lead.name}
+                      </span>
                       <div className="flex items-center gap-1 flex-none">
                         {hasPending && (
                           <AlertCircle className="h-3 w-3 text-amber-500" title="Pendências" />
                         )}
-                        <span className="text-[10px] text-muted-foreground">{lead.lastMessageTime}</span>
+                        <span className="text-[10px] text-muted-foreground">
+                          {lead.lastMessageTime}
+                        </span>
                       </div>
                     </div>
-                    <p className="truncate text-[12px] text-muted-foreground mt-0.5">{lead.lastMessage}</p>
+                    <p className="truncate text-[12px] text-muted-foreground mt-0.5">
+                      {lead.lastMessage}
+                    </p>
                     {/* Stage + tags row */}
                     <div className="flex items-center justify-between mt-1.5 gap-1">
                       <div className="flex items-center gap-1 min-w-0">
                         {stageCfg && lead.stage && (
-                          <span className={cn("rounded px-1.5 py-0.5 text-[9px] font-semibold flex-none", stageCfg.bg, stageCfg.color)}>
+                          <span
+                            className={cn(
+                              "rounded px-1.5 py-0.5 text-[9px] font-semibold flex-none",
+                              stageCfg.bg,
+                              stageCfg.color,
+                            )}
+                          >
                             {STAGE_LABELS[lead.stage]}
                           </span>
                         )}
-                        {!lead.stage && lead.tagIds.slice(0, 1).map((tid) => {
-                          const tag = tags.find((t) => t.id === tid);
-                          return tag ? (
-                            <span key={tid} className={cn("rounded px-1.5 py-0.5 text-[9px] font-medium", tagColorMap[tag.color])}>
-                              {tag.name}
-                            </span>
-                          ) : null;
-                        })}
+                        {!lead.stage &&
+                          lead.tagIds.slice(0, 1).map((tid) => {
+                            const tag = tags.find((t) => t.id === tid);
+                            return tag ? (
+                              <span
+                                key={tid}
+                                className={cn(
+                                  "rounded px-1.5 py-0.5 text-[9px] font-medium",
+                                  tagColorMap[tag.color],
+                                )}
+                              >
+                                {tag.name}
+                              </span>
+                            ) : null;
+                          })}
                       </div>
                       <div className="flex items-center gap-1.5 flex-none">
                         {attendant && (
-                          <span className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white ring-1 ring-white/30"
-                            style={{ backgroundColor: attendant.color }} title={attendant.name}>
+                          <span
+                            className="flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white ring-1 ring-white/30"
+                            style={{ backgroundColor: attendant.color }}
+                            title={attendant.name}
+                          >
                             {attendant.initials[0]}
                           </span>
                         )}
@@ -620,13 +871,19 @@ function AtendimentosPage() {
         selectedInternalUser ? (
           <div className="flex flex-1 flex-col overflow-hidden bg-background">
             <div className="flex items-center gap-3 border-b border-border bg-card/60 backdrop-blur-sm px-5 py-3.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
-                style={{ backgroundColor: selectedInternalUser.color }}>
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-white shadow-sm"
+                style={{ backgroundColor: selectedInternalUser.color }}
+              >
                 {selectedInternalUser.initials}
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-[14px] font-bold text-foreground">{selectedInternalUser.name}</h2>
-                <p className="text-[11px] text-muted-foreground capitalize">{selectedInternalUser.role} · Chat Interno</p>
+                <h2 className="text-[14px] font-bold text-foreground">
+                  {selectedInternalUser.name}
+                </h2>
+                <p className="text-[11px] text-muted-foreground capitalize">
+                  {selectedInternalUser.role} · Chat Interno
+                </p>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] font-semibold text-primary bg-primary/10 rounded-lg px-2.5 py-1">
                 <Users2 className="h-3.5 w-3.5" />
@@ -642,14 +899,25 @@ function AtendimentosPage() {
             <div className="border-t border-border bg-card/60 px-4 py-3">
               <div className="flex items-end gap-2">
                 <div className="flex-1">
-                  <textarea value={internalMsg} onChange={(e) => setInternalMsg(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendInternal(); } }}
+                  <textarea
+                    value={internalMsg}
+                    onChange={(e) => setInternalMsg(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendInternal();
+                      }
+                    }}
                     placeholder="Mensagem interna..."
                     rows={1}
-                    className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition max-h-32" />
+                    className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition max-h-32"
+                  />
                 </div>
-                <button onClick={handleSendInternal} disabled={!internalMsg.trim()}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all">
+                <button
+                  onClick={handleSendInternal}
+                  disabled={!internalMsg.trim()}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                >
                   <Send className="h-4 w-4" />
                 </button>
               </div>
@@ -662,7 +930,9 @@ function AtendimentosPage() {
                 <Users2 className="h-8 w-8 text-primary/50" />
               </div>
               <p className="text-base font-semibold text-foreground">Chat Interno da Equipe</p>
-              <p className="text-sm text-muted-foreground max-w-xs">Selecione um membro da equipe para iniciar uma conversa interna</p>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                Selecione um membro da equipe para iniciar uma conversa interna
+              </p>
             </div>
           </div>
         )
@@ -674,15 +944,25 @@ function AtendimentosPage() {
               <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/40 text-xs font-bold text-primary">
                 {getInitials(selectedLead.name)}
               </div>
-              <span className={cn("absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-card", statusConfig[selectedLead.status].dot)} />
+              <span
+                className={cn(
+                  "absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full ring-2 ring-card",
+                  statusConfig[selectedLead.status].dot,
+                )}
+              />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-[14px] font-bold text-foreground leading-tight truncate">{selectedLead.name}</h2>
+              <h2 className="text-[14px] font-bold text-foreground leading-tight truncate">
+                {selectedLead.name}
+              </h2>
               <p className="text-[11px] text-muted-foreground">
                 {selectedLead.phone}
                 {currentAttendant && (
                   <span className="ml-2">
-                    · Atendido por <span className="font-medium" style={{ color: currentAttendant.color }}>{currentAttendant.name}</span>
+                    · Atendido por{" "}
+                    <span className="font-medium" style={{ color: currentAttendant.color }}>
+                      {currentAttendant.name}
+                    </span>
                   </span>
                 )}
                 {selectedLead.stage && (
@@ -718,17 +998,28 @@ function AtendimentosPage() {
                   <Paperclip className="h-4 w-4" />
                 </button>
                 <div className="flex-1">
-                  <textarea value={newMessage} onChange={(e) => setNewMessage(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleSendMessage(); } }}
+                  <textarea
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage();
+                      }
+                    }}
                     placeholder="Digite uma mensagem..."
                     rows={1}
-                    className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition max-h-32" />
+                    className="w-full resize-none rounded-xl border border-border bg-background px-4 py-2.5 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition max-h-32"
+                  />
                 </div>
                 <button className="p-2 text-muted-foreground hover:text-foreground transition-colors rounded-lg hover:bg-accent">
                   <Smile className="h-4 w-4" />
                 </button>
-                <button onClick={handleSendMessage} disabled={!newMessage.trim()}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed">
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!newMessage.trim()}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-all hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
                   <Send className="h-4 w-4" />
                 </button>
               </div>
@@ -747,7 +1038,9 @@ function AtendimentosPage() {
               <MessageSquare className="h-8 w-8 text-primary/50" />
             </div>
             <p className="text-base font-semibold text-foreground">Selecione um atendimento</p>
-            <p className="text-sm text-muted-foreground max-w-xs">Clique em um lead na lista ao lado para ver a conversa</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Clique em um lead na lista ao lado para ver a conversa
+            </p>
           </div>
         </div>
       )}
@@ -763,23 +1056,36 @@ function AtendimentosPage() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/50 text-sm font-bold text-primary ring-4 ring-primary/10">
               {getInitials(selectedLead.name)}
             </div>
-            <h3 className="mt-2.5 text-[14px] font-bold text-foreground leading-tight">{selectedLead.name}</h3>
-            {selectedLead.company && <p className="text-xs text-muted-foreground mt-0.5">{selectedLead.company}</p>}
-            <span className={cn(
-              "mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium",
-              selectedLead.status === "ativo"      && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-              selectedLead.status === "pendente"   && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-              selectedLead.status === "potencial"  && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-              selectedLead.status === "finalizado" && "bg-muted text-muted-foreground",
-            )}>
-              <span className={cn("h-1.5 w-1.5 rounded-full", statusConfig[selectedLead.status].dot)} />
+            <h3 className="mt-2.5 text-[14px] font-bold text-foreground leading-tight">
+              {selectedLead.name}
+            </h3>
+            {selectedLead.company && (
+              <p className="text-xs text-muted-foreground mt-0.5">{selectedLead.company}</p>
+            )}
+            <span
+              className={cn(
+                "mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium",
+                selectedLead.status === "ativo" &&
+                  "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                selectedLead.status === "pendente" &&
+                  "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+                selectedLead.status === "potencial" &&
+                  "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                selectedLead.status === "finalizado" && "bg-muted text-muted-foreground",
+              )}
+            >
+              <span
+                className={cn("h-1.5 w-1.5 rounded-full", statusConfig[selectedLead.status].dot)}
+              />
               {statusConfig[selectedLead.status].label}
             </span>
           </div>
 
           {/* Contact details */}
           <div className="px-4 py-3 border-b border-border space-y-2.5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Contato</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+              Contato
+            </p>
             <div className="flex items-center gap-2.5">
               <Phone className="h-3.5 w-3.5 flex-none text-muted-foreground" />
               <span className="text-[13px] text-foreground">{selectedLead.phone}</span>
@@ -790,10 +1096,27 @@ function AtendimentosPage() {
                 <span className="text-[13px] text-foreground truncate">{selectedLead.email}</span>
               </div>
             )}
+            {selectedLead.region && (
+              <div className="flex items-center gap-2.5">
+                <MapPin className="h-3.5 w-3.5 flex-none text-muted-foreground" />
+                <span className="text-[13px] text-foreground">
+                  {{
+                    centro: "Centro",
+                    batel: "Batel",
+                    santana: "Santana",
+                    trianon: "Trianon",
+                    santacruz: "Santa Cruz",
+                  }[selectedLead.region] ?? selectedLead.region}
+                  <span className="text-[11px] text-muted-foreground ml-1">— Guarapuava, PR</span>
+                </span>
+              </div>
+            )}
             {currentAttendant && (
               <div className="flex items-center gap-2.5">
                 <UserCircle className="h-3.5 w-3.5 flex-none text-muted-foreground" />
-                <span className="text-[13px]" style={{ color: currentAttendant.color }}>{currentAttendant.name}</span>
+                <span className="text-[13px]" style={{ color: currentAttendant.color }}>
+                  {currentAttendant.name}
+                </span>
               </div>
             )}
           </div>
@@ -801,12 +1124,20 @@ function AtendimentosPage() {
           {/* Tags */}
           {selectedLead.tagIds.length > 0 && (
             <div className="px-4 py-3 border-b border-border">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Tags</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                Tags
+              </p>
               <div className="flex flex-wrap gap-1.5">
                 {selectedLead.tagIds.map((tid) => {
                   const tag = tags.find((t) => t.id === tid);
                   return tag ? (
-                    <span key={tid} className={cn("rounded-full px-2.5 py-1 text-[11px] font-medium flex items-center gap-1", tagColorMap[tag.color])}>
+                    <span
+                      key={tid}
+                      className={cn(
+                        "rounded-full px-2.5 py-1 text-[11px] font-medium flex items-center gap-1",
+                        tagColorMap[tag.color],
+                      )}
+                    >
                       <TagIcon className="h-2.5 w-2.5" />
                       {tag.name}
                     </span>
@@ -818,17 +1149,23 @@ function AtendimentosPage() {
 
           {/* Stats */}
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">Histórico</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+              Histórico
+            </p>
             <div className="grid grid-cols-2 gap-2">
               <div className="rounded-xl bg-background border border-border p-3 text-center">
                 <ShoppingBag className="h-3.5 w-3.5 text-muted-foreground mx-auto mb-1" />
-                <p className="text-lg font-bold text-foreground leading-none">{selectedLead.totalPurchases}</p>
+                <p className="text-lg font-bold text-foreground leading-none">
+                  {selectedLead.totalPurchases}
+                </p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">Compras</p>
               </div>
               <div className="rounded-xl bg-background border border-border p-3 text-center">
                 <Star className="h-3.5 w-3.5 text-amber-500 mx-auto mb-1" />
                 <p className="text-lg font-bold text-foreground leading-none">
-                  {selectedLead.totalSpent > 0 ? `R$${(selectedLead.totalSpent / 1000).toFixed(1)}k` : "R$0"}
+                  {selectedLead.totalSpent > 0
+                    ? `R$${(selectedLead.totalSpent / 1000).toFixed(1)}k`
+                    : "R$0"}
                 </p>
                 <p className="text-[10px] text-muted-foreground mt-0.5">Total gasto</p>
               </div>
@@ -836,9 +1173,13 @@ function AtendimentosPage() {
             {selectedLead.lastPurchase && (
               <div className="mt-2 rounded-xl bg-background border border-border p-3">
                 <p className="text-[10px] text-muted-foreground">Última compra</p>
-                <p className="text-[12px] font-medium text-foreground mt-0.5 leading-tight">{selectedLead.lastPurchase}</p>
+                <p className="text-[12px] font-medium text-foreground mt-0.5 leading-tight">
+                  {selectedLead.lastPurchase}
+                </p>
                 {selectedLead.lastPurchaseValue && (
-                  <p className="text-[11px] text-primary font-semibold mt-0.5">R$ {selectedLead.lastPurchaseValue.toLocaleString("pt-BR")}</p>
+                  <p className="text-[11px] text-primary font-semibold mt-0.5">
+                    R$ {selectedLead.lastPurchaseValue.toLocaleString("pt-BR")}
+                  </p>
                 )}
               </div>
             )}
@@ -854,7 +1195,9 @@ function AtendimentosPage() {
           {/* Notes */}
           {selectedLead.notes && (
             <div className="px-4 py-3 border-b border-border">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">Notas</p>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+                Notas
+              </p>
               <div className="flex gap-2">
                 <StickyNote className="h-3.5 w-3.5 flex-none text-muted-foreground mt-0.5" />
                 <p className="text-[12px] text-foreground leading-relaxed">{selectedLead.notes}</p>
@@ -865,12 +1208,22 @@ function AtendimentosPage() {
           {/* Resumo do Atendimento */}
           {selectedLead.attendanceSummary && (
             <div className="px-4 py-3">
-              <button onClick={() => setShowSummary(!showSummary)} className="flex w-full items-center justify-between">
+              <button
+                onClick={() => setShowSummary(!showSummary)}
+                className="flex w-full items-center justify-between"
+              >
                 <div className="flex items-center gap-1.5">
                   <FileText className="h-3.5 w-3.5 text-primary" />
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Resumo do Atendimento</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Resumo do Atendimento
+                  </p>
                 </div>
-                <ChevronDown className={cn("h-3.5 w-3.5 text-muted-foreground transition-transform", showSummary && "rotate-180")} />
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 text-muted-foreground transition-transform",
+                    showSummary && "rotate-180",
+                  )}
+                />
               </button>
               {showSummary && (
                 <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-3">

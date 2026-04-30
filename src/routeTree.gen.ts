@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as MensagensRapidasRouteImport } from './routes/mensagens-rapidas'
+import { Route as HorariosRouteImport } from './routes/horarios'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContatosRouteImport } from './routes/contatos'
 import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
+import { Route as AutomacaoIaRouteImport } from './routes/automacao-ia'
 import { Route as AtendimentosRouteImport } from './routes/atendimentos'
 import { Route as AtendentesRouteImport } from './routes/atendentes'
 import { Route as IndexRouteImport } from './routes/index'
@@ -26,6 +28,11 @@ const TagsRoute = TagsRouteImport.update({
 const MensagensRapidasRoute = MensagensRapidasRouteImport.update({
   id: '/mensagens-rapidas',
   path: '/mensagens-rapidas',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HorariosRoute = HorariosRouteImport.update({
+  id: '/horarios',
+  path: '/horarios',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -41,6 +48,11 @@ const ContatosRoute = ContatosRouteImport.update({
 const ConfiguracoesRoute = ConfiguracoesRouteImport.update({
   id: '/configuracoes',
   path: '/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AutomacaoIaRoute = AutomacaoIaRouteImport.update({
+  id: '/automacao-ia',
+  path: '/automacao-ia',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AtendimentosRoute = AtendimentosRouteImport.update({
@@ -63,9 +75,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
+  '/automacao-ia': typeof AutomacaoIaRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contatos': typeof ContatosRoute
   '/dashboard': typeof DashboardRoute
+  '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
 }
@@ -73,9 +87,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
+  '/automacao-ia': typeof AutomacaoIaRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contatos': typeof ContatosRoute
   '/dashboard': typeof DashboardRoute
+  '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
 }
@@ -84,9 +100,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
+  '/automacao-ia': typeof AutomacaoIaRoute
   '/configuracoes': typeof ConfiguracoesRoute
   '/contatos': typeof ContatosRoute
   '/dashboard': typeof DashboardRoute
+  '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
 }
@@ -96,9 +114,11 @@ export interface FileRouteTypes {
     | '/'
     | '/atendentes'
     | '/atendimentos'
+    | '/automacao-ia'
     | '/configuracoes'
     | '/contatos'
     | '/dashboard'
+    | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
   fileRoutesByTo: FileRoutesByTo
@@ -106,9 +126,11 @@ export interface FileRouteTypes {
     | '/'
     | '/atendentes'
     | '/atendimentos'
+    | '/automacao-ia'
     | '/configuracoes'
     | '/contatos'
     | '/dashboard'
+    | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
   id:
@@ -116,9 +138,11 @@ export interface FileRouteTypes {
     | '/'
     | '/atendentes'
     | '/atendimentos'
+    | '/automacao-ia'
     | '/configuracoes'
     | '/contatos'
     | '/dashboard'
+    | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
   fileRoutesById: FileRoutesById
@@ -127,9 +151,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AtendentesRoute: typeof AtendentesRoute
   AtendimentosRoute: typeof AtendimentosRoute
+  AutomacaoIaRoute: typeof AutomacaoIaRoute
   ConfiguracoesRoute: typeof ConfiguracoesRoute
   ContatosRoute: typeof ContatosRoute
   DashboardRoute: typeof DashboardRoute
+  HorariosRoute: typeof HorariosRoute
   MensagensRapidasRoute: typeof MensagensRapidasRoute
   TagsRoute: typeof TagsRoute
 }
@@ -148,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: '/mensagens-rapidas'
       fullPath: '/mensagens-rapidas'
       preLoaderRoute: typeof MensagensRapidasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/horarios': {
+      id: '/horarios'
+      path: '/horarios'
+      fullPath: '/horarios'
+      preLoaderRoute: typeof HorariosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -169,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/configuracoes'
       fullPath: '/configuracoes'
       preLoaderRoute: typeof ConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/automacao-ia': {
+      id: '/automacao-ia'
+      path: '/automacao-ia'
+      fullPath: '/automacao-ia'
+      preLoaderRoute: typeof AutomacaoIaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/atendimentos': {
@@ -199,9 +239,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AtendentesRoute: AtendentesRoute,
   AtendimentosRoute: AtendimentosRoute,
+  AutomacaoIaRoute: AutomacaoIaRoute,
   ConfiguracoesRoute: ConfiguracoesRoute,
   ContatosRoute: ContatosRoute,
   DashboardRoute: DashboardRoute,
+  HorariosRoute: HorariosRoute,
   MensagensRapidasRoute: MensagensRapidasRoute,
   TagsRoute: TagsRoute,
 }

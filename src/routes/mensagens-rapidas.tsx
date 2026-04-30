@@ -7,7 +7,15 @@ export const Route = createFileRoute("/mensagens-rapidas")({
   component: MensagensRapidasPage,
 });
 
-const categories = ["Todas", "Abertura", "Orçamento", "Instalação", "Suporte", "Financeiro", "Encerramento"];
+const categories = [
+  "Todas",
+  "Abertura",
+  "Orçamento",
+  "Instalação",
+  "Suporte",
+  "Financeiro",
+  "Encerramento",
+];
 
 const categoryColor: Record<string, string> = {
   Abertura: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
@@ -81,7 +89,9 @@ function MensagensRapidasPage() {
                   </div>
                   <div>
                     <h3 className="text-[13px] font-bold text-foreground">{msg.title}</h3>
-                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${categoryColor[msg.category] ?? "bg-muted text-muted-foreground"}`}>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${categoryColor[msg.category] ?? "bg-muted text-muted-foreground"}`}
+                    >
                       {msg.category}
                     </span>
                   </div>

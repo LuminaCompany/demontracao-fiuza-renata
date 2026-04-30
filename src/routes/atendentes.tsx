@@ -2,8 +2,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { attendants } from "@/data/mock";
 import {
-  MessageSquare, Clock, TrendingUp, UserPlus,
-  ChevronDown, KeyRound, User, Trophy, Eye, EyeOff, BarChart2,
+  MessageSquare,
+  Clock,
+  TrendingUp,
+  UserPlus,
+  ChevronDown,
+  KeyRound,
+  User,
+  Trophy,
+  Eye,
+  EyeOff,
+  BarChart2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +21,21 @@ export const Route = createFileRoute("/atendentes")({
 });
 
 const statusConfig = {
-  online:  { label: "Online",  dot: "bg-emerald-500",      badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" },
-  busy:    { label: "Ocupado", dot: "bg-amber-500",        badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400" },
-  offline: { label: "Offline", dot: "bg-muted-foreground", badge: "bg-muted text-muted-foreground" },
+  online: {
+    label: "Online",
+    dot: "bg-emerald-500",
+    badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+  },
+  busy: {
+    label: "Ocupado",
+    dot: "bg-amber-500",
+    badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+  },
+  offline: {
+    label: "Offline",
+    dot: "bg-muted-foreground",
+    badge: "bg-muted text-muted-foreground",
+  },
 };
 
 function AtendentesPage() {
@@ -47,7 +68,9 @@ function AtendentesPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-foreground">Atendentes</h1>
-            <p className="text-sm text-muted-foreground mt-0.5">{attendants.length} atendentes cadastrados</p>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              {attendants.length} atendentes cadastrados
+            </p>
           </div>
           <button className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
             <UserPlus className="h-4 w-4" />
@@ -85,7 +108,9 @@ function AtendentesPage() {
               {attendantOfMonth.initials}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[16px] font-bold text-foreground leading-tight">{attendantOfMonth.name}</p>
+              <p className="text-[16px] font-bold text-foreground leading-tight">
+                {attendantOfMonth.name}
+              </p>
               <p className="text-[12px] text-muted-foreground">{attendantOfMonth.department}</p>
               <div className="flex items-center gap-4 mt-1.5">
                 <span className="text-[12px] font-semibold text-amber-600 dark:text-amber-400">
@@ -98,7 +123,9 @@ function AtendentesPage() {
               </div>
             </div>
             <div className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1.5 flex-none">
-              <span className="text-[13px] font-bold text-amber-700 dark:text-amber-300">🏆 #1</span>
+              <span className="text-[13px] font-bold text-amber-700 dark:text-amber-300">
+                🏆 #1
+              </span>
             </div>
           </div>
         </div>
@@ -124,15 +151,24 @@ function AtendentesPage() {
                       >
                         {a.initials}
                       </div>
-                      <span className={cn(
-                        "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-card",
-                        cfg.dot,
-                      )} />
+                      <span
+                        className={cn(
+                          "absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full ring-2 ring-card",
+                          cfg.dot,
+                        )}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-[14px] font-bold text-foreground leading-tight">{a.name}</h3>
+                      <h3 className="text-[14px] font-bold text-foreground leading-tight">
+                        {a.name}
+                      </h3>
                       <p className="text-[12px] text-muted-foreground">{a.department}</p>
-                      <span className={cn("mt-1.5 inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold", cfg.badge)}>
+                      <span
+                        className={cn(
+                          "mt-1.5 inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-semibold",
+                          cfg.badge,
+                        )}
+                      >
                         {cfg.label}
                       </span>
                     </div>
@@ -141,7 +177,12 @@ function AtendentesPage() {
                       className="rounded-lg p-1.5 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors flex-none"
                       title="Gerenciar acesso"
                     >
-                      <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", isExpanded && "rotate-180")} />
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 transition-transform duration-200",
+                          isExpanded && "rotate-180",
+                        )}
+                      />
                     </button>
                   </div>
 
@@ -230,7 +271,11 @@ function AtendentesPage() {
                           onClick={() => togglePassword(a.id)}
                           className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
-                          {showPwd ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                          {showPwd ? (
+                            <EyeOff className="h-3.5 w-3.5" />
+                          ) : (
+                            <Eye className="h-3.5 w-3.5" />
+                          )}
                         </button>
                       </div>
                     </div>

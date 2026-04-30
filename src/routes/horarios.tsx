@@ -61,8 +61,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-function AttendantRow({ att, schedule, onChange }: {
-  att: typeof attendants[0];
+function AttendantRow({
+  att,
+  schedule,
+  onChange,
+}: {
+  att: (typeof attendants)[0];
   schedule: AttendantSchedule;
   onChange: (s: AttendantSchedule) => void;
 }) {
@@ -78,8 +82,8 @@ function AttendantRow({ att, schedule, onChange }: {
     });
   }
 
-  const enabledDays = DAYS.filter(d => schedule.days[d.key].enabled);
-  const disabledDays = DAYS.filter(d => !schedule.days[d.key].enabled);
+  const enabledDays = DAYS.filter((d) => schedule.days[d.key].enabled);
+  const disabledDays = DAYS.filter((d) => !schedule.days[d.key].enabled);
 
   return (
     <div className="rounded-2xl border border-border bg-card overflow-hidden">
@@ -99,7 +103,7 @@ function AttendantRow({ att, schedule, onChange }: {
           <p className="text-[11px] text-muted-foreground">{att.department}</p>
         </div>
         <div className="flex items-center gap-2">
-          {enabledDays.map(d => (
+          {enabledDays.map((d) => (
             <span
               key={d.key}
               className="rounded-md bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold text-primary"
@@ -112,17 +116,26 @@ function AttendantRow({ att, schedule, onChange }: {
               +{disabledDays.length} inativos
             </span>
           )}
-          <span className={cn(
-            "rounded-full px-2.5 py-0.5 text-[10px] font-medium ml-1",
-            att.status === "online" && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-            att.status === "busy" && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-            att.status === "offline" && "bg-muted text-muted-foreground",
-          )}>
+          <span
+            className={cn(
+              "rounded-full px-2.5 py-0.5 text-[10px] font-medium ml-1",
+              att.status === "online" &&
+                "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+              att.status === "busy" &&
+                "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+              att.status === "offline" && "bg-muted text-muted-foreground",
+            )}
+          >
             {att.status === "online" ? "Online" : att.status === "busy" ? "Ocupado" : "Offline"}
           </span>
           <svg
-            className={cn("h-4 w-4 text-muted-foreground transition-transform", expanded && "rotate-180")}
-            fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            className={cn(
+              "h-4 w-4 text-muted-foreground transition-transform",
+              expanded && "rotate-180",
+            )}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
@@ -133,15 +146,17 @@ function AttendantRow({ att, schedule, onChange }: {
       {expanded && (
         <div className="border-t border-border px-4 py-4">
           <div className="grid grid-cols-7 gap-2">
-            {DAYS.map(day => {
+            {DAYS.map((day) => {
               const daySchedule = schedule.days[day.key];
               return (
                 <div key={day.key} className="flex flex-col gap-1.5">
                   <div className="flex flex-col items-center gap-1">
-                    <span className={cn(
-                      "text-[11px] font-semibold",
-                      daySchedule.enabled ? "text-foreground" : "text-muted-foreground",
-                    )}>
+                    <span
+                      className={cn(
+                        "text-[11px] font-semibold",
+                        daySchedule.enabled ? "text-foreground" : "text-muted-foreground",
+                      )}
+                    >
                       {day.label}
                     </span>
                     <Toggle
@@ -149,16 +164,20 @@ function AttendantRow({ att, schedule, onChange }: {
                       onChange={(v) => updateDay(day.key, { enabled: v })}
                     />
                   </div>
-                  <div className={cn(
-                    "flex flex-col gap-1 transition-opacity",
-                    !daySchedule.enabled && "opacity-40 pointer-events-none",
-                  )}>
+                  <div
+                    className={cn(
+                      "flex flex-col gap-1 transition-opacity",
+                      !daySchedule.enabled && "opacity-40 pointer-events-none",
+                    )}
+                  >
                     <div>
-                      <label className="text-[9px] font-medium text-muted-foreground">Entrada</label>
+                      <label className="text-[9px] font-medium text-muted-foreground">
+                        Entrada
+                      </label>
                       <input
                         type="time"
                         value={daySchedule.start}
-                        onChange={e => updateDay(day.key, { start: e.target.value })}
+                        onChange={(e) => updateDay(day.key, { start: e.target.value })}
                         className="mt-0.5 w-full rounded-lg border border-border bg-background px-1.5 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 transition"
                       />
                     </div>
@@ -167,7 +186,7 @@ function AttendantRow({ att, schedule, onChange }: {
                       <input
                         type="time"
                         value={daySchedule.end}
-                        onChange={e => updateDay(day.key, { end: e.target.value })}
+                        onChange={(e) => updateDay(day.key, { end: e.target.value })}
                         className="mt-0.5 w-full rounded-lg border border-border bg-background px-1.5 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-1 focus:ring-primary/30 transition"
                       />
                     </div>
@@ -181,30 +200,41 @@ function AttendantRow({ att, schedule, onChange }: {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span className="text-[11px] text-muted-foreground">Aplicar modelo:</span>
             {[
-              { label: "Seg–Sex 8h–18h", action: () => {
-                DAYS.forEach(d => {
-                  const isWeekend = d.key === "sab" || d.key === "dom";
-                  updateDay(d.key, {
-                    enabled: !isWeekend,
-                    start: "08:00",
-                    end: "18:00",
+              {
+                label: "Seg–Sex 8h–18h",
+                action: () => {
+                  DAYS.forEach((d) => {
+                    const isWeekend = d.key === "sab" || d.key === "dom";
+                    updateDay(d.key, {
+                      enabled: !isWeekend,
+                      start: "08:00",
+                      end: "18:00",
+                    });
                   });
-                });
-              }},
-              { label: "Seg–Sáb 8h–17h", action: () => {
-                DAYS.forEach(d => {
-                  const isSunday = d.key === "dom";
-                  updateDay(d.key, {
-                    enabled: !isSunday,
-                    start: "08:00",
-                    end: isSunday ? "13:00" : d.key === "sab" ? "13:00" : "17:00",
+                },
+              },
+              {
+                label: "Seg–Sáb 8h–17h",
+                action: () => {
+                  DAYS.forEach((d) => {
+                    const isSunday = d.key === "dom";
+                    updateDay(d.key, {
+                      enabled: !isSunday,
+                      start: "08:00",
+                      end: isSunday ? "13:00" : d.key === "sab" ? "13:00" : "17:00",
+                    });
                   });
-                });
-              }},
-              { label: "Todos os dias", action: () => {
-                DAYS.forEach(d => updateDay(d.key, { enabled: true, start: "09:00", end: "18:00" }));
-              }},
-            ].map(preset => (
+                },
+              },
+              {
+                label: "Todos os dias",
+                action: () => {
+                  DAYS.forEach((d) =>
+                    updateDay(d.key, { enabled: true, start: "09:00", end: "18:00" }),
+                  );
+                },
+              },
+            ].map((preset) => (
               <button
                 key={preset.label}
                 onClick={preset.action}
@@ -222,10 +252,10 @@ function AttendantRow({ att, schedule, onChange }: {
 
 function HorariosPage() {
   const [schedules, setSchedules] = useState<AttendantSchedule[]>(
-    attendants.map(att => ({
+    attendants.map((att) => ({
       attendantId: att.id,
       days: defaultSchedule(),
-    }))
+    })),
   );
 
   const [companyHours] = useState({
@@ -235,7 +265,7 @@ function HorariosPage() {
   });
 
   function updateSchedule(idx: number, schedule: AttendantSchedule) {
-    setSchedules(prev => prev.map((s, i) => i === idx ? schedule : s));
+    setSchedules((prev) => prev.map((s, i) => (i === idx ? schedule : s)));
   }
 
   return (
@@ -255,13 +285,13 @@ function HorariosPage() {
       </div>
 
       <div className="flex-1 overflow-auto px-6 py-5 space-y-5 max-w-4xl">
-
         {/* Info banner */}
         <div className="flex items-start gap-3 rounded-2xl border border-amber-200/60 bg-amber-50/80 dark:border-amber-800/40 dark:bg-amber-950/20 px-4 py-3.5">
           <Info className="h-4 w-4 text-amber-600 dark:text-amber-400 flex-none mt-0.5" />
           <p className="text-[12px] text-amber-700 dark:text-amber-300">
-            Os atendentes só poderão acessar o CRM nos dias e horários definidos aqui. Fora do horário,
-            o acesso será bloqueado e novos leads serão redirecionados para os atendentes disponíveis.
+            Os atendentes só poderão acessar o CRM nos dias e horários definidos aqui. Fora do
+            horário, o acesso será bloqueado e novos leads serão redirecionados para os atendentes
+            disponíveis.
           </p>
         </div>
 
@@ -269,11 +299,13 @@ function HorariosPage() {
         <section>
           <div className="flex items-center gap-2 mb-3">
             <Clock className="h-4 w-4 text-primary" />
-            <h2 className="text-[14px] font-bold text-foreground">Horário de Funcionamento da Empresa</h2>
+            <h2 className="text-[14px] font-bold text-foreground">
+              Horário de Funcionamento da Empresa
+            </h2>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
             <div className="flex flex-wrap gap-2">
-              {DAYS.map(d => {
+              {DAYS.map((d) => {
                 const active = companyHours.enabledDays.includes(d.key);
                 return (
                   <button
@@ -310,7 +342,9 @@ function HorariosPage() {
               </div>
               <div className="flex-1" />
               <div>
-                <label className="text-[12px] font-medium text-muted-foreground">Mensagem fora do horário</label>
+                <label className="text-[12px] font-medium text-muted-foreground">
+                  Mensagem fora do horário
+                </label>
                 <input
                   defaultValue="Olá! Nosso atendimento é de seg–sex, 8h às 18h30. Retornaremos em breve! 😊"
                   className="mt-1 block w-80 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"

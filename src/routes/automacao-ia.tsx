@@ -46,7 +46,12 @@ function Toggle({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   );
 }
 
-function SectionHeader({ icon: Icon, title, description, color = "text-primary" }: {
+function SectionHeader({
+  icon: Icon,
+  title,
+  description,
+  color = "text-primary",
+}: {
   icon: React.ElementType;
   title: string;
   description: string;
@@ -67,9 +72,7 @@ function SectionHeader({ icon: Icon, title, description, color = "text-primary" 
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-2xl border border-border bg-card p-5", className)}>
-      {children}
-    </div>
+    <div className={cn("rounded-2xl border border-border bg-card p-5", className)}>{children}</div>
   );
 }
 
@@ -91,7 +94,8 @@ function FollowUpSection() {
       label: "Sem resposta — médio",
       delay: "24",
       delayUnit: "horas",
-      message: "Oi, [Nome]! Tudo bem? Vi que não chegamos a finalizar seu atendimento. Ainda posso te ajudar com o [Produto]? 😊",
+      message:
+        "Oi, [Nome]! Tudo bem? Vi que não chegamos a finalizar seu atendimento. Ainda posso te ajudar com o [Produto]? 😊",
       enabled: true,
     },
     {
@@ -99,7 +103,8 @@ function FollowUpSection() {
       label: "Sem resposta — longo",
       delay: "3",
       delayUnit: "dias",
-      message: "Olá [Nome]! Passando para saber se posso ajudar com algo. Temos novidades e condições especiais essa semana! 🎉",
+      message:
+        "Olá [Nome]! Passando para saber se posso ajudar com algo. Temos novidades e condições especiais essa semana! 🎉",
       enabled: false,
     },
   ]);
@@ -128,7 +133,12 @@ function FollowUpSection() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Toggle checked={enabled} onChange={setEnabled} />
-            <span className={cn("text-[13px] font-medium", enabled ? "text-foreground" : "text-muted-foreground")}>
+            <span
+              className={cn(
+                "text-[13px] font-medium",
+                enabled ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
               {enabled ? "Ativado" : "Desativado"}
             </span>
           </div>
@@ -136,7 +146,11 @@ function FollowUpSection() {
             onClick={() => setExpanded(!expanded)}
             className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
           >
-            {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            {expanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
             {expanded ? "Recolher" : "Configurar"}
           </button>
         </div>
@@ -159,7 +173,11 @@ function FollowUpSection() {
                   <div className="flex items-center gap-2">
                     <Toggle
                       checked={fu.enabled}
-                      onChange={(v) => setFollowUps(prev => prev.map((f, i) => i === idx ? { ...f, enabled: v } : f))}
+                      onChange={(v) =>
+                        setFollowUps((prev) =>
+                          prev.map((f, i) => (i === idx ? { ...f, enabled: v } : f)),
+                        )
+                      }
                     />
                     <button className="p-1 text-muted-foreground hover:text-destructive transition-colors rounded">
                       <Trash2 className="h-3.5 w-3.5" />
@@ -169,18 +187,24 @@ function FollowUpSection() {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[11px] font-medium text-muted-foreground">Tempo sem resposta para ativar</label>
+                    <label className="text-[11px] font-medium text-muted-foreground">
+                      Tempo sem resposta para ativar
+                    </label>
                     <select
                       defaultValue={`${fu.delay} ${fu.delayUnit}`}
                       className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
                     >
-                      {timeOptions.map(opt => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      {timeOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
                       ))}
                     </select>
                   </div>
                   <div>
-                    <label className="text-[11px] font-medium text-muted-foreground">Enviar apenas</label>
+                    <label className="text-[11px] font-medium text-muted-foreground">
+                      Enviar apenas
+                    </label>
                     <select
                       defaultValue="uma_vez"
                       className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
@@ -194,7 +218,9 @@ function FollowUpSection() {
                 <div>
                   <label className="text-[11px] font-medium text-muted-foreground">
                     Mensagem de follow up
-                    <span className="ml-1 text-muted-foreground/60">(use [Nome] para o nome do cliente)</span>
+                    <span className="ml-1 text-muted-foreground/60">
+                      (use [Nome] para o nome do cliente)
+                    </span>
                   </label>
                   <textarea
                     defaultValue={fu.message}
@@ -227,7 +253,8 @@ function FidelizacaoSection() {
       desc: "Mensagem enviada após a conclusão de um atendimento",
       delay: "3",
       delayUnit: "dias",
-      message: "Olá, [Nome]! 🌟 Esperamos que esteja satisfeito(a) com o serviço da Fiuza! Qualquer dúvida, estamos à disposição. Nos avalie! ⭐",
+      message:
+        "Olá, [Nome]! 🌟 Esperamos que esteja satisfeito(a) com o serviço da Fiuza! Qualquer dúvida, estamos à disposição. Nos avalie! ⭐",
       enabled: true,
     },
     {
@@ -237,7 +264,8 @@ function FidelizacaoSection() {
       desc: "Para clientes que não entram em contato há algum tempo",
       delay: "30",
       delayUnit: "dias",
-      message: "Oi, [Nome]! Sentimos sua falta! 😊 Temos novidades incríveis e condições especiais esperando por você. Que tal um orçamento atualizado?",
+      message:
+        "Oi, [Nome]! Sentimos sua falta! 😊 Temos novidades incríveis e condições especiais esperando por você. Que tal um orçamento atualizado?",
       enabled: true,
     },
     {
@@ -247,7 +275,8 @@ function FidelizacaoSection() {
       desc: "Parabenize seus clientes no aniversário",
       delay: "0",
       delayUnit: "dias",
-      message: "Feliz aniversário, [Nome]! 🎉🎂 A equipe Fiuza deseja um dia especial para você! Como presente, temos uma condição exclusiva disponível hoje.",
+      message:
+        "Feliz aniversário, [Nome]! 🎉🎂 A equipe Fiuza deseja um dia especial para você! Como presente, temos uma condição exclusiva disponível hoje.",
       enabled: false,
     },
     {
@@ -257,7 +286,8 @@ function FidelizacaoSection() {
       desc: "Para clientes com alto valor de compra acima de R$ 5.000",
       delay: "60",
       delayUnit: "dias",
-      message: "Olá, [Nome]! Como cliente VIP, você tem acesso antecipado às nossas novas coleções e descontos exclusivos. Confira as novidades! ✨",
+      message:
+        "Olá, [Nome]! Como cliente VIP, você tem acesso antecipado às nossas novas coleções e descontos exclusivos. Confira as novidades! ✨",
       enabled: false,
     },
   ]);
@@ -284,13 +314,18 @@ function FidelizacaoSection() {
       <Card>
         <div className="flex items-center justify-between mb-4">
           <p className="text-[12px] text-muted-foreground">
-            Configure mensagens automáticas para diferentes momentos do relacionamento com o cliente.
+            Configure mensagens automáticas para diferentes momentos do relacionamento com o
+            cliente.
           </p>
           <button
             onClick={() => setExpanded(!expanded)}
             className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors ml-4 flex-none"
           >
-            {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            {expanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
             {expanded ? "Recolher" : "Expandir"}
           </button>
         </div>
@@ -309,11 +344,18 @@ function FidelizacaoSection() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
-                      <div className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded-lg",
-                        msg.enabled ? "bg-primary/10" : "bg-muted",
-                      )}>
-                        <Icon className={cn("h-3.5 w-3.5", msg.enabled ? "text-primary" : "text-muted-foreground")} />
+                      <div
+                        className={cn(
+                          "flex h-7 w-7 items-center justify-center rounded-lg",
+                          msg.enabled ? "bg-primary/10" : "bg-muted",
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "h-3.5 w-3.5",
+                            msg.enabled ? "text-primary" : "text-muted-foreground",
+                          )}
+                        />
                       </div>
                       <div>
                         <p className="text-[12px] font-semibold text-foreground">{msg.label}</p>
@@ -322,7 +364,11 @@ function FidelizacaoSection() {
                     </div>
                     <Toggle
                       checked={msg.enabled}
-                      onChange={(v) => setMessages(prev => prev.map((m, i) => i === idx ? { ...m, enabled: v } : m))}
+                      onChange={(v) =>
+                        setMessages((prev) =>
+                          prev.map((m, i) => (i === idx ? { ...m, enabled: v } : m)),
+                        )
+                      }
                     />
                   </div>
 
@@ -330,18 +376,24 @@ function FidelizacaoSection() {
                     <>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="text-[11px] font-medium text-muted-foreground">Quando enviar</label>
+                          <label className="text-[11px] font-medium text-muted-foreground">
+                            Quando enviar
+                          </label>
                           <select
                             defaultValue={`${msg.delay} ${msg.delayUnit}`}
                             className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
                           >
-                            {timeOptions.map(opt => (
-                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            {timeOptions.map((opt) => (
+                              <option key={opt.value} value={opt.value}>
+                                {opt.label}
+                              </option>
                             ))}
                           </select>
                         </div>
                         <div>
-                          <label className="text-[11px] font-medium text-muted-foreground">Horário preferencial</label>
+                          <label className="text-[11px] font-medium text-muted-foreground">
+                            Horário preferencial
+                          </label>
                           <input
                             type="time"
                             defaultValue="09:00"
@@ -351,7 +403,8 @@ function FidelizacaoSection() {
                       </div>
                       <div>
                         <label className="text-[11px] font-medium text-muted-foreground">
-                          Mensagem <span className="text-muted-foreground/60">(use [Nome] e [Produto])</span>
+                          Mensagem{" "}
+                          <span className="text-muted-foreground/60">(use [Nome] e [Produto])</span>
                         </label>
                         <textarea
                           defaultValue={msg.message}
@@ -376,16 +429,16 @@ function TriagemSection() {
   const [enabled, setEnabled] = useState(true);
   const [expanded, setExpanded] = useState(false);
   const [greetingMsg, setGreetingMsg] = useState(
-    "Olá! Bem-vindo à **Fiuza** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?"
+    "Olá! Bem-vindo à **Fiuza** 🏗️\n\nSou a assistente virtual. Com qual atendente você deseja falar?",
   );
   const [attendantList, setAttendantList] = useState(
     attendants
-      .filter(a => !["a11", "a12", "a14"].includes(a.id))
-      .map(a => ({
+      .filter((a) => !["a11", "a12", "a14"].includes(a.id))
+      .map((a) => ({
         ...a,
         inList: ["a1", "a2", "a3", "a4", "a5", "a6"].includes(a.id),
         onVacation: false,
-      }))
+      })),
   );
 
   return (
@@ -399,7 +452,12 @@ function TriagemSection() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <Toggle checked={enabled} onChange={setEnabled} />
-            <span className={cn("text-[13px] font-medium", enabled ? "text-foreground" : "text-muted-foreground")}>
+            <span
+              className={cn(
+                "text-[13px] font-medium",
+                enabled ? "text-foreground" : "text-muted-foreground",
+              )}
+            >
               {enabled ? "Ativado" : "Desativado"}
             </span>
           </div>
@@ -407,7 +465,11 @@ function TriagemSection() {
             onClick={() => setExpanded(!expanded)}
             className="flex items-center gap-1.5 text-[12px] text-muted-foreground hover:text-foreground transition-colors"
           >
-            {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            {expanded ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
             {expanded ? "Recolher" : "Configurar"}
           </button>
         </div>
@@ -416,11 +478,15 @@ function TriagemSection() {
           <div className="space-y-5">
             {/* Greeting message */}
             <div>
-              <label className="text-[12px] font-semibold text-foreground">Mensagem de saudação</label>
-              <p className="text-[11px] text-muted-foreground mb-1.5">Esta mensagem é enviada automaticamente quando o cliente enviar a primeira mensagem.</p>
+              <label className="text-[12px] font-semibold text-foreground">
+                Mensagem de saudação
+              </label>
+              <p className="text-[11px] text-muted-foreground mb-1.5">
+                Esta mensagem é enviada automaticamente quando o cliente enviar a primeira mensagem.
+              </p>
               <textarea
                 value={greetingMsg}
-                onChange={e => setGreetingMsg(e.target.value)}
+                onChange={(e) => setGreetingMsg(e.target.value)}
                 rows={3}
                 className="w-full resize-none rounded-xl border border-border bg-background px-3.5 py-2.5 text-[12px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
               />
@@ -428,9 +494,12 @@ function TriagemSection() {
 
             {/* Attendant list config */}
             <div>
-              <label className="text-[12px] font-semibold text-foreground">Lista de atendentes na triagem</label>
+              <label className="text-[12px] font-semibold text-foreground">
+                Lista de atendentes na triagem
+              </label>
               <p className="text-[11px] text-muted-foreground mb-3">
-                Gerencie quais atendentes aparecem na lista de seleção. Atendentes de férias não aparecem temporariamente.
+                Gerencie quais atendentes aparecem na lista de seleção. Atendentes de férias não
+                aparecem temporariamente.
               </p>
               <div className="rounded-xl border border-border overflow-hidden">
                 <div className="grid grid-cols-[1fr_auto_auto_auto] gap-0 text-[11px] font-semibold text-muted-foreground bg-muted/40 px-4 py-2 border-b border-border">
@@ -440,11 +509,14 @@ function TriagemSection() {
                   <span className="text-center px-3">Status</span>
                 </div>
                 {attendantList.map((att, idx) => (
-                  <div key={att.id} className={cn(
-                    "grid grid-cols-[1fr_auto_auto_auto] items-center px-4 py-2.5 gap-0",
-                    idx !== attendantList.length - 1 && "border-b border-border/50",
-                    att.onVacation && "opacity-60",
-                  )}>
+                  <div
+                    key={att.id}
+                    className={cn(
+                      "grid grid-cols-[1fr_auto_auto_auto] items-center px-4 py-2.5 gap-0",
+                      idx !== attendantList.length - 1 && "border-b border-border/50",
+                      att.onVacation && "opacity-60",
+                    )}
+                  >
                     <div className="flex items-center gap-2.5">
                       <div
                         className="flex h-6 w-6 flex-none items-center justify-center rounded-full text-[10px] font-bold text-white"
@@ -460,29 +532,47 @@ function TriagemSection() {
                     <div className="flex justify-center px-4">
                       <Toggle
                         checked={att.inList && !att.onVacation}
-                        onChange={(v) => setAttendantList(prev => prev.map((a, i) => i === idx ? { ...a, inList: v } : a))}
+                        onChange={(v) =>
+                          setAttendantList((prev) =>
+                            prev.map((a, i) => (i === idx ? { ...a, inList: v } : a)),
+                          )
+                        }
                       />
                     </div>
                     <div className="flex justify-center px-4">
                       <Toggle
                         checked={att.onVacation}
-                        onChange={(v) => setAttendantList(prev => prev.map((a, i) => i === idx ? { ...a, onVacation: v } : a))}
+                        onChange={(v) =>
+                          setAttendantList((prev) =>
+                            prev.map((a, i) => (i === idx ? { ...a, onVacation: v } : a)),
+                          )
+                        }
                       />
                     </div>
                     <div className="flex justify-center px-3">
-                      <span className={cn(
-                        "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
-                        att.status === "online" && "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-                        att.status === "busy" && "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-                        att.status === "offline" && "bg-muted text-muted-foreground",
-                      )}>
-                        <span className={cn(
-                          "h-1.5 w-1.5 rounded-full",
-                          att.status === "online" && "bg-emerald-500",
-                          att.status === "busy" && "bg-amber-500",
-                          att.status === "offline" && "bg-muted-foreground",
-                        )} />
-                        {att.status === "online" ? "Online" : att.status === "busy" ? "Ocupado" : "Offline"}
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium",
+                          att.status === "online" &&
+                            "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
+                          att.status === "busy" &&
+                            "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
+                          att.status === "offline" && "bg-muted text-muted-foreground",
+                        )}
+                      >
+                        <span
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            att.status === "online" && "bg-emerald-500",
+                            att.status === "busy" && "bg-amber-500",
+                            att.status === "offline" && "bg-muted-foreground",
+                          )}
+                        />
+                        {att.status === "online"
+                          ? "Online"
+                          : att.status === "busy"
+                            ? "Ocupado"
+                            : "Offline"}
                       </span>
                     </div>
                   </div>
@@ -490,21 +580,32 @@ function TriagemSection() {
               </div>
               <p className="mt-2 text-[11px] text-muted-foreground">
                 <AlertCircle className="inline h-3 w-3 mr-1" />
-                Atendentes marcados como "Férias" são automaticamente removidos da lista até serem reativados.
+                Atendentes marcados como "Férias" são automaticamente removidos da lista até serem
+                reativados.
               </p>
             </div>
 
             {/* Distribution mode */}
             <div>
-              <label className="text-[12px] font-semibold text-foreground">Modo de distribuição</label>
-              <p className="text-[11px] text-muted-foreground mb-2">Como os leads são distribuídos quando o cliente não escolher um atendente específico.</p>
+              <label className="text-[12px] font-semibold text-foreground">
+                Modo de distribuição
+              </label>
+              <p className="text-[11px] text-muted-foreground mb-2">
+                Como os leads são distribuídos quando o cliente não escolher um atendente
+                específico.
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 {[
                   { value: "escolha", label: "Escolha do cliente", desc: "Cliente seleciona" },
                   { value: "automatico", label: "Automático", desc: "(revezamento)" },
-                ].map(opt => (
+                ].map((opt) => (
                   <label key={opt.value} className="cursor-pointer">
-                    <input type="radio" name="dist_mode" defaultChecked={opt.value === "escolha"} className="peer sr-only" />
+                    <input
+                      type="radio"
+                      name="dist_mode"
+                      defaultChecked={opt.value === "escolha"}
+                      className="peer sr-only"
+                    />
                     <div className="rounded-xl border-2 border-border p-3 text-center peer-checked:border-primary peer-checked:bg-primary/5 transition-colors hover:border-primary/50">
                       <p className="text-[12px] font-semibold text-foreground">{opt.label}</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{opt.desc}</p>
@@ -555,7 +656,9 @@ function OutrasAutomacoesSection() {
               </div>
               <Toggle
                 checked={item.enabled}
-                onChange={(v) => setItems(prev => prev.map((it, i) => i === idx ? { ...it, enabled: v } : it))}
+                onChange={(v) =>
+                  setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, enabled: v } : it)))
+                }
               />
             </div>
           ))}

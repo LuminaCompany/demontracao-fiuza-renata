@@ -55,9 +55,7 @@ export function Sidebar() {
           </div>
           <div className="min-w-0">
             <p className="truncate text-[13px] font-bold text-white leading-tight">Fiuza</p>
-            <p className="truncate text-[10px] text-sidebar-foreground/50 leading-tight">
-              CRM
-            </p>
+            <p className="truncate text-[10px] text-sidebar-foreground/50 leading-tight">CRM</p>
           </div>
         </div>
 
@@ -82,7 +80,9 @@ export function Sidebar() {
                 <Icon
                   className={cn(
                     "h-4 w-4 flex-none transition-colors",
-                    isActive ? "text-sidebar-primary" : "text-sidebar-foreground/50 group-hover:text-white",
+                    isActive
+                      ? "text-sidebar-primary"
+                      : "text-sidebar-foreground/50 group-hover:text-white",
                   )}
                 />
                 <span className="flex-1 truncate">{label}</span>

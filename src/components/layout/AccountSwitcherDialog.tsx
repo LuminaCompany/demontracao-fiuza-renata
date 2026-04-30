@@ -33,7 +33,9 @@ export function AccountSwitcherDialog({ open, onOpenChange }: Props) {
                 }}
                 className={cn(
                   "flex w-full items-center gap-3.5 rounded-xl border px-4 py-3 text-left transition-all duration-150 hover:border-primary/40 hover:bg-accent",
-                  isActive ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20" : "border-border",
+                  isActive
+                    ? "border-primary/50 bg-primary/5 ring-1 ring-primary/20"
+                    : "border-border",
                 )}
               >
                 <div

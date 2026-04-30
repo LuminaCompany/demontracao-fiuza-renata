@@ -1,4 +1,4 @@
-// ── Fiuza — Mock Data ─────────────────────────────────────────────
+// ── Fiuza Construções — Mock Data ─────────────────────────────────────────────
 // Todos os dados são fictícios para fins de demonstração.
 
 export type LeadStatus = "ativo" | "pendente" | "potencial" | "finalizado";
@@ -16,14 +16,14 @@ export type AtendimentoStage =
   | "pos_venda";
 
 export const STAGE_LABELS: Record<AtendimentoStage, string> = {
-  novo_contato:          "Novo Contato",
-  em_orcamento:          "Em Orçamento",
-  proposta_enviada:      "Proposta Enviada",
-  aguardando_aprovacao:  "Aguardando Aprovação",
-  pagamento_pendente:    "Pagamento Pendente",
-  em_producao:           "Em Produção",
-  instalacao_agendada:   "Instalação Agendada",
-  pos_venda:             "Pós-venda",
+  novo_contato: "Novo Contato",
+  em_orcamento: "Em Orçamento",
+  proposta_enviada: "Proposta Enviada",
+  aguardando_aprovacao: "Aguardando Aprovação",
+  pagamento_pendente: "Pagamento Pendente",
+  em_producao: "Em Obra",
+  instalacao_agendada: "Visita Agendada",
+  pos_venda: "Pós-Obra",
 };
 
 export const STAGE_ORDER: AtendimentoStage[] = [
@@ -74,6 +74,7 @@ export interface Lead {
   email?: string;
   company?: string;
   address?: string;
+  region?: string;
   status: LeadStatus;
   stage?: AtendimentoStage;
   pendingItems?: string[];
@@ -106,9 +107,9 @@ export const tags: Tag[] = [
   { id: "t1", name: "Orçamento", color: "blue" },
   { id: "t2", name: "Alta Prioridade", color: "red" },
   { id: "t3", name: "Urgente", color: "red" },
-  { id: "t4", name: "Retorno", color: "amber" },
-  { id: "t5", name: "Instalação", color: "green" },
-  { id: "t6", name: "Garantia", color: "orange" },
+  { id: "t4", name: "Reforma", color: "amber" },
+  { id: "t5", name: "Visita Técnica", color: "green" },
+  { id: "t6", name: "Ampliação", color: "orange" },
   { id: "t7", name: "Novo Cliente", color: "violet" },
   { id: "t8", name: "Follow-up", color: "pink" },
   { id: "t9", name: "Proposta", color: "teal" },
@@ -175,9 +176,9 @@ export const attendants: Attendant[] = [
   },
   {
     id: "a5",
-    name: "Michele",
-    initials: "MC",
-    email: "michele@fiuza.com.br",
+    name: "Cirlene",
+    initials: "CL",
+    email: "cirlene@fiuza.com.br",
     phone: "61 9 9034-1122",
     department: "Gestão / Vendas",
     status: "online",
@@ -249,7 +250,7 @@ export const attendants: Attendant[] = [
     initials: "MR",
     email: "mirce@fiuza.com.br",
     phone: "61 9 9678-9900",
-    department: "Suporte",
+    department: "Técnico",
     status: "offline",
     activeCount: 0,
     totalToday: 5,
@@ -319,10 +320,10 @@ export const attendants: Attendant[] = [
 export const accounts: Account[] = [
   {
     id: "acc1",
-    name: "Michele",
+    name: "Cirlene",
     role: "gestor",
-    initials: "MC",
-    email: "michele@fiuza.com.br",
+    initials: "CL",
+    email: "cirlene@fiuza.com.br",
     color: "#10b981",
   },
   {
@@ -364,70 +365,72 @@ export const quickMessages = [
   {
     id: "qm1",
     title: "Boas-vindas",
-    content: "Olá! Bem-vindo à Fiuza 😊 Como posso ajudar você hoje?",
+    content:
+      "Olá! Bem-vindo à Fiuza Construções 😊 Como posso ajudar você hoje? Me conte sobre seu projeto que montamos um orçamento completo!",
     category: "Abertura",
   },
   {
     id: "qm2",
-    title: "Orçamento em análise",
+    title: "Orçamento em elaboração",
     content:
-      "Oi! Seu orçamento está em análise pela nossa equipe. Retornaremos em breve com os valores.",
+      "Oi! Seu orçamento está sendo elaborado pela nossa equipe técnica. Retornaremos em breve com os valores detalhados por etapa da obra.",
     category: "Orçamento",
   },
   {
     id: "qm3",
-    title: "Confirmação de medidas",
+    title: "Solicitar informações da obra",
     content:
-      "Para prosseguir com o orçamento, preciso que você me informe as medidas (largura x altura em cm). Pode me enviar uma foto também! 📐",
+      "Para montar o orçamento, preciso de algumas informações: qual a metragem da obra (m²), tipo (casa, reforma, ampliação ou comercial) e padrão de acabamento desejado (simples, médio ou alto padrão)? 📐",
     category: "Orçamento",
   },
   {
     id: "qm4",
-    title: "Agendamento de instalação",
+    title: "Agendamento de visita técnica",
     content:
-      "Ótima notícia! Sua instalação foi agendada. Nossa equipe técnica estará no local no horário combinado. Qualquer dúvida é só chamar! 🔧",
-    category: "Instalação",
+      "Ótima notícia! Sua visita técnica foi agendada. Nossa equipe de engenharia estará no local no horário combinado para levantamento de medidas e análise do terreno. Qualquer dúvida é só chamar! 🏗️",
+    category: "Visita",
   },
   {
     id: "qm5",
-    title: "Garantia",
+    title: "Prazo estimado de obra",
     content:
-      "Todos os nossos produtos possuem garantia de 12 meses. Para acionar a garantia, nos envie fotos do problema e o número do pedido.",
+      "O prazo depende da metragem e do acabamento. Casas de até 150m² padrão médio: aproximadamente 8 a 12 meses. Reformas de 80m²: 2 a 4 meses. Podemos detalhar melhor após a visita técnica!",
     category: "Suporte",
   },
   {
     id: "qm6",
     title: "Formas de pagamento",
     content:
-      "Aceitamos: PIX (5% desconto), cartão de crédito até 12x, boleto bancário e transferência. Qual prefere?",
+      "Trabalhamos com: entrada + parcelas mensais durante a obra, financiamento bancário (CAIXA / Banco do Brasil) ou pagamento à vista com desconto especial. Qual prefere?",
     category: "Financeiro",
   },
   {
     id: "qm7",
     title: "Encerramento",
     content:
-      "Foi um prazer atender você! Qualquer dúvida futura, estamos à disposição. Até logo! 😊",
+      "Foi um prazer atender você! Qualquer dúvida sobre o projeto ou a obra, estamos à disposição. Até logo! 😊",
     category: "Encerramento",
   },
 ];
 
 // ── Leads / Conversas ─────────────────────────────────────────────
 export const leads: Lead[] = [
-  // ── Lead 1: Potencial — novo contato ──
+  // ── Lead 1: Potencial — novo contato, incompleto ──
   {
     id: "l1",
     name: "João Pedro Silva",
     phone: "61 9 9801-2345",
     email: "joao.pedro@gmail.com",
+    region: "centro",
     status: "potencial",
     stage: "novo_contato",
     pendingItems: [
       "Retornar mensagem do cliente",
-      "Enviar opções de box de banheiro com preços",
+      "Solicitar metragem e tipo de construção desejada",
     ],
     tagIds: ["t1", "t7"],
     attendantId: "a1",
-    lastMessage: "Oi, quero fazer um orçamento para box de banheiro",
+    lastMessage: "Oi, quero fazer um orçamento para construir uma casa",
     lastMessageTime: "09:47",
     unreadCount: 1,
     totalPurchases: 0,
@@ -437,7 +440,7 @@ export const leads: Lead[] = [
     messages: [
       {
         id: "m1",
-        content: "Oi, quero fazer um orçamento para box de banheiro",
+        content: "Oi, quero fazer um orçamento para construir uma casa",
         sender: "client",
         time: "09:44",
         status: "read",
@@ -451,34 +454,35 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 2: Ativo — aguardando aprovação de pagamento ──
+  // ── Lead 2: Ativo — aguardando aprovação ──
   {
     id: "l2",
     name: "Ana Paula Almeida",
     phone: "61 9 9723-8876",
     email: "ana.paula@outlook.com",
     company: "Residencial Almeida",
+    region: "batel",
     status: "ativo",
     stage: "aguardando_aprovacao",
     pendingItems: [
-      "Aguardando confirmação de pagamento via PIX",
-      "Confirmar dados para emissão de nota fiscal",
+      "Aguardando aprovação do orçamento pela cliente",
+      "Confirmar dados para contrato e emissão de nota fiscal",
     ],
     tagIds: ["t1", "t9", "t10"],
     attendantId: "a1",
-    lastMessage: "Essas medidas estão perfeitas, quando fica pronto?",
+    lastMessage: "Vou conversar com meu marido e te respondo hoje!",
     lastMessageTime: "14:32",
     unreadCount: 2,
     totalPurchases: 1,
-    totalSpent: 2800,
-    lastPurchase: "Box Vidro Temperado 8mm",
-    lastPurchaseValue: 2800,
+    totalSpent: 320000,
+    lastPurchase: "Casa Residencial 150m² — Padrão Médio",
+    lastPurchaseValue: 320000,
     createdAt: "2024-03-10",
     notes: "Cliente VIP. Prefere contato via WhatsApp. Indicou 2 amigos.",
     messages: [
       {
         id: "m1",
-        content: "Oi, preciso de um box de vidro temperado para o banheiro",
+        content: "Oi, quero construir uma casa de 150m². Quanto custa?",
         sender: "client",
         time: "10:15",
         status: "read",
@@ -492,7 +496,7 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Oi Ana Paula! Aqui é o Amarildo 😊 Para fazer o orçamento do box, você pode me passar as medidas do seu banheiro?",
+          "Oi Ana Paula! Aqui é o Amarildo 😊 Que projeto incrível! Me conta um pouco mais: o terreno já é seu? E qual padrão de acabamento você deseja — simples, médio ou alto padrão?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "10:18",
@@ -500,7 +504,8 @@ export const leads: Lead[] = [
       },
       {
         id: "m4",
-        content: "Claro! O box tem 90cm de largura e 200cm de altura",
+        content:
+          "Sim, o terreno é meu. Quero padrão médio, 3 quartos, 2 banheiros e garagem para 2 carros",
         sender: "client",
         time: "10:22",
         status: "read",
@@ -508,7 +513,7 @@ export const leads: Lead[] = [
       {
         id: "m5",
         content:
-          "Perfeito! Temos ótimas opções. Vou montar o orçamento:\n\nBox Vidro Temperado 8mm — R$ 2.800\nBox Vidro Temperado 10mm — R$ 3.400\n\nAmbos com perfil de alumínio e instalação inclusa. Qual prefere?",
+          "Perfeito! Com base nessas informações, montei o orçamento estimado:\n\nCasa 150m² — Padrão Médio\n• Fundação e estrutura: R$ 85.000\n• Alvenaria e cobertura: R$ 72.000\n• Instalações elétricas e hidráulicas: R$ 45.000\n• Acabamentos internos: R$ 68.000\n• Mão de obra e gestão: R$ 50.000\n\nTotal estimado: R$ 320.000\nPrazo de obra: 10 a 12 meses\n\nPosso agendar uma visita técnica ao terreno para detalhar melhor?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "10:35",
@@ -516,7 +521,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m6",
-        content: "Prefiro o de 8mm. Quais são as formas de pagamento?",
+        content: "Que ótimo! Vocês trabalham com financiamento pela CAIXA?",
         sender: "client",
         time: "10:38",
         status: "read",
@@ -524,7 +529,7 @@ export const leads: Lead[] = [
       {
         id: "m7",
         content:
-          "Aceitamos PIX com 5% de desconto (R$ 2.660), cartão em até 12x ou boleto. O prazo de fabricação é de 7 dias úteis após aprovação.",
+          "Sim! Somos credenciados para obras financiadas pela CAIXA Econômica e Banco do Brasil. Auxiliamos em toda a documentação do processo.",
         sender: "attendant",
         senderName: "Amarildo",
         time: "10:42",
@@ -532,23 +537,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m8",
-        content: "Vou pagar no PIX! Me manda os dados",
-        sender: "client",
-        time: "14:28",
-        status: "read",
-      },
-      {
-        id: "m9",
-        content:
-          "Ótimo! Chave PIX: fiuza@fiuza.com.br\nValor: R$ 2.660,00\nTitular: Fiuza LTDA\n\nApós o pagamento me envia o comprovante 🙏",
-        sender: "attendant",
-        senderName: "Amarildo",
-        time: "14:30",
-        status: "read",
-      },
-      {
-        id: "m10",
-        content: "Essas medidas estão perfeitas, quando fica pronto?",
+        content: "Vou conversar com meu marido e te respondo hoje!",
         sender: "client",
         time: "14:32",
         status: "delivered",
@@ -562,26 +551,27 @@ export const leads: Lead[] = [
     name: "Maria das Graças Costa",
     phone: "61 9 8834-5566",
     email: "maria.graca@yahoo.com.br",
+    region: "santacruz",
     status: "ativo",
     stage: "proposta_enviada",
     pendingItems: [
       "Confirmar visita técnica — quinta-feira de manhã",
       "Aguardar aprovação do orçamento após visita",
     ],
-    tagIds: ["t9", "t1"],
+    tagIds: ["t9", "t4"],
     attendantId: "a2",
     lastMessage: "Pode ser na quinta-feira de manhã?",
     lastMessageTime: "11:20",
     unreadCount: 0,
-    totalPurchases: 2,
-    totalSpent: 5600,
-    lastPurchase: "Janela de Correr 2 Folhas",
-    lastPurchaseValue: 3200,
+    totalPurchases: 1,
+    totalSpent: 95000,
+    lastPurchase: "Reforma Completa 80m²",
+    lastPurchaseValue: 95000,
     createdAt: "2024-02-20",
     messages: [
       {
         id: "m1",
-        content: "Boa tarde, quero trocar as janelas do meu apartamento",
+        content: "Boa tarde, quero fazer uma reforma completa no meu apartamento de 80m²",
         sender: "client",
         time: "08:30",
         status: "read",
@@ -595,7 +585,7 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Olá Maria! Sou a Andrilene 😊 Que tipo de janela você está pensando? Correr, guilhotina ou de abrir?",
+          "Olá Maria! Sou a Andrilene 😊 Que tipo de reforma você está planejando? Estrutural, elétrica, hidráulica ou acabamentos completos?",
         sender: "attendant",
         senderName: "Andrilene",
         time: "08:45",
@@ -603,7 +593,8 @@ export const leads: Lead[] = [
       },
       {
         id: "m4",
-        content: "De correr, tenho 3 janelas. Cada uma tem 1,20m x 1,00m",
+        content:
+          "Reforma completa. Cozinha, banheiros, troca de piso e pintura em todo o apartamento",
         sender: "client",
         time: "09:02",
         status: "read",
@@ -611,7 +602,7 @@ export const leads: Lead[] = [
       {
         id: "m5",
         content:
-          "Ótimo! Para janelas de correr 2 folhas nessas medidas, temos a opção em alumínio com vidro 6mm: R$ 780,00 cada. As 3 sairiam por R$ 2.340,00 com instalação. Posso te mandar uma visita técnica para confirmar medidas?",
+          "Entendi! Para uma reforma completa de 80m² incluindo cozinha, banheiros, piso e pintura, o valor estimado fica entre R$ 85.000 e R$ 105.000 dependendo dos materiais. Posso agendar uma visita técnica para fechar o orçamento exato?",
         sender: "attendant",
         senderName: "Andrilene",
         time: "09:15",
@@ -632,14 +623,15 @@ export const leads: Lead[] = [
     id: "l4",
     name: "Carlos Eduardo Faria",
     phone: "61 9 9990-0012",
+    region: "centro",
     status: "pendente",
     stage: "novo_contato",
     pendingItems: [
       "URGENTE: cliente aguarda resposta há mais de 2h",
       "Atribuir atendente disponível imediatamente",
-      "Verificar disponibilidade para serviço emergencial",
+      "Verificar risco estrutural relatado pelo cliente",
     ],
-    tagIds: ["t3", "t1"],
+    tagIds: ["t3", "t2"],
     lastMessage: "Alguém vai me atender?",
     lastMessageTime: "09:00",
     unreadCount: 3,
@@ -649,14 +641,15 @@ export const leads: Lead[] = [
     messages: [
       {
         id: "m1",
-        content: "Bom dia, preciso urgente de um vidro quebrado para minha porta",
+        content:
+          "Bom dia, apareceu uma rachadura enorme na parede da minha casa, preciso de uma vistoria urgente",
         sender: "client",
         time: "07:15",
         status: "delivered",
       },
       {
         id: "m2",
-        content: "Preciso de uma resposta rápida, ta quebrando vento aqui",
+        content: "Também tá vazando água no teto depois da chuva de ontem, tô preocupado",
         sender: "client",
         time: "08:30",
         status: "delivered",
@@ -671,32 +664,34 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 5: Ativo — garantia, aguardando foto ──
+  // ── Lead 5: Ativo — em orçamento, aguardando planta ──
   {
     id: "l5",
     name: "Fernanda Oliveira",
     phone: "61 9 9112-3344",
     email: "fernanda.oli@gmail.com",
+    region: "santana",
     status: "ativo",
     stage: "em_orcamento",
     pendingItems: [
-      "Aguardando foto do problema para acionar garantia",
-      "Após foto: acionar equipe técnica para vistoria",
+      "Aguardando planta baixa da área para fechar orçamento",
+      "Após receber: acionar engenheiro para laudo técnico",
     ],
-    tagIds: ["t6", "t5"],
+    tagIds: ["t6", "t1"],
     attendantId: "a3",
-    lastMessage: "Vou te mandar a foto agora",
+    lastMessage: "Vou te mandar a planta agora",
     lastMessageTime: "13:55",
     unreadCount: 1,
-    totalPurchases: 3,
-    totalSpent: 9200,
-    lastPurchase: "Porta de Vidro Temperado",
-    lastPurchaseValue: 4500,
+    totalPurchases: 1,
+    totalSpent: 280000,
+    lastPurchase: "Casa Residencial 120m² — Padrão Médio",
+    lastPurchaseValue: 280000,
     createdAt: "2023-11-05",
     messages: [
       {
         id: "m1",
-        content: "Oi, o meu box de banheiro que comprei faz 3 meses está soltando do perfil",
+        content:
+          "Oi! Quero ampliar minha casa. Tenho 60m² e quero adicionar mais 50m² nos fundos do terreno",
         sender: "client",
         time: "13:40",
         status: "read",
@@ -710,7 +705,7 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Oi Fernanda! Aqui é o Clayton 😊 Isso está dentro da garantia sim! Você pode me mandar uma foto do problema para eu acionar nossa equipe técnica?",
+          "Oi Fernanda! Aqui é o Clayton 😊 Que projeto bacana! Para uma ampliação de 50m², preciso da planta atual da sua casa para verificar a viabilidade estrutural. Você tem a planta baixa?",
         sender: "attendant",
         senderName: "Clayton",
         time: "13:43",
@@ -718,7 +713,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m4",
-        content: "Vou te mandar a foto agora",
+        content: "Vou te mandar a planta agora",
         sender: "client",
         time: "13:55",
         status: "delivered",
@@ -732,27 +727,28 @@ export const leads: Lead[] = [
     name: "Roberto Campos",
     phone: "61 9 8845-6789",
     email: "roberto.campos@empresa.com.br",
-    company: "Campos Construções",
+    company: "Campos Incorporadora",
     address: "QI 25 Lote 5, Guará II, Brasília-DF",
+    region: "centro",
     status: "finalizado",
     stage: "pos_venda",
     pendingItems: [],
     attendanceSummary:
-      "Cliente Roberto Campos da empresa Campos Construções entrou em contato solicitando orçamento para box de banheiro temperado 10mm e espelho para projeto residencial em Guará II.\n\nProdutos adquiridos:\n• Box Vidro Temperado 10mm (80x200cm) — R$ 3.800\n• Espelho com moldura (120x80cm) — R$ 1.400\nTotal: R$ 5.200 (pago via PIX)\n\nCliente foi atendido pelo Amarildo. Solicitou 2 visitas técnicas para confirmação de medidas. Aprovação do orçamento no mesmo dia. Fabricação concluída em 6 dias úteis. Instalação realizada sem intercorrências.\n\nPróxima ação: Contato de follow-up em 30 dias para verificar satisfação e possível indicação.",
+      "Cliente Roberto Campos da Campos Incorporadora entrou em contato solicitando orçamento para construção de sobrado comercial de 220m² em Guará II.\n\nServiços contratados:\n• Projeto arquitetônico e estrutural: R$ 28.000\n• Construção Sobrado Comercial 220m²: R$ 480.000\n• Acabamentos alto padrão: R$ 95.000\nTotal: R$ 603.000 (à vista com 8% de desconto: R$ 555.000)\n\nCliente atendido pelo Amarildo. Visita técnica realizada em 2 dias após o contato inicial. Orçamento aprovado na semana seguinte. Obra concluída em 14 meses dentro do prazo contratado. Zero aditivos de obra.\n\nPróxima ação: Follow-up em 30 dias para verificar satisfação e prospectar novo projeto residencial.",
     tagIds: ["t9", "t5", "t10"],
     attendantId: "a1",
-    lastMessage: "Produto entregue e instalado com sucesso ✅",
+    lastMessage: "Obra entregue dentro do prazo ✅",
     lastMessageTime: "Ontem",
     unreadCount: 0,
-    totalPurchases: 5,
-    totalSpent: 18400,
-    lastPurchase: "Box Vidro Temperado 10mm + Espelho",
-    lastPurchaseValue: 5200,
+    totalPurchases: 3,
+    totalSpent: 1240000,
+    lastPurchase: "Sobrado Comercial 220m² + Acabamentos",
+    lastPurchaseValue: 603000,
     createdAt: "2023-08-12",
     messages: [
       {
         id: "m1",
-        content: "Boa tarde, preciso de orçamento para box e espelho",
+        content: "Boa tarde, preciso de orçamento para construção de um sobrado comercial de 220m²",
         sender: "client",
         time: "14:00",
         status: "read",
@@ -766,7 +762,7 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Roberto! Aqui é o Amarildo. Que ótimo! Me passa as medidas que faço o orçamento 🙂",
+          "Roberto! Aqui é o Amarildo. Que projeto! Me passa o endereço do terreno que agendo a visita técnica 🙂",
         sender: "attendant",
         senderName: "Amarildo",
         time: "14:05",
@@ -774,7 +770,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m4",
-        content: "Box: 80x200cm. Espelho: 120x80cm",
+        content: "QI 25 Lote 5, Guará II. Pode agendar para semana que vem",
         sender: "client",
         time: "14:10",
         status: "read",
@@ -782,7 +778,7 @@ export const leads: Lead[] = [
       {
         id: "m5",
         content:
-          "Orçamento:\nBox 10mm — R$ 3.800\nEspelho — R$ 1.400\nTotal: R$ 5.200 (PIX com 5% desc: R$ 4.940)",
+          "Orçamento Sobrado Comercial 220m²:\n• Projeto: R$ 28.000\n• Construção: R$ 480.000\n• Acabamentos alto padrão: R$ 95.000\nTotal: R$ 603.000\n(À vista: R$ 555.000 — 8% desc.)\nPrazo: 14 meses",
         sender: "attendant",
         senderName: "Amarildo",
         time: "14:25",
@@ -790,33 +786,34 @@ export const leads: Lead[] = [
       },
       {
         id: "m6",
-        content: "Aprovado! Vou pagar no PIX agora",
+        content: "Aprovado! Vamos fechar à vista",
         sender: "client",
         time: "14:28",
         status: "read",
       },
       {
         id: "m7",
-        content: "Produto entregue e instalado com sucesso ✅",
+        content: "Obra entregue dentro do prazo ✅",
         sender: "system",
         time: "16:00",
       },
     ],
   },
 
-  // ── Lead 7: Potencial — espelhos decorativos ──
+  // ── Lead 7: Potencial — novo contato, incompleto ──
   {
     id: "l7",
     name: "Patricia Mendes Rocha",
     phone: "61 9 9956-7788",
+    region: "trianon",
     status: "potencial",
     stage: "novo_contato",
     pendingItems: [
-      "Iniciar atendimento sobre espelhos decorativos",
-      "Enviar catálogo de modelos e preços",
+      "Iniciar atendimento sobre construção comercial",
+      "Enviar portfólio de galpões e obras comerciais",
     ],
     tagIds: ["t1", "t7"],
-    lastMessage: "Tenho interesse em espelhos decorativos",
+    lastMessage: "Preciso de orçamento para um galpão comercial",
     lastMessageTime: "10:05",
     unreadCount: 1,
     totalPurchases: 0,
@@ -825,7 +822,7 @@ export const leads: Lead[] = [
     messages: [
       {
         id: "m1",
-        content: "Oi, tenho interesse em espelhos decorativos para sala",
+        content: "Oi, preciso de orçamento para construir um galpão comercial de 300m²",
         sender: "client",
         time: "10:05",
         status: "delivered",
@@ -833,16 +830,17 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 8: Ativo — instalação agendada ──
+  // ── Lead 8: Ativo — visita técnica agendada ──
   {
     id: "l8",
     name: "Lucas Ferreira Braga",
     phone: "61 9 8867-9900",
     email: "lucas.braga@hotmail.com",
+    region: "batel",
     status: "ativo",
     stage: "instalacao_agendada",
     pendingItems: [
-      "Instalação agendada: sexta-feira às 14h",
+      "Visita técnica agendada: sexta-feira às 14h",
       "Confirmar endereço com o cliente no dia anterior",
     ],
     tagIds: ["t5", "t9"],
@@ -851,9 +849,9 @@ export const leads: Lead[] = [
     lastMessageTime: "16:10",
     unreadCount: 0,
     totalPurchases: 1,
-    totalSpent: 1800,
-    lastPurchase: "Vidro Temperado para Mesa",
-    lastPurchaseValue: 1800,
+    totalSpent: 185000,
+    lastPurchase: "Casa Residencial 90m² — Padrão Simples",
+    lastPurchaseValue: 185000,
     createdAt: "2024-03-28",
     messages: [
       {
@@ -865,7 +863,7 @@ export const leads: Lead[] = [
       {
         id: "m2",
         content:
-          "Lucas! Aqui é o Michael. Você quer agendar a instalação do vidro da mesa, certo?",
+          "Lucas! Aqui é o Michael. Você quer agendar a visita técnica ao terreno para levantamento do orçamento da sua casa, certo?",
         sender: "attendant",
         senderName: "Michael",
         time: "15:45",
@@ -881,7 +879,7 @@ export const leads: Lead[] = [
       {
         id: "m4",
         content:
-          "Pode ser sexta-feira às 14h. Nosso técnico Clayton estará aí. Confirma?",
+          "Pode ser sexta-feira às 14h. Nosso engenheiro Clayton estará lá para o levantamento. Confirma?",
         sender: "attendant",
         senderName: "Michael",
         time: "16:05",
@@ -897,33 +895,33 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 9: Ativo — cliente recorrente, aguardando OK ──
+  // ── Lead 9: Ativo — cliente recorrente, aguardando confirmação ──
   {
     id: "l9",
     name: "Sandra Lima Pereira",
     phone: "61 9 9023-4455",
     email: "sandra.lima@gmail.com",
+    region: "batel",
     status: "ativo",
     stage: "aguardando_aprovacao",
     pendingItems: [
-      "Aguardando confirmação de pedido do box 8mm",
-      "Após confirmação: gerar pedido e prazo de entrega",
+      "Aguardando confirmação do orçamento de ampliação",
+      "Após aprovação: assinar contrato e iniciar projeto",
     ],
-    tagIds: ["t10", "t1", "t4"],
+    tagIds: ["t10", "t6", "t4"],
     attendantId: "a1",
-    lastMessage: "Excelente! Mesmo modelo da última vez",
+    lastMessage: "Excelente! Mesmo padrão de acabamento da casa original",
     lastMessageTime: "09:30",
     unreadCount: 0,
-    totalPurchases: 4,
-    totalSpent: 12600,
-    lastPurchase: "Box Vidro Temperado 8mm",
-    lastPurchaseValue: 2800,
+    totalPurchases: 2,
+    totalSpent: 420000,
+    lastPurchase: "Ampliação 60m² — Padrão Médio",
+    lastPurchaseValue: 120000,
     createdAt: "2023-06-15",
     messages: [
       {
         id: "m1",
-        content:
-          "Oi Sandra, cliente VIP! Aqui é o Amarildo! Como posso ajudar hoje? 😊",
+        content: "Oi Sandra, cliente VIP! Aqui é o Amarildo! Como posso ajudar hoje? 😊",
         sender: "attendant",
         senderName: "Amarildo",
         time: "09:20",
@@ -931,7 +929,8 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content: "Amarildo! Quero mais um box igual ao que comprei no ano passado para o outro banheiro",
+        content:
+          "Amarildo! Quero ampliar a casa mais uma vez. Quero 60m² nos fundos — uma suíte master e varanda gourmet",
         sender: "client",
         time: "09:25",
         status: "read",
@@ -939,7 +938,7 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Claro! Box Vidro Temperado 8mm com perfil cromado, R$ 2.800. Mesmo modelo e instalação inclusa. Confirma?",
+          "Claro! Ampliação de 60m² com suíte master e varanda gourmet, padrão médio: R$ 120.000 estimado. Prazo de 6 meses. Inclui projeto, materiais e mão de obra. Confirma?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "09:28",
@@ -947,7 +946,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m4",
-        content: "Excelente! Mesmo modelo da última vez",
+        content: "Excelente! Mesmo padrão de acabamento da casa original",
         sender: "client",
         time: "09:30",
         status: "read",
@@ -960,20 +959,21 @@ export const leads: Lead[] = [
     id: "l10",
     name: "Marcos Henrique Alves",
     phone: "61 9 8890-1122",
+    region: "santacruz",
     status: "finalizado",
     stage: "pos_venda",
     pendingItems: [],
     attendanceSummary:
-      "Cliente Marcos Henrique entrou em contato para substituição das janelas da sala. Atendido pela Andrilene.\n\nProduto adquirido:\n• Janela de Correr 3 Folhas Alumínio (2,00x1,20m) — R$ 3.600\nForma de pagamento: Cartão de crédito 6x\n\nCliente pesquisou preços antes, escolheu a Fiuza pelo prazo e qualidade. Instalação realizada em 8 dias úteis pelo técnico Clayton. Zero problemas relatados.\n\nSatisfação: Cliente elogiou o atendimento e sinalizou possível interesse em trocar portas no segundo semestre.",
+      "Cliente Marcos Henrique entrou em contato para reforma completa de cozinha e 2 banheiros. Atendido pela Andrilene.\n\nServiço contratado:\n• Reforma de Cozinha + 2 Banheiros (40m²): R$ 68.000\nForma de pagamento: 30% entrada + saldo em 8 parcelas mensais durante a obra\n\nCliente pesquisou outras construtoras antes, escolheu a Fiuza pelo prazo e qualidade no atendimento. Obra concluída em 3 meses sem intercorrências. Zero retrabalhos.\n\nSatisfação: Cliente elogiou os acabamentos e sinalizou interesse em reformar a área de lazer no segundo semestre.",
     tagIds: ["t5", "t4"],
     attendantId: "a2",
-    lastMessage: "Obrigado! Ficou perfeito 🙌",
+    lastMessage: "Obrigado! Ficou lindo demais 🙌",
     lastMessageTime: "Há 2 dias",
     unreadCount: 0,
     totalPurchases: 2,
-    totalSpent: 4800,
-    lastPurchase: "Janela de Correr 3 Folhas",
-    lastPurchaseValue: 3600,
+    totalSpent: 118000,
+    lastPurchase: "Reforma Cozinha + 2 Banheiros",
+    lastPurchaseValue: 68000,
     createdAt: "2023-12-01",
     messages: [
       {
@@ -984,7 +984,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m2",
-        content: "Marcos, tudo certo com a janela?",
+        content: "Marcos, tudo certo com a reforma? Ficou do jeito que esperava?",
         sender: "attendant",
         senderName: "Andrilene",
         time: "15:00",
@@ -992,7 +992,7 @@ export const leads: Lead[] = [
       },
       {
         id: "m3",
-        content: "Obrigado! Ficou perfeito 🙌",
+        content: "Obrigado! Ficou lindo demais 🙌",
         sender: "client",
         time: "15:10",
         status: "read",
@@ -1000,19 +1000,20 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 11: Pendente — sem atendimento ──
+  // ── Lead 11: Pendente — sem atendimento, incompleto ──
   {
     id: "l11",
     name: "Beatriz Santos Melo",
     phone: "61 9 9778-3344",
+    region: "trianon",
     status: "pendente",
     stage: "novo_contato",
     pendingItems: [
       "Retornar mensagem da cliente (desde ontem)",
-      "Iniciar atendimento sobre portas de vidro temperado",
+      "Iniciar atendimento sobre construção de casa térrea",
     ],
     tagIds: ["t1"],
-    lastMessage: "Quero saber sobre portas de vidro",
+    lastMessage: "Quero saber sobre construção de casa térrea",
     lastMessageTime: "Ontem",
     unreadCount: 1,
     totalPurchases: 0,
@@ -1021,7 +1022,7 @@ export const leads: Lead[] = [
     messages: [
       {
         id: "m1",
-        content: "Boa tarde, quero saber sobre portas de vidro temperado",
+        content: "Boa tarde, quero saber o valor para construir uma casa térrea de 100m²",
         sender: "client",
         time: "17:30",
         status: "delivered",
@@ -1029,19 +1030,20 @@ export const leads: Lead[] = [
     ],
   },
 
-  // ── Lead 12: Potencial — sacada ──
+  // ── Lead 12: Potencial — em orçamento, aguardando informações ──
   {
     id: "l12",
     name: "Gustavo Alves Moreira",
     phone: "61 9 9334-5566",
+    region: "santana",
     status: "potencial",
     stage: "em_orcamento",
     pendingItems: [
-      "Solicitar medidas da sacada para orçamento",
-      "Enviar opções de fechamento em vidro",
+      "Aguardando resposta do cliente sobre padrão de acabamento",
+      "Enviar estimativa preliminar após retorno",
     ],
     tagIds: ["t1", "t7"],
-    lastMessage: "Olá! Preciso de orçamento para sacada",
+    lastMessage: "Olá! Preciso de orçamento para construir uma casa",
     lastMessageTime: "08:50",
     unreadCount: 1,
     totalPurchases: 0,
@@ -1050,7 +1052,7 @@ export const leads: Lead[] = [
     messages: [
       {
         id: "m1",
-        content: "Olá! Preciso de orçamento para fechamento de sacada em vidro",
+        content: "Olá! Preciso de orçamento para construir uma casa de 130m² em terreno plano",
         sender: "client",
         time: "08:50",
         status: "delivered",
@@ -1064,11 +1066,538 @@ export const leads: Lead[] = [
       {
         id: "m3",
         content:
-          "Oi Gustavo! Aqui é o Amarildo 😊 Para montar o orçamento do fechamento de sacada, você pode me passar as medidas? Largura e altura aproximadas.",
+          "Oi Gustavo! Aqui é o Amarildo 😊 Ótima escolha! Para montar o orçamento da sua casa de 130m², me diz: qual padrão de acabamento você busca — simples, médio ou alto padrão? E já tem projeto arquitetônico?",
         sender: "attendant",
         senderName: "Amarildo",
         time: "08:55",
         status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 13: Ativo — Centro, em orçamento ──
+  {
+    id: "l13",
+    name: "Rodrigo Amaral Costa",
+    phone: "42 9 9821-3344",
+    email: "rodrigo.amaral@gmail.com",
+    region: "centro",
+    status: "ativo",
+    stage: "em_orcamento",
+    pendingItems: [
+      "Enviar orçamento detalhado para aprovação",
+      "Confirmar metragem do terreno com engenheiro",
+    ],
+    tagIds: ["t1", "t5"],
+    attendantId: "a3",
+    lastMessage: "Preciso do orçamento até sexta, tenho reunião com o banco",
+    lastMessageTime: "11:30",
+    unreadCount: 1,
+    totalPurchases: 0,
+    totalSpent: 0,
+    createdAt: "2024-04-10",
+    notes: "Cliente veio por indicação do Roberto Campos.",
+    messages: [
+      {
+        id: "m1",
+        content: "Olá! Quero construir uma casa de 180m² no Centro de Guarapuava",
+        sender: "client",
+        time: "10:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content: "Atendimento recebido — Clayton (Vendas)",
+        sender: "system",
+        time: "10:01",
+      },
+      {
+        id: "m3",
+        content:
+          "Oi Rodrigo! Aqui é o Clayton. Que projeto bacana! Me conta mais: o terreno já é seu? Qual padrão de acabamento está buscando?",
+        sender: "attendant",
+        senderName: "Clayton",
+        time: "10:05",
+        status: "read",
+      },
+      {
+        id: "m4",
+        content:
+          "Sim, tenho o terreno no Centro. Quero padrão médio-alto, 4 quartos sendo 2 suítes",
+        sender: "client",
+        time: "10:18",
+        status: "read",
+      },
+      {
+        id: "m5",
+        content:
+          "Perfeito! Estou montando o orçamento detalhado agora. Para 180m² padrão médio-alto, estimo entre R$ 460.000 e R$ 510.000. Mando o detalhamento completo ainda hoje",
+        sender: "attendant",
+        senderName: "Clayton",
+        time: "10:30",
+        status: "read",
+      },
+      {
+        id: "m6",
+        content: "Preciso do orçamento até sexta, tenho reunião com o banco",
+        sender: "client",
+        time: "11:30",
+        status: "delivered",
+      },
+    ],
+  },
+
+  // ── Lead 14: Potencial — Batel, novo contato ──
+  {
+    id: "l14",
+    name: "Elaine Rodrigues Pinto",
+    phone: "42 9 9634-5566",
+    email: "elaine.rodrigues@hotmail.com",
+    region: "batel",
+    status: "potencial",
+    stage: "novo_contato",
+    pendingItems: [
+      "Iniciar atendimento sobre reforma residencial",
+      "Enviar portfólio de reformas realizadas no Batel",
+    ],
+    tagIds: ["t4", "t7"],
+    lastMessage: "Vi no Instagram vocês fazendo reforma, quero fazer na minha casa também",
+    lastMessageTime: "09:15",
+    unreadCount: 1,
+    totalPurchases: 0,
+    totalSpent: 0,
+    createdAt: "2024-04-16",
+    messages: [
+      {
+        id: "m1",
+        content: "Vi no Instagram vocês fazendo reforma, quero fazer na minha casa também",
+        sender: "client",
+        time: "09:15",
+        status: "delivered",
+      },
+    ],
+  },
+
+  // ── Lead 15: Ativo — Santana, proposta enviada ──
+  {
+    id: "l15",
+    name: "Felipe Souza Neto",
+    phone: "42 9 9745-8899",
+    email: "felipe.souza@empresa.com",
+    company: "Souza & Filhos LTDA",
+    region: "santana",
+    status: "ativo",
+    stage: "proposta_enviada",
+    pendingItems: [
+      "Aguardando assinatura do contrato",
+      "Verificar documentação do terreno para licença",
+    ],
+    tagIds: ["t9", "t1", "t10"],
+    attendantId: "a6",
+    lastMessage: "O contrato está ótimo! Só preciso revisar com meu advogado",
+    lastMessageTime: "16:45",
+    unreadCount: 0,
+    totalPurchases: 1,
+    totalSpent: 215000,
+    lastPurchase: "Galpão Comercial 120m²",
+    lastPurchaseValue: 215000,
+    createdAt: "2024-03-05",
+    notes: "Cliente recorrente. Empresa de distribuição de alimentos.",
+    messages: [
+      {
+        id: "m1",
+        content: "Nayara, quero construir mais um galpão no meu terreno da Santana",
+        sender: "client",
+        time: "13:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content: "Atendimento recebido — Nayara (Vendas)",
+        sender: "system",
+        time: "13:01",
+      },
+      {
+        id: "m3",
+        content:
+          "Felipe! Que ótimo voltar a trabalhar com vocês 😊 Qual metragem está pensando desta vez?",
+        sender: "attendant",
+        senderName: "Nayara",
+        time: "13:05",
+        status: "read",
+      },
+      {
+        id: "m4",
+        content: "Quero 200m² desta vez, padrão industrial mas com área de escritório integrada",
+        sender: "client",
+        time: "13:15",
+        status: "read",
+      },
+      {
+        id: "m5",
+        content:
+          "Proposta Galpão Industrial 200m² com escritório:\n• Estrutura metálica: R$ 120.000\n• Alvenaria + cobertura: R$ 68.000\n• Elétrica e hidráulica: R$ 38.000\n• Escritório integrado (30m²): R$ 52.000\nTotal: R$ 278.000 | Prazo: 7 meses",
+        sender: "attendant",
+        senderName: "Nayara",
+        time: "14:00",
+        status: "read",
+      },
+      {
+        id: "m6",
+        content: "O contrato está ótimo! Só preciso revisar com meu advogado",
+        sender: "client",
+        time: "16:45",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 16: Pendente — Trianon, urgente ──
+  {
+    id: "l16",
+    name: "Camila Torres Mendes",
+    phone: "42 9 9856-7788",
+    region: "trianon",
+    status: "pendente",
+    stage: "novo_contato",
+    pendingItems: [
+      "URGENTE: infiltração grave relatada — acionar equipe técnica",
+      "Retornar ligação da cliente imediatamente",
+    ],
+    tagIds: ["t3", "t2"],
+    lastMessage: "Tô com infiltração grave no teto, o reboco já caiu, preciso de ajuda",
+    lastMessageTime: "07:42",
+    unreadCount: 2,
+    totalPurchases: 0,
+    totalSpent: 0,
+    createdAt: "2024-04-16",
+    messages: [
+      {
+        id: "m1",
+        content:
+          "Bom dia, tô com infiltração grave no teto do meu quarto. O reboco já caiu e molhou o colchão",
+        sender: "client",
+        time: "07:40",
+        status: "delivered",
+      },
+      {
+        id: "m2",
+        content: "Tô com infiltração grave no teto, o reboco já caiu, preciso de ajuda",
+        sender: "client",
+        time: "07:42",
+        status: "delivered",
+      },
+    ],
+  },
+
+  // ── Lead 17: Ativo — Santa Cruz, aguardando aprovação ──
+  {
+    id: "l17",
+    name: "André Luiz Machado",
+    phone: "42 9 9967-1122",
+    email: "andre.machado@construfacil.com",
+    company: "ConstruFácil",
+    region: "santacruz",
+    status: "ativo",
+    stage: "aguardando_aprovacao",
+    pendingItems: [
+      "Aguardando aprovação dos sócios para iniciar a obra",
+      "Verificar disponibilidade de equipe para março",
+    ],
+    tagIds: ["t9", "t6"],
+    attendantId: "a1",
+    lastMessage: "Reunião dos sócios é na quinta. Te aviso logo depois",
+    lastMessageTime: "15:20",
+    unreadCount: 0,
+    totalPurchases: 2,
+    totalSpent: 540000,
+    lastPurchase: "Sede Comercial 180m²",
+    lastPurchaseValue: 380000,
+    createdAt: "2024-02-14",
+    notes: "Empresa de construção leve, contraria a Fiuza para obras pesadas.",
+    messages: [
+      {
+        id: "m1",
+        content:
+          "Amarildo, preciso de orçamento para expandir nossa sede em Santa Cruz. Quero mais 90m² nos fundos",
+        sender: "client",
+        time: "09:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content: "André! Claro, vou agendar visita técnica para esta semana",
+        sender: "attendant",
+        senderName: "Amarildo",
+        time: "09:10",
+        status: "read",
+      },
+      {
+        id: "m3",
+        content:
+          "Expansão 90m² Sede ConstruFácil:\n• Estrutura e alvenaria: R$ 82.000\n• Cobertura: R$ 24.000\n• Acabamentos padrão médio: R$ 38.000\n• Elétrica + hidráulica: R$ 22.000\nTotal: R$ 166.000 | Prazo: 5 meses",
+        sender: "attendant",
+        senderName: "Amarildo",
+        time: "11:00",
+        status: "read",
+      },
+      {
+        id: "m4",
+        content: "Reunião dos sócios é na quinta. Te aviso logo depois",
+        sender: "client",
+        time: "15:20",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 18: Potencial — Centro, em orçamento ──
+  {
+    id: "l18",
+    name: "Vanessa Pires Moura",
+    phone: "42 9 9078-3344",
+    email: "vanessa.pires@gmail.com",
+    region: "centro",
+    status: "potencial",
+    stage: "em_orcamento",
+    pendingItems: [
+      "Aguardando resposta sobre padrão de acabamento",
+      "Verificar viabilidade de ampliação do recuo",
+    ],
+    tagIds: ["t6", "t1"],
+    attendantId: "a2",
+    lastMessage: "Deixa eu ver com meu marido qual padrão de acabamento vamos querer",
+    lastMessageTime: "12:10",
+    unreadCount: 0,
+    totalPurchases: 0,
+    totalSpent: 0,
+    createdAt: "2024-04-08",
+    messages: [
+      {
+        id: "m1",
+        content: "Boa tarde! Quero fazer uma ampliação na minha casa no Centro",
+        sender: "client",
+        time: "11:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content: "Atendimento recebido — Andrilene (Vendas)",
+        sender: "system",
+        time: "11:01",
+      },
+      {
+        id: "m3",
+        content: "Oi Vanessa! Sou a Andrilene 😊 Que área você quer ampliar e quantos m²?",
+        sender: "attendant",
+        senderName: "Andrilene",
+        time: "11:08",
+        status: "read",
+      },
+      {
+        id: "m4",
+        content: "Quero ampliar a cozinha e fazer uma varanda gourmet nos fundos. Uns 40m²",
+        sender: "client",
+        time: "11:25",
+        status: "read",
+      },
+      {
+        id: "m5",
+        content:
+          "Para 40m² com cozinha ampliada e varanda gourmet, estimo entre R$ 75.000 e R$ 95.000 dependendo do padrão de acabamento. Qual prefere — simples, médio ou alto padrão?",
+        sender: "attendant",
+        senderName: "Andrilene",
+        time: "11:40",
+        status: "read",
+      },
+      {
+        id: "m6",
+        content: "Deixa eu ver com meu marido qual padrão de acabamento vamos querer",
+        sender: "client",
+        time: "12:10",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 19: Ativo — Batel, em produção ──
+  {
+    id: "l19",
+    name: "Diego Santos Costa",
+    phone: "42 9 9189-4455",
+    email: "diego.santos@gmail.com",
+    region: "batel",
+    status: "ativo",
+    stage: "em_producao",
+    pendingItems: [
+      "Acompanhar andamento da concretagem da laje",
+      "Emitir relatório fotográfico semanal para o cliente",
+    ],
+    tagIds: ["t5"],
+    attendantId: "a3",
+    lastMessage: "A laje ficou perfeita! Equipe de vocês é muito profissional",
+    lastMessageTime: "17:00",
+    unreadCount: 0,
+    totalPurchases: 1,
+    totalSpent: 342000,
+    lastPurchase: "Casa Residencial 160m² — Padrão Médio",
+    lastPurchaseValue: 342000,
+    createdAt: "2023-10-18",
+    notes: "Obra iniciada em novembro. Prazo de conclusão: agosto de 2024.",
+    messages: [
+      {
+        id: "m1",
+        content: "Clayton, como está o andamento da minha obra?",
+        sender: "client",
+        time: "16:30",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content:
+          "Diego! Estamos na concretagem da laje do segundo pavimento. Segue conforme cronograma 👷",
+        sender: "attendant",
+        senderName: "Clayton",
+        time: "16:45",
+        status: "read",
+      },
+      {
+        id: "m3",
+        content: "A laje ficou perfeita! Equipe de vocês é muito profissional",
+        sender: "client",
+        time: "17:00",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 20: Finalizado — Santana ──
+  {
+    id: "l20",
+    name: "Juliana Martins Rocha",
+    phone: "42 9 9290-5566",
+    email: "juliana.martins@outlook.com",
+    region: "santana",
+    status: "finalizado",
+    stage: "pos_venda",
+    pendingItems: [],
+    attendanceSummary:
+      "Cliente Juliana Martins entrou em contato para construção de residência unifamiliar de 140m² na Santana.\n\nContratação:\n• Casa 140m² padrão médio | 3 quartos + 2 banheiros: R$ 308.000\n• Paisagismo e área externa: R$ 22.000\nTotal: R$ 330.000 | Prazo: 11 meses\n\nObra concluída dentro do prazo com nota máxima de satisfação. Cliente indicou 3 amigas para orçamento.",
+    tagIds: ["t5", "t10"],
+    attendantId: "a6",
+    lastMessage: "Adorei tudo! Já indiquei para 3 amigas minhas ❤️",
+    lastMessageTime: "Há 3 dias",
+    unreadCount: 0,
+    totalPurchases: 1,
+    totalSpent: 330000,
+    lastPurchase: "Casa Residencial 140m² + Paisagismo",
+    lastPurchaseValue: 330000,
+    createdAt: "2023-07-20",
+    messages: [
+      {
+        id: "m1",
+        content: "Nayara, vim te dar um retorno da minha casa nova!",
+        sender: "client",
+        time: "10:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content: "Juliana! Ansiosa para saber 😍 Conta tudo!",
+        sender: "attendant",
+        senderName: "Nayara",
+        time: "10:02",
+        status: "read",
+      },
+      {
+        id: "m3",
+        content: "Adorei tudo! Já indiquei para 3 amigas minhas ❤️",
+        sender: "client",
+        time: "10:05",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 21: Ativo — Trianon, visita agendada ──
+  {
+    id: "l21",
+    name: "Paulo César Andrade",
+    phone: "42 9 9391-7788",
+    email: "paulo.andrade@andrade.eng.br",
+    company: "Andrade Engenharia",
+    region: "trianon",
+    status: "ativo",
+    stage: "instalacao_agendada",
+    pendingItems: [
+      "Visita técnica agendada: segunda-feira às 10h",
+      "Levar pranchas do projeto arquitetônico para aprovação",
+    ],
+    tagIds: ["t5", "t9", "t1"],
+    attendantId: "a5",
+    lastMessage: "Segunda às 10h está perfeito. Estarei no local",
+    lastMessageTime: "14:50",
+    unreadCount: 0,
+    totalPurchases: 3,
+    totalSpent: 890000,
+    lastPurchase: "Condomínio 4 casas 100m² cada",
+    lastPurchaseValue: 560000,
+    createdAt: "2024-01-09",
+    notes: "Engenheiro parceiro. Indica obras de terceiros para a Fiuza.",
+    messages: [
+      {
+        id: "m1",
+        content:
+          "Cirlene, tenho um cliente querendo construir um sobrado no Trianon. Posso indicar para vocês fazerem a visita técnica?",
+        sender: "client",
+        time: "14:00",
+        status: "read",
+      },
+      {
+        id: "m2",
+        content:
+          "Paulo! Claro, adoramos trabalhar com seus clientes 😊 Que dia funciona para a visita?",
+        sender: "attendant",
+        senderName: "Cirlene",
+        time: "14:10",
+        status: "read",
+      },
+      {
+        id: "m3",
+        content: "Segunda às 10h está perfeito. Estarei no local",
+        sender: "client",
+        time: "14:50",
+        status: "read",
+      },
+    ],
+  },
+
+  // ── Lead 22: Potencial — Santa Cruz, novo contato ──
+  {
+    id: "l22",
+    name: "Cristina Lima Duarte",
+    phone: "42 9 9492-9900",
+    region: "santacruz",
+    status: "potencial",
+    stage: "novo_contato",
+    pendingItems: [
+      "Ligar para cliente — não responde no WhatsApp",
+      "Enviar catálogo de projetos residenciais prontos",
+    ],
+    tagIds: ["t1", "t7"],
+    lastMessage: "Quero construir uma casinha simples para minha mãe, qual o valor mínimo?",
+    lastMessageTime: "Ontem",
+    unreadCount: 1,
+    totalPurchases: 0,
+    totalSpent: 0,
+    createdAt: "2024-04-15",
+    messages: [
+      {
+        id: "m1",
+        content: "Quero construir uma casinha simples para minha mãe, qual o valor mínimo?",
+        sender: "client",
+        time: "19:30",
+        status: "delivered",
       },
     ],
   },
@@ -1113,16 +1642,16 @@ export const weeklyLeadsData = [
 ];
 
 export const monthlyRevenueData = [
-  { month: "Jan", value: 28400 },
-  { month: "Fev", value: 34200 },
-  { month: "Mar", value: 31800 },
-  { month: "Abr", value: 42600 },
-  { month: "Mai", value: 38900 },
-  { month: "Jun", value: 45200 },
-  { month: "Jul", value: 41700 },
-  { month: "Ago", value: 50300 },
-  { month: "Set", value: 47800 },
-  { month: "Out", value: 53600 },
-  { month: "Nov", value: 61200 },
-  { month: "Dez", value: 58900 },
+  { month: "Jan", value: 284000 },
+  { month: "Fev", value: 342000 },
+  { month: "Mar", value: 318000 },
+  { month: "Abr", value: 426000 },
+  { month: "Mai", value: 389000 },
+  { month: "Jun", value: 452000 },
+  { month: "Jul", value: 417000 },
+  { month: "Ago", value: 503000 },
+  { month: "Set", value: 478000 },
+  { month: "Out", value: 536000 },
+  { month: "Nov", value: 612000 },
+  { month: "Dez", value: 589000 },
 ];

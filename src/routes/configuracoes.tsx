@@ -28,12 +28,13 @@ function ConfiguracoesPage() {
       <div className="px-6 pt-6 pb-4 border-b border-border bg-card/40">
         <h1 className="text-xl font-bold text-foreground">Configurações</h1>
         <p className="text-sm text-muted-foreground mt-0.5">
-          {isGestor ? "Gerencie as preferências do sistema e da empresa" : "Gerencie suas preferências de conta"}
+          {isGestor
+            ? "Gerencie as preferências do sistema e da empresa"
+            : "Gerencie suas preferências de conta"}
         </p>
       </div>
 
       <div className="flex-1 overflow-auto px-6 py-5 max-w-3xl space-y-6">
-
         {/* Empresa — gestores only */}
         {isGestor && (
           <section>
@@ -44,7 +45,9 @@ function ConfiguracoesPage() {
             <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[12px] font-medium text-muted-foreground">Nome da empresa</label>
+                  <label className="text-[12px] font-medium text-muted-foreground">
+                    Nome da empresa
+                  </label>
                   <input
                     defaultValue="Fiuza"
                     className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
@@ -129,7 +132,9 @@ function ConfiguracoesPage() {
                 {(["light", "dark"] as const).map((t) => (
                   <button
                     key={t}
-                    onClick={() => { if (theme !== t) toggleTheme(); }}
+                    onClick={() => {
+                      if (theme !== t) toggleTheme();
+                    }}
                     className={cn(
                       "px-4 py-2 text-[12px] font-medium transition-colors",
                       theme === t
@@ -153,12 +158,30 @@ function ConfiguracoesPage() {
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
             {[
-              { title: "Novo lead", desc: "Notificar quando um novo cliente entrar em contato.", enabled: true },
-              { title: "Mensagem não respondida", desc: "Alertar após 30 minutos sem resposta.", enabled: true },
-              { title: "Atendimento transferido", desc: "Notificar quando um atendimento for transferido para você.", enabled: false },
-              ...(isGestor ? [
-                { title: "Atendente offline", desc: "Alertar quando um atendente ficar indisponível durante o horário de trabalho.", enabled: false },
-              ] : []),
+              {
+                title: "Novo lead",
+                desc: "Notificar quando um novo cliente entrar em contato.",
+                enabled: true,
+              },
+              {
+                title: "Mensagem não respondida",
+                desc: "Alertar após 30 minutos sem resposta.",
+                enabled: true,
+              },
+              {
+                title: "Atendimento transferido",
+                desc: "Notificar quando um atendimento for transferido para você.",
+                enabled: false,
+              },
+              ...(isGestor
+                ? [
+                    {
+                      title: "Atendente offline",
+                      desc: "Alertar quando um atendente ficar indisponível durante o horário de trabalho.",
+                      enabled: false,
+                    },
+                  ]
+                : []),
             ].map((item) => (
               <div key={item.title} className="flex items-start justify-between gap-4">
                 <div>
@@ -196,7 +219,9 @@ function ConfiguracoesPage() {
                 />
               </div>
               <div>
-                <label className="text-[12px] font-medium text-muted-foreground">Confirmar senha</label>
+                <label className="text-[12px] font-medium text-muted-foreground">
+                  Confirmar senha
+                </label>
                 <input
                   type="password"
                   placeholder="••••••••"
@@ -218,14 +243,27 @@ function ConfiguracoesPage() {
               <div className="rounded-xl bg-primary/5 border border-primary/20 p-4">
                 <p className="text-[13px] font-medium text-primary">Conta Gestor Ativa</p>
                 <p className="text-[12px] text-muted-foreground mt-1">
-                  Você tem acesso completo ao sistema, incluindo Automação IA, Horários, Atendentes e configurações da empresa.
+                  Você tem acesso completo ao sistema, incluindo Automação IA, Horários, Atendentes
+                  e configurações da empresa.
                 </p>
               </div>
               <div className="space-y-3 pt-1">
                 {[
-                  { title: "Atendentes podem ver Dashboard", desc: "Permite que atendentes visualizem métricas gerais.", enabled: false },
-                  { title: "Atendentes podem exportar contatos", desc: "Permite exportar a lista de contatos para CSV.", enabled: false },
-                  { title: "Atendentes podem transferir atendimentos", desc: "Permite que atendentes transfiram leads entre si.", enabled: true },
+                  {
+                    title: "Atendentes podem ver Dashboard",
+                    desc: "Permite que atendentes visualizem métricas gerais.",
+                    enabled: false,
+                  },
+                  {
+                    title: "Atendentes podem exportar contatos",
+                    desc: "Permite exportar a lista de contatos para CSV.",
+                    enabled: false,
+                  },
+                  {
+                    title: "Atendentes podem transferir atendimentos",
+                    desc: "Permite que atendentes transfiram leads entre si.",
+                    enabled: true,
+                  },
                 ].map((item) => (
                   <div key={item.title} className="flex items-start justify-between gap-4">
                     <div>
