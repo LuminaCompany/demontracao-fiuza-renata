@@ -33,7 +33,6 @@ import {
   Heart,
 } from "lucide-react";
 import { attendants, peakHoursData, weeklyLeadsData, monthlyRevenueData } from "@/data/mock";
-import { GuarapuavaMap } from "@/components/GuarapuavaMap";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/dashboard")({
@@ -42,9 +41,9 @@ export const Route = createFileRoute("/dashboard")({
 
 const kpiCards = [
   {
-    label: "Atendentes Online",
+    label: "Equipe Online",
     value: "3",
-    sub: "de 5 atendentes",
+    sub: "de 5 recepcionistas",
     icon: UserCheck,
     color: "text-emerald-500",
     bg: "bg-emerald-500/10 dark:bg-emerald-500/15",
@@ -52,7 +51,7 @@ const kpiCards = [
     trendUp: true,
   },
   {
-    label: "Novos Leads",
+    label: "Novos Pacientes",
     value: "12",
     sub: "hoje",
     icon: Users,
@@ -72,17 +71,17 @@ const kpiCards = [
     trendUp: true,
   },
   {
-    label: "Atendimentos Ativos",
+    label: "Consultas Agendadas",
     value: "47",
-    sub: "em andamento",
+    sub: "para hoje e amanhã",
     icon: Activity,
     color: "text-primary",
     bg: "bg-primary/10 dark:bg-primary/15",
-    trend: "53 finalizados hoje",
+    trend: "8 cirurgias na semana",
     trendUp: true,
   },
   {
-    label: "Pendentes",
+    label: "Confirmações Pendentes",
     value: "4",
     sub: "aguardando resposta",
     icon: AlertCircle,
@@ -104,13 +103,13 @@ const kpiCards = [
 ];
 
 const followUpData = [
-  { name: "Realizados", value: 38, color: "#22c55e" },
+  { name: "Confirmados", value: 38, color: "#22c55e" },
   { name: "Pendentes", value: 7, color: "#f59e0b" },
-  { name: "Não feitos", value: 5, color: "#ef4444" },
+  { name: "Sem resposta", value: 5, color: "#ef4444" },
 ];
 
 const fidelizacaoData = [
-  { name: "Recompras", value: 43, color: "#3b82f6" },
+  { name: "Retornos", value: 43, color: "#3b82f6" },
   { name: "Indicações", value: 18, color: "#8b5cf6" },
   { name: "Sem retorno", value: 6, color: "#6b7280" },
 ];
@@ -163,7 +162,7 @@ function DashboardPage() {
   const [month, setMonth] = useState("2024-04");
   const [week, setWeek] = useState("2024-W16");
 
-  const salesAttendants = attendants.filter((a) => a.department.includes("Vendas"));
+  const salesAttendants = attendants.filter((a) => a.department.includes("Recepção"));
   const sortedAttendants = [...salesAttendants].sort((a, b) => b.totalToday - a.totalToday);
 
   const followUpTotal = followUpData.reduce((s, d) => s + d.value, 0);
@@ -310,7 +309,7 @@ function DashboardPage() {
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-[14px] font-bold text-foreground">Leads da Semana</h3>
+                <h3 className="text-[14px] font-bold text-foreground">Pacientes da Semana</h3>
                 <p className="text-[11px] text-muted-foreground">Novos vs Finalizados</p>
               </div>
               <TrendingUp className="h-4 w-4 text-emerald-500" />
@@ -394,11 +393,11 @@ function DashboardPage() {
             </ResponsiveContainer>
           </div>
 
-          {/* Ranking — apenas Vendas */}
+          {/* Ranking — Recepção */}
           <div className="rounded-2xl border border-border bg-card p-5">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-[14px] font-bold text-foreground">Ranking Vendas</h3>
+                <h3 className="text-[14px] font-bold text-foreground">Ranking Recepção</h3>
                 <p className="text-[11px] text-muted-foreground">Atendentes hoje</p>
               </div>
               <Star className="h-4 w-4 text-amber-500" />
@@ -617,20 +616,17 @@ function DashboardPage() {
           </div>
         </div>
 
-        {/* Mapa de Guarapuava */}
-        <GuarapuavaMap />
-
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-3 pb-2">
           {[
             {
-              label: "Taxa de Conversão",
-              value: "68%",
+              label: "Taxa de Confirmação",
+              value: "81%",
               icon: CheckCircle,
               color: "text-emerald-500",
             },
-            { label: "Leads do Mês", value: "284", icon: Users, color: "text-blue-500" },
-            { label: "Ticket Médio", value: "R$ 3.840", icon: TrendingUp, color: "text-primary" },
+            { label: "Pacientes do Mês", value: "284", icon: Users, color: "text-blue-500" },
+            { label: "Ticket Médio", value: "R$ 380", icon: TrendingUp, color: "text-primary" },
             { label: "Tempo Médio Geral", value: "4,8min", icon: Star, color: "text-amber-500" },
           ].map((s) => (
             <div

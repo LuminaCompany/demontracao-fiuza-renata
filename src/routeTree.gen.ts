@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as MensagensRapidasRouteImport } from './routes/mensagens-rapidas'
 import { Route as HorariosRouteImport } from './routes/horarios'
@@ -20,6 +21,11 @@ import { Route as AtendimentosRouteImport } from './routes/atendimentos'
 import { Route as AtendentesRouteImport } from './routes/atendentes'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WhatsappRoute = WhatsappRouteImport.update({
+  id: '/whatsapp',
+  path: '/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TagsRoute = TagsRouteImport.update({
   id: '/tags',
   path: '/tags',
@@ -82,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
+  '/whatsapp': typeof WhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByTo {
   '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
+  '/whatsapp': typeof WhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +115,7 @@ export interface FileRoutesById {
   '/horarios': typeof HorariosRoute
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
+  '/whatsapp': typeof WhatsappRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
     | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
+    | '/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +143,7 @@ export interface FileRouteTypes {
     | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
+    | '/whatsapp'
   id:
     | '__root__'
     | '/'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/horarios'
     | '/mensagens-rapidas'
     | '/tags'
+    | '/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,10 +170,18 @@ export interface RootRouteChildren {
   HorariosRoute: typeof HorariosRoute
   MensagensRapidasRoute: typeof MensagensRapidasRoute
   TagsRoute: typeof TagsRoute
+  WhatsappRoute: typeof WhatsappRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/whatsapp': {
+      id: '/whatsapp'
+      path: '/whatsapp'
+      fullPath: '/whatsapp'
+      preLoaderRoute: typeof WhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/tags': {
       id: '/tags'
       path: '/tags'
@@ -246,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   HorariosRoute: HorariosRoute,
   MensagensRapidasRoute: MensagensRapidasRoute,
   TagsRoute: TagsRoute,
+  WhatsappRoute: WhatsappRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

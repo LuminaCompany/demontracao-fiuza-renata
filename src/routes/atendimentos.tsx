@@ -41,6 +41,7 @@ import {
   STAGE_ORDER,
 } from "@/data/mock";
 import { useAuth } from "@/lib/auth";
+import { useDemoCrm } from "@/lib/demo-crm";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/atendimentos")({
@@ -136,13 +137,13 @@ const initialInternalChats: Record<string, Message[]> = {
   acc1: [
     {
       id: "ic1",
-      content: "Boa tarde! Como está o fluxo de leads hoje?",
+      content: "Boa tarde! Como está o fluxo de pacientes hoje?",
       sender: "client",
       time: "13:15",
     },
     {
       id: "ic2",
-      content: "Boa tarde! Tranquilo, 3 leads ativos no momento.",
+      content: "Boa tarde! Tranquilo, 3 consultas confirmadas para amanhã.",
       sender: "attendant",
       senderName: "Você",
       time: "13:16",
@@ -150,7 +151,7 @@ const initialInternalChats: Record<string, Message[]> = {
     },
     {
       id: "ic3",
-      content: "Ótimo! Acompanhe o lead da Ana Paula com prioridade 🙏",
+      content: "Ótimo! Acompanhe a Beatriz — ela está em consulta agora 🙏",
       sender: "client",
       time: "13:17",
     },
@@ -158,13 +159,13 @@ const initialInternalChats: Record<string, Message[]> = {
   acc3: [
     {
       id: "ic4",
-      content: "Você pode me ajudar com o orçamento do João Pedro?",
+      content: "Você pode confirmar o horário da Juliana para sexta?",
       sender: "client",
       time: "10:05",
     },
     {
       id: "ic5",
-      content: "Claro! Já estou preparando. Te mando em breve.",
+      content: "Claro! Já confirmei com ela para sexta às 14h.",
       sender: "attendant",
       senderName: "Você",
       time: "10:06",
@@ -390,7 +391,7 @@ function StagePanel({ lead }: { lead: Lead }) {
           <span className="text-[9px] text-muted-foreground">
             {stageIndex + 1}/{totalSteps}
           </span>
-          <span className="text-[9px] text-muted-foreground">Pós-venda</span>
+          <span className="text-[9px] text-muted-foreground">Pós-atendimento</span>
         </div>
       </div>
 
@@ -431,6 +432,7 @@ function StagePanel({ lead }: { lead: Lead }) {
 function AtendimentosPage() {
   const { currentAccount } = useAuth();
   const { leadId } = Route.useSearch();
+  const { waLeads } = useDemoCrm();
 
   const currentAttendantId = useMemo(
     () =>
@@ -452,6 +454,16 @@ function AtendimentosPage() {
   const [newMessage, setNewMessage] = useState("");
   const [allLeads, setAllLeads] = useState<Lead[]>(leads);
   const [showSummary, setShowSummary] = useState(false);
+
+  // Merge WhatsApp-generated patients into CRM list
+  useEffect(() => {
+    setAllLeads((prev) => {
+      const existingIds = new Set(prev.map((l) => l.id));
+      const newOnes = waLeads.filter((l) => !existingIds.has(l.id));
+      if (newOnes.length === 0) return prev;
+      return [...newOnes, ...prev];
+    });
+  }, [waLeads]);
 
   // Chat interno
   const [internalChatMode, setInternalChatMode] = useState(false);
@@ -1119,6 +1131,24 @@ function AtendimentosPage() {
                 </span>
               </div>
             )}
+            {selectedLead.doctor && (
+              <div className="flex items-center gap-2.5">
+                <FileText className="h-3.5 w-3.5 flex-none text-muted-foreground" />
+                <span className="text-[13px] text-foreground truncate">{selectedLead.doctor}</span>
+              </div>
+            )}
+            {selectedLead.healthInsurance && (
+              <div className="flex items-center gap-2.5">
+                <Bell className="h-3.5 w-3.5 flex-none text-muted-foreground" />
+                <span className="text-[13px] text-foreground">{selectedLead.healthInsurance}</span>
+              </div>
+            )}
+            {selectedLead.appointmentDate && (
+              <div className="flex items-center gap-2.5">
+                <Clock className="h-3.5 w-3.5 flex-none text-muted-foreground" />
+                <span className="text-[13px] text-foreground">{selectedLead.appointmentDate}</span>
+              </div>
+            )}
           </div>
 
           {/* Tags */}
@@ -1158,7 +1188,7 @@ function AtendimentosPage() {
                 <p className="text-lg font-bold text-foreground leading-none">
                   {selectedLead.totalPurchases}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Compras</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Consultas</p>
               </div>
               <div className="rounded-xl bg-background border border-border p-3 text-center">
                 <Star className="h-3.5 w-3.5 text-amber-500 mx-auto mb-1" />
@@ -1167,12 +1197,12 @@ function AtendimentosPage() {
                     ? `R$${(selectedLead.totalSpent / 1000).toFixed(1)}k`
                     : "R$0"}
                 </p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">Total gasto</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">Total pago</p>
               </div>
             </div>
             {selectedLead.lastPurchase && (
               <div className="mt-2 rounded-xl bg-background border border-border p-3">
-                <p className="text-[10px] text-muted-foreground">Última compra</p>
+                <p className="text-[10px] text-muted-foreground">Último procedimento</p>
                 <p className="text-[12px] font-medium text-foreground mt-0.5 leading-tight">
                   {selectedLead.lastPurchase}
                 </p>

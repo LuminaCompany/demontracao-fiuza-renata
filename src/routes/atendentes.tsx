@@ -198,7 +198,7 @@ function AtendentesPage() {
                     <div className="rounded-xl bg-background border border-border p-3">
                       <div className="flex items-center gap-1.5 mb-1">
                         <TrendingUp className="h-3 w-3 text-emerald-500" />
-                        <span className="text-[10px] text-muted-foreground">Vendas Hoje</span>
+                        <span className="text-[10px] text-muted-foreground">Atend. Hoje</span>
                       </div>
                       <p className="text-xl font-bold text-foreground">{a.totalToday}</p>
                     </div>
@@ -212,7 +212,7 @@ function AtendentesPage() {
                     <div className="rounded-xl bg-background border border-border p-3">
                       <div className="flex items-center gap-1.5 mb-1">
                         <BarChart2 className="h-3 w-3 text-primary" />
-                        <span className="text-[10px] text-muted-foreground">Vendas/Mês</span>
+                        <span className="text-[10px] text-muted-foreground">Atend./Mês</span>
                       </div>
                       <p className="text-xl font-bold text-foreground">{a.totalMonth}</p>
                     </div>
