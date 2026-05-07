@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Clock, Save, AlertCircle, Info } from "lucide-react";
+import { Clock, Save, AlertCircle, Info, Bot } from "lucide-react";
 import { attendants } from "@/data/mock";
 import { cn } from "@/lib/utils";
 
@@ -250,18 +250,19 @@ function AttendantRow({
   );
 }
 
+const receptionistas = attendants.filter((a) => a.department === "Recepção").slice(0, 2);
+
 function HorariosPage() {
   const [schedules, setSchedules] = useState<AttendantSchedule[]>(
-    attendants.map((att) => ({
+    receptionistas.map((att) => ({
       attendantId: att.id,
       days: defaultSchedule(),
     })),
   );
 
-  const [companyHours] = useState({
-    start: "08:00",
-    end: "18:30",
-    enabledDays: ["seg", "ter", "qua", "qui", "sex"],
+  const [scheduling, setScheduling] = useState({
+    fullDay: false,
+    days: ["seg", "ter", "qua", "qui", "sex", "sab", "dom"],
   });
 
   function updateSchedule(idx: number, schedule: AttendantSchedule) {
@@ -295,62 +296,88 @@ function HorariosPage() {
           </p>
         </div>
 
-        {/* Company hours */}
+        {/* IA scheduling window */}
         <section>
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="h-4 w-4 text-primary" />
+            <Bot className="h-4 w-4 text-primary" />
             <h2 className="text-[14px] font-bold text-foreground">
-              Horário de Funcionamento da Empresa
+              Janela de Agendamento da IA
             </h2>
           </div>
           <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-            <div className="flex flex-wrap gap-2">
-              {DAYS.map((d) => {
-                const active = companyHours.enabledDays.includes(d.key);
-                return (
-                  <button
-                    key={d.key}
-                    className={cn(
-                      "rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors",
-                      active
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-muted-foreground hover:bg-muted/70",
-                    )}
-                  >
-                    {d.label}
-                  </button>
-                );
-              })}
+            {/* 24h toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[13px] font-semibold text-foreground">Atendimento 24h?</p>
+                <p className="text-[11px] text-muted-foreground">
+                  A IA pode agendar em qualquer horário do dia
+                </p>
+              </div>
+              <Toggle
+                checked={scheduling.fullDay}
+                onChange={(v) => setScheduling((s) => ({ ...s, fullDay: v }))}
+              />
             </div>
-            <div className="flex items-center gap-4">
-              <div>
-                <label className="text-[12px] font-medium text-muted-foreground">Abertura</label>
-                <input
-                  type="time"
-                  defaultValue="08:00"
-                  className="mt-1 block rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
-                />
+
+            {!scheduling.fullDay && (
+              <>
+                <div className="h-px bg-border" />
+                <div className="flex flex-wrap gap-2">
+                  {DAYS.map((d) => {
+                    const active = scheduling.days.includes(d.key);
+                    return (
+                      <button
+                        key={d.key}
+                        onClick={() =>
+                          setScheduling((s) => ({
+                            ...s,
+                            days: active
+                              ? s.days.filter((x) => x !== d.key)
+                              : [...s.days, d.key],
+                          }))
+                        }
+                        className={cn(
+                          "rounded-lg px-3 py-1.5 text-[12px] font-semibold transition-colors",
+                          active
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground hover:bg-muted/70",
+                        )}
+                      >
+                        {d.label}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-4">
+                  <div>
+                    <label className="text-[12px] font-medium text-muted-foreground">Início</label>
+                    <input
+                      type="time"
+                      defaultValue="05:00"
+                      className="mt-1 block rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                    />
+                  </div>
+                  <div className="text-muted-foreground mt-5">→</div>
+                  <div>
+                    <label className="text-[12px] font-medium text-muted-foreground">Fim</label>
+                    <input
+                      type="time"
+                      defaultValue="00:00"
+                      className="mt-1 block rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {scheduling.fullDay && (
+              <div className="flex items-center gap-3 rounded-xl bg-primary/10 border border-primary/20 px-4 py-3">
+                <Bot className="h-4 w-4 text-primary flex-none" />
+                <p className="text-[12px] text-primary font-medium">
+                  A IA realizará agendamentos a qualquer hora, todos os dias da semana.
+                </p>
               </div>
-              <div className="text-muted-foreground mt-5">→</div>
-              <div>
-                <label className="text-[12px] font-medium text-muted-foreground">Fechamento</label>
-                <input
-                  type="time"
-                  defaultValue="18:30"
-                  className="mt-1 block rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
-                />
-              </div>
-              <div className="flex-1" />
-              <div>
-                <label className="text-[12px] font-medium text-muted-foreground">
-                  Mensagem fora do horário
-                </label>
-                <input
-                  defaultValue="Olá! Nosso atendimento é de seg–sex, 8h às 18h30. Retornaremos em breve! 😊"
-                  className="mt-1 block w-80 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
-                />
-              </div>
-            </div>
+            )}
           </div>
         </section>
 
@@ -360,7 +387,7 @@ function HorariosPage() {
             <div className="flex items-center gap-2">
               <h2 className="text-[14px] font-bold text-foreground">Horários por Atendente</h2>
               <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">
-                {attendants.length} atendentes
+                {receptionistas.length} atendentes
               </span>
             </div>
             <button className="text-[12px] text-primary hover:underline transition-colors">
@@ -369,7 +396,7 @@ function HorariosPage() {
           </div>
 
           <div className="space-y-2">
-            {attendants.map((att, idx) => (
+            {receptionistas.map((att, idx) => (
               <AttendantRow
                 key={att.id}
                 att={att}

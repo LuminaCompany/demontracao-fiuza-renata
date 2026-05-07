@@ -45,83 +45,83 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* ── Fiuza — Light Theme ────────────────────────────────────────── */
+/* ── Clínica Bem Estar — Light Theme (Ciano / Azul Gelo) ────────── */
 :root {
   --radius: 0.5rem;
 
-  --background: oklch(0.972 0.008 215);
-  --foreground: oklch(0.148 0.035 225);
+  --background: oklch(0.975 0.010 195);
+  --foreground: oklch(0.14 0.038 205);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.148 0.035 225);
+  --card-foreground: oklch(0.14 0.038 205);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.148 0.035 225);
-  --primary: oklch(0.56 0.16 215);
-  --primary-foreground: oklch(0.98 0.004 215);
-  --secondary: oklch(0.942 0.018 215);
-  --secondary-foreground: oklch(0.29 0.06 220);
-  --muted: oklch(0.942 0.012 215);
-  --muted-foreground: oklch(0.52 0.036 220);
-  --accent: oklch(0.92 0.028 215);
-  --accent-foreground: oklch(0.25 0.052 220);
+  --popover-foreground: oklch(0.14 0.038 205);
+  --primary: oklch(0.50 0.22 193);
+  --primary-foreground: oklch(0.98 0.006 195);
+  --secondary: oklch(0.944 0.018 195);
+  --secondary-foreground: oklch(0.28 0.062 205);
+  --muted: oklch(0.944 0.012 195);
+  --muted-foreground: oklch(0.50 0.034 205);
+  --accent: oklch(0.922 0.026 195);
+  --accent-foreground: oklch(0.23 0.050 205);
   --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.984 0.003 215);
-  --border: oklch(0.895 0.018 215);
-  --input: oklch(0.895 0.018 215);
-  --ring: oklch(0.56 0.16 215);
+  --destructive-foreground: oklch(0.984 0.003 195);
+  --border: oklch(0.898 0.018 195);
+  --input: oklch(0.898 0.018 195);
+  --ring: oklch(0.50 0.22 193);
 
-  --chart-1: oklch(0.56 0.16 215);
-  --chart-2: oklch(0.62 0.148 192);
-  --chart-3: oklch(0.66 0.165 255);
-  --chart-4: oklch(0.71 0.148 102);
-  --chart-5: oklch(0.61 0.21 32);
+  --chart-1: oklch(0.50 0.22 193);
+  --chart-2: oklch(0.42 0.22 240);
+  --chart-3: oklch(0.72 0.16 210);
+  --chart-4: oklch(0.55 0.18 265);
+  --chart-5: oklch(0.62 0.15 200);
 
   /* Sidebar always stays dark regardless of theme */
-  --sidebar: oklch(0.155 0.052 225);
-  --sidebar-foreground: oklch(0.895 0.014 220);
-  --sidebar-primary: oklch(0.56 0.16 215);
-  --sidebar-primary-foreground: oklch(0.98 0.004 215);
-  --sidebar-accent: oklch(0.22 0.052 225);
-  --sidebar-accent-foreground: oklch(0.895 0.014 220);
-  --sidebar-border: oklch(0.23 0.05 225);
-  --sidebar-ring: oklch(0.56 0.16 215);
+  --sidebar: oklch(0.14 0.056 205);
+  --sidebar-foreground: oklch(0.895 0.014 205);
+  --sidebar-primary: oklch(0.50 0.22 193);
+  --sidebar-primary-foreground: oklch(0.98 0.006 195);
+  --sidebar-accent: oklch(0.20 0.050 205);
+  --sidebar-accent-foreground: oklch(0.895 0.014 205);
+  --sidebar-border: oklch(0.22 0.048 205);
+  --sidebar-ring: oklch(0.50 0.22 193);
 }
 
-/* ── Fiuza — Dark Theme ─────────────────────────────────────────── */
+/* ── Clínica Bem Estar — Dark Theme (Ciano / Azul Gelo) ─────────── */
 .dark {
-  --background: oklch(0.118 0.032 225);
-  --foreground: oklch(0.948 0.01 220);
-  --card: oklch(0.162 0.04 225);
-  --card-foreground: oklch(0.948 0.01 220);
-  --popover: oklch(0.162 0.04 225);
-  --popover-foreground: oklch(0.948 0.01 220);
-  --primary: oklch(0.64 0.16 215);
-  --primary-foreground: oklch(0.148 0.035 225);
-  --secondary: oklch(0.218 0.045 225);
-  --secondary-foreground: oklch(0.895 0.014 220);
-  --muted: oklch(0.218 0.04 225);
-  --muted-foreground: oklch(0.632 0.034 220);
-  --accent: oklch(0.238 0.052 225);
-  --accent-foreground: oklch(0.895 0.014 220);
+  --background: oklch(0.11 0.034 205);
+  --foreground: oklch(0.948 0.012 200);
+  --card: oklch(0.158 0.042 205);
+  --card-foreground: oklch(0.948 0.012 200);
+  --popover: oklch(0.158 0.042 205);
+  --popover-foreground: oklch(0.948 0.012 200);
+  --primary: oklch(0.62 0.22 193);
+  --primary-foreground: oklch(0.14 0.038 205);
+  --secondary: oklch(0.215 0.044 205);
+  --secondary-foreground: oklch(0.895 0.014 205);
+  --muted: oklch(0.215 0.038 205);
+  --muted-foreground: oklch(0.632 0.032 205);
+  --accent: oklch(0.235 0.050 205);
+  --accent-foreground: oklch(0.895 0.014 205);
   --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.984 0.003 215);
+  --destructive-foreground: oklch(0.984 0.003 195);
   --border: oklch(1 0 0 / 8%);
   --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.56 0.16 215);
+  --ring: oklch(0.50 0.22 193);
 
-  --chart-1: oklch(0.64 0.16 215);
-  --chart-2: oklch(0.66 0.148 192);
-  --chart-3: oklch(0.68 0.155 255);
-  --chart-4: oklch(0.728 0.14 102);
-  --chart-5: oklch(0.628 0.205 32);
+  --chart-1: oklch(0.62 0.22 193);
+  --chart-2: oklch(0.55 0.20 240);
+  --chart-3: oklch(0.78 0.13 210);
+  --chart-4: oklch(0.65 0.16 265);
+  --chart-5: oklch(0.72 0.13 200);
 
-  --sidebar: oklch(0.09 0.028 225);
-  --sidebar-foreground: oklch(0.895 0.014 220);
-  --sidebar-primary: oklch(0.6 0.16 215);
-  --sidebar-primary-foreground: oklch(0.98 0.004 215);
-  --sidebar-accent: oklch(0.16 0.042 225);
-  --sidebar-accent-foreground: oklch(0.895 0.014 220);
+  --sidebar: oklch(0.088 0.028 205);
+  --sidebar-foreground: oklch(0.895 0.014 205);
+  --sidebar-primary: oklch(0.58 0.22 193);
+  --sidebar-primary-foreground: oklch(0.98 0.006 195);
+  --sidebar-accent: oklch(0.16 0.044 205);
+  --sidebar-accent-foreground: oklch(0.895 0.014 205);
   --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.56 0.16 215);
+  --sidebar-ring: oklch(0.50 0.22 193);
 }
 
 @layer base {

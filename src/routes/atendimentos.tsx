@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useRef, useEffect, useCallback, useMemo, memo } from "react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Search,
   Filter,
@@ -9,6 +14,7 @@ import {
   MapPin,
   Tag as TagIcon,
   ChevronDown,
+  ChevronDownIcon,
   Send,
   Paperclip,
   Smile,
@@ -22,10 +28,10 @@ import {
   Circle,
   Users2,
   Bell,
-  X,
   Clock,
-  AlertCircle,
   FileText,
+  Plus,
+  Trash2,
 } from "lucide-react";
 import {
   leads,
@@ -36,9 +42,6 @@ import {
   type LeadStatus,
   type Account,
   type Message,
-  type AtendimentoStage,
-  STAGE_LABELS,
-  STAGE_ORDER,
 } from "@/data/mock";
 import { useAuth } from "@/lib/auth";
 import { useDemoCrm } from "@/lib/demo-crm";
@@ -51,51 +54,11 @@ export const Route = createFileRoute("/atendimentos")({
   component: AtendimentosPage,
 });
 
-// ── Stage config ──────────────────────────────────────────────────
-const stageConfig: Record<AtendimentoStage, { color: string; bg: string; dot: string }> = {
-  novo_contato: {
-    color: "text-sky-600 dark:text-sky-400",
-    bg: "bg-sky-100 dark:bg-sky-900/30",
-    dot: "bg-sky-500",
-  },
-  em_orcamento: {
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    dot: "bg-amber-500",
-  },
-  proposta_enviada: {
-    color: "text-violet-600 dark:text-violet-400",
-    bg: "bg-violet-100 dark:bg-violet-900/30",
-    dot: "bg-violet-500",
-  },
-  aguardando_aprovacao: {
-    color: "text-orange-600 dark:text-orange-400",
-    bg: "bg-orange-100 dark:bg-orange-900/30",
-    dot: "bg-orange-500",
-  },
-  pagamento_pendente: {
-    color: "text-amber-600 dark:text-amber-400",
-    bg: "bg-amber-100 dark:bg-amber-900/30",
-    dot: "bg-amber-500",
-  },
-  em_producao: { color: "text-primary", bg: "bg-primary/10", dot: "bg-primary" },
-  instalacao_agendada: {
-    color: "text-teal-600 dark:text-teal-400",
-    bg: "bg-teal-100 dark:bg-teal-900/30",
-    dot: "bg-teal-500",
-  },
-  pos_venda: {
-    color: "text-emerald-600 dark:text-emerald-400",
-    bg: "bg-emerald-100 dark:bg-emerald-900/30",
-    dot: "bg-emerald-500",
-  },
-};
-
 // ── Status config ─────────────────────────────────────────────────
 const statusConfig: Record<LeadStatus, { label: string; color: string; dot: string }> = {
-  ativo: { label: "Ativo", color: "text-emerald-500", dot: "bg-emerald-500" },
-  pendente: { label: "Pendente", color: "text-amber-500", dot: "bg-amber-500" },
-  potencial: { label: "Potencial", color: "text-blue-500", dot: "bg-blue-500" },
+  ativo: { label: "Em Atendimento", color: "text-emerald-500", dot: "bg-emerald-500" },
+  pendente: { label: "Follow UP", color: "text-amber-500", dot: "bg-amber-500" },
+  potencial: { label: "Agendado", color: "text-blue-500", dot: "bg-blue-500" },
   finalizado: { label: "Finalizado", color: "text-muted-foreground", dot: "bg-muted-foreground" },
 };
 
@@ -123,14 +86,7 @@ function getInitials(name: string) {
 }
 
 // ── Types ─────────────────────────────────────────────────────────
-type TabFilter = "todos" | "ativo" | "pendente" | "potencial" | "finalizado";
-
-interface Reminder {
-  id: string;
-  date: string;
-  time: string;
-  note: string;
-}
+type TabFilter = "todos" | "ia" | "humano" | "followup";
 
 // ── Mock internal chat data ───────────────────────────────────────
 const initialInternalChats: Record<string, Message[]> = {
@@ -235,195 +191,120 @@ const MessageBubble = memo(function MessageBubble({
   );
 });
 
-// ── Reminder panel ────────────────────────────────────────────────
-const ReminderPanel = memo(function ReminderPanel({
-  reminders,
-  onAdd,
-  onRemove,
-}: {
-  reminders: Reminder[];
-  onAdd: (date: string, time: string, note: string) => void;
-  onRemove: (id: string) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [note, setNote] = useState("");
+// ── Lembretes ─────────────────────────────────────────────────────
+interface Lembrete {
+  id: string;
+  date: Date;
+  time: string;
+  message: string;
+}
 
-  function handleAdd() {
-    if (!date || !time || !note.trim()) return;
-    onAdd(date, time, note.trim());
-    setDate("");
-    setTime("");
-    setNote("");
-    setOpen(false);
+function LembretesPanel() {
+  const [lembretes, setLembretes] = useState<Lembrete[]>([]);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [time, setTime] = useState("10:00");
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+
+  function addLembrete() {
+    if (!date || !message.trim()) return;
+    setLembretes((prev) => [
+      ...prev,
+      { id: Date.now().toString(), date, time, message: message.trim() },
+    ]);
+    setDate(undefined);
+    setMessage("");
+    setTime("10:00");
+  }
+
+  function removeLembrete(id: string) {
+    setLembretes((prev) => prev.filter((l) => l.id !== id));
   }
 
   return (
     <div className="px-4 py-3 border-b border-border">
-      <button onClick={() => setOpen(!open)} className="flex w-full items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <Bell className="h-3.5 w-3.5 text-amber-500" />
-          <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Lembrete
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          {reminders.length > 0 && (
-            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-bold text-white">
-              {reminders.length}
-            </span>
-          )}
-          <ChevronDown
-            className={cn(
-              "h-3.5 w-3.5 text-muted-foreground transition-transform",
-              open && "rotate-180",
-            )}
-          />
-        </div>
-      </button>
-
-      {open && (
-        <div className="mt-3 space-y-2.5">
-          <div className="grid grid-cols-2 gap-2">
-            <div>
-              <label className="text-[10px] text-muted-foreground">Data</label>
-              <input
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] text-muted-foreground">Hora</label>
-              <input
-                type="time"
-                value={time}
-                onChange={(e) => setTime(e.target.value)}
-                className="mt-0.5 w-full rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
-            </div>
-          </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground">Anotação para você</label>
-            <textarea
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              rows={2}
-              placeholder="Ex: Ligar para confirmar instalação..."
-              className="mt-0.5 w-full resize-none rounded-lg border border-border bg-background px-2 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-            />
-          </div>
-          <button
-            onClick={handleAdd}
-            disabled={!date || !time || !note.trim()}
-            className="w-full rounded-xl bg-amber-500 px-3 py-1.5 text-[11px] font-medium text-white hover:bg-amber-600 transition-colors disabled:opacity-40"
-          >
-            Adicionar Lembrete
-          </button>
-          {reminders.length > 0 && (
-            <div className="space-y-1.5 pt-1">
-              {reminders.map((r) => (
-                <div
-                  key={r.id}
-                  className="flex items-start gap-2 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 p-2"
-                >
-                  <Bell className="h-3 w-3 text-amber-500 flex-none mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
-                      {r.date} às {r.time}
-                    </p>
-                    <p className="text-[10px] text-foreground">{r.note}</p>
-                  </div>
-                  <button
-                    onClick={() => onRemove(r.id)}
-                    className="text-muted-foreground hover:text-destructive flex-none"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-});
-
-// ── Stage panel ───────────────────────────────────────────────────
-function StagePanel({ lead }: { lead: Lead }) {
-  if (!lead.stage) return null;
-  const cfg = stageConfig[lead.stage];
-  const stageIndex = STAGE_ORDER.indexOf(lead.stage);
-  const totalSteps = STAGE_ORDER.length;
-
-  return (
-    <div className="px-4 pt-4 pb-4 border-b border-border">
-      <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-        Etapa do Atendimento
-      </p>
-
-      {/* Current stage badge */}
-      <div className={cn("flex items-center gap-2 rounded-xl px-3 py-2.5", cfg.bg)}>
-        <span className={cn("h-2 w-2 rounded-full flex-none", cfg.dot)} />
-        <span className={cn("text-[13px] font-bold leading-tight", cfg.color)}>
-          {STAGE_LABELS[lead.stage]}
-        </span>
+      <div className="flex items-center gap-1.5 mb-3">
+        <Bell className="h-3 w-3 text-amber-500" />
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">
+          Lembretes
+        </p>
       </div>
 
-      {/* Progress bar */}
-      <div className="mt-3">
-        <div className="flex gap-1">
-          {STAGE_ORDER.map((_, i) => (
+      {/* Existing reminders */}
+      {lembretes.length > 0 && (
+        <div className="space-y-2 mb-3">
+          {lembretes.map((l) => (
             <div
-              key={i}
-              className={cn(
-                "h-1.5 flex-1 rounded-full transition-all",
-                i <= stageIndex ? cfg.dot : "bg-muted",
-              )}
-            />
+              key={l.id}
+              className="flex items-start gap-2 rounded-xl border border-amber-200 dark:border-amber-800/40 bg-amber-50 dark:bg-amber-950/20 px-3 py-2"
+            >
+              <Bell className="h-3 w-3 text-amber-500 flex-none mt-0.5" />
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                  {format(l.date, "dd/MM/yyyy", { locale: ptBR })} às {l.time}
+                </p>
+                <p className="text-[11px] text-foreground leading-snug mt-0.5">{l.message}</p>
+              </div>
+              <button
+                onClick={() => removeLembrete(l.id)}
+                className="text-muted-foreground hover:text-destructive transition-colors flex-none"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            </div>
           ))}
         </div>
-        <div className="flex justify-between mt-1">
-          <span className="text-[9px] text-muted-foreground">Início</span>
-          <span className="text-[9px] text-muted-foreground">
-            {stageIndex + 1}/{totalSteps}
-          </span>
-          <span className="text-[9px] text-muted-foreground">Pós-atendimento</span>
-        </div>
-      </div>
+      )}
 
-      {/* Pending items */}
-      {lead.pendingItems && lead.pendingItems.length > 0 && (
-        <div className="mt-3">
-          <div className="flex items-center gap-1.5 mb-2">
-            <AlertCircle className="h-3 w-3 text-amber-500" />
-            <p className="text-[10px] font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wide">
-              Pendências ({lead.pendingItems.length})
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            {lead.pendingItems.map((item, i) => (
-              <div
-                key={i}
-                className="flex items-start gap-2 rounded-lg bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-800/30 px-2.5 py-2"
+      {/* New reminder form */}
+      <div className="rounded-xl border border-amber-200 dark:border-amber-800/40 bg-amber-50/60 dark:bg-amber-950/10 p-3 space-y-2">
+        <div className="flex gap-2">
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className="h-8 flex-1 justify-between font-normal text-[11px] border-amber-200 dark:border-amber-800/40 bg-white dark:bg-card"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-400 flex-none mt-1.5" />
-                <p className="text-[11px] text-foreground leading-snug">{item}</p>
-              </div>
-            ))}
-          </div>
+                {date ? format(date, "dd/MM/yy", { locale: ptBR }) : "Data"}
+                <ChevronDownIcon className="h-3 w-3 opacity-60" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                captionLayout="dropdown"
+                defaultMonth={date}
+                onSelect={(d) => {
+                  setDate(d);
+                  setOpen(false);
+                }}
+              />
+            </PopoverContent>
+          </Popover>
+          <input
+            type="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            className="h-8 w-24 rounded-lg border border-amber-200 dark:border-amber-800/40 bg-white dark:bg-card px-2 text-[11px] text-foreground focus:outline-none focus:ring-2 focus:ring-amber-300/50"
+          />
         </div>
-      )}
-
-      {lead.pendingItems && lead.pendingItems.length === 0 && (
-        <div className="mt-3 rounded-lg bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-800/30 px-2.5 py-2 flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 flex-none" />
-          <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Sem pendências</p>
-        </div>
-      )}
+        <textarea
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Mensagem do lembrete..."
+          rows={2}
+          className="w-full resize-none rounded-lg border border-amber-200 dark:border-amber-800/40 bg-white dark:bg-card px-3 py-2 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-300/50 transition"
+        />
+        <button
+          onClick={addLembrete}
+          disabled={!date || !message.trim()}
+          className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-[11px] font-semibold text-white hover:bg-amber-600 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          <Plus className="h-3 w-3" />
+          Adicionar lembrete
+        </button>
+      </div>
     </div>
   );
 }
@@ -449,11 +330,9 @@ function AtendimentosPage() {
   const [search, setSearch] = useState("");
   const [filterAttendant, setFilterAttendant] = useState("todos");
   const [filterTag, setFilterTag] = useState("todos");
-  const [filterStage, setFilterStage] = useState("todos");
   const [showFilters, setShowFilters] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [allLeads, setAllLeads] = useState<Lead[]>(leads);
-  const [showSummary, setShowSummary] = useState(false);
 
   // Merge WhatsApp-generated patients into CRM list
   useEffect(() => {
@@ -471,9 +350,6 @@ function AtendimentosPage() {
   const [internalChats, setInternalChats] =
     useState<Record<string, Message[]>>(initialInternalChats);
   const [internalMsg, setInternalMsg] = useState("");
-
-  // Per-lead reminders
-  const [reminders, setReminders] = useState<Record<string, Reminder[]>>({});
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -500,7 +376,9 @@ function AtendimentosPage() {
   const filteredLeads = useMemo(
     () =>
       visibleLeads.filter((lead) => {
-        if (tab !== "todos" && lead.status !== tab) return false;
+        if (tab === "ia" && lead.attendedBy !== "ia") return false;
+        if (tab === "humano" && lead.attendedBy !== "humano") return false;
+        if (tab === "followup" && lead.status !== "pendente") return false;
         if (
           search &&
           !lead.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -509,19 +387,17 @@ function AtendimentosPage() {
           return false;
         if (filterAttendant !== "todos" && lead.attendantId !== filterAttendant) return false;
         if (filterTag !== "todos" && !lead.tagIds.includes(filterTag)) return false;
-        if (filterStage !== "todos" && lead.stage !== filterStage) return false;
         return true;
       }),
-    [visibleLeads, tab, search, filterAttendant, filterTag, filterStage],
+    [visibleLeads, tab, search, filterAttendant, filterTag],
   );
 
   const tabCounts = useMemo(
     () => ({
       todos: visibleLeads.length,
-      ativo: visibleLeads.filter((l) => l.status === "ativo").length,
-      pendente: visibleLeads.filter((l) => l.status === "pendente").length,
-      potencial: visibleLeads.filter((l) => l.status === "potencial").length,
-      finalizado: visibleLeads.filter((l) => l.status === "finalizado").length,
+      ia: visibleLeads.filter((l) => l.attendedBy === "ia").length,
+      humano: visibleLeads.filter((l) => l.attendedBy === "humano").length,
+      followup: visibleLeads.filter((l) => l.status === "pendente").length,
     }),
     [visibleLeads],
   );
@@ -576,20 +452,6 @@ function AtendimentosPage() {
     }));
     setInternalMsg("");
   }, [internalMsg, selectedInternalUser, currentAccount]);
-
-  const addReminder = useCallback((leadId: string, date: string, time: string, note: string) => {
-    setReminders((prev) => ({
-      ...prev,
-      [leadId]: [...(prev[leadId] ?? []), { id: `r${Date.now()}`, date, time, note }],
-    }));
-  }, []);
-
-  const removeReminder = useCallback((leadId: string, id: string) => {
-    setReminders((prev) => ({
-      ...prev,
-      [leadId]: (prev[leadId] ?? []).filter((r) => r.id !== id),
-    }));
-  }, []);
 
   const currentAttendant = useMemo(
     () => (selectedLead ? attendants.find((a) => a.id === selectedLead.attendantId) : null),
@@ -682,18 +544,6 @@ function AtendimentosPage() {
                       </option>
                     ))}
                   </select>
-                  <select
-                    value={filterStage}
-                    onChange={(e) => setFilterStage(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-1.5 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  >
-                    <option value="todos">Todas as etapas</option>
-                    {Object.entries(STAGE_LABELS).map(([key, label]) => (
-                      <option key={key} value={key}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
                 </div>
               )}
             </>
@@ -703,28 +553,31 @@ function AtendimentosPage() {
         {/* Status tabs */}
         {!internalChatMode && (
           <div className="flex gap-0.5 px-3 py-2 overflow-x-auto scrollbar-none border-b border-border">
-            {(["todos", "ativo", "pendente", "potencial", "finalizado"] as TabFilter[]).map((t) => (
-              <button
-                key={t}
-                onClick={() => setTab(t)}
-                className={cn(
-                  "flex-none rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors whitespace-nowrap",
-                  tab === t
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground",
-                )}
-              >
-                {t === "todos" ? "Todos" : statusConfig[t as LeadStatus].label}
-                <span
+            {(["todos", "ia", "humano", "followup"] as TabFilter[]).map((t) => {
+              const label = { todos: "Todos", ia: "IA", humano: "Humano", followup: "Follow UP" }[t];
+              return (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
                   className={cn(
-                    "ml-1 inline-flex items-center justify-center rounded-full w-4 h-4 text-[9px]",
-                    tab === t ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
+                    "flex-none rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors whitespace-nowrap",
+                    tab === t
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-accent hover:text-foreground",
                   )}
                 >
-                  {tabCounts[t]}
-                </span>
-              </button>
-            ))}
+                  {label}
+                  <span
+                    className={cn(
+                      "ml-1 inline-flex items-center justify-center rounded-full w-4 h-4 text-[9px]",
+                      tab === t ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {tabCounts[t]}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -781,15 +634,10 @@ function AtendimentosPage() {
               const status = statusConfig[lead.status];
               const attendant = attendants.find((a) => a.id === lead.attendantId);
               const isSelected = selectedLead?.id === lead.id;
-              const stageCfg = lead.stage ? stageConfig[lead.stage] : null;
-              const hasPending = lead.pendingItems && lead.pendingItems.length > 0;
               return (
                 <button
                   key={lead.id}
-                  onClick={() => {
-                    setSelectedLead(lead);
-                    setShowSummary(false);
-                  }}
+                  onClick={() => setSelectedLead(lead)}
                   className={cn(
                     "flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-accent/60",
                     isSelected && "bg-primary/8 border-l-2 border-l-primary",
@@ -811,47 +659,30 @@ function AtendimentosPage() {
                       <span className="truncate text-[13px] font-semibold text-foreground">
                         {lead.name}
                       </span>
-                      <div className="flex items-center gap-1 flex-none">
-                        {hasPending && (
-                          <AlertCircle className="h-3 w-3 text-amber-500" title="Pendências" />
-                        )}
-                        <span className="text-[10px] text-muted-foreground">
-                          {lead.lastMessageTime}
-                        </span>
-                      </div>
+                      <span className="text-[10px] text-muted-foreground flex-none">
+                        {lead.lastMessageTime}
+                      </span>
                     </div>
                     <p className="truncate text-[12px] text-muted-foreground mt-0.5">
                       {lead.lastMessage}
                     </p>
-                    {/* Stage + tags row */}
+                    {/* Tags row */}
                     <div className="flex items-center justify-between mt-1.5 gap-1">
                       <div className="flex items-center gap-1 min-w-0">
-                        {stageCfg && lead.stage && (
-                          <span
-                            className={cn(
-                              "rounded px-1.5 py-0.5 text-[9px] font-semibold flex-none",
-                              stageCfg.bg,
-                              stageCfg.color,
-                            )}
-                          >
-                            {STAGE_LABELS[lead.stage]}
-                          </span>
-                        )}
-                        {!lead.stage &&
-                          lead.tagIds.slice(0, 1).map((tid) => {
-                            const tag = tags.find((t) => t.id === tid);
-                            return tag ? (
-                              <span
-                                key={tid}
-                                className={cn(
-                                  "rounded px-1.5 py-0.5 text-[9px] font-medium",
-                                  tagColorMap[tag.color],
-                                )}
-                              >
-                                {tag.name}
-                              </span>
-                            ) : null;
-                          })}
+                        {lead.tagIds.slice(0, 1).map((tid) => {
+                          const tag = tags.find((t) => t.id === tid);
+                          return tag ? (
+                            <span
+                              key={tid}
+                              className={cn(
+                                "rounded px-1.5 py-0.5 text-[9px] font-medium",
+                                tagColorMap[tag.color],
+                              )}
+                            >
+                              {tag.name}
+                            </span>
+                          ) : null;
+                        })}
                       </div>
                       <div className="flex items-center gap-1.5 flex-none">
                         {attendant && (
@@ -977,11 +808,6 @@ function AtendimentosPage() {
                     </span>
                   </span>
                 )}
-                {selectedLead.stage && (
-                  <span className="ml-2 font-medium text-primary">
-                    · {STAGE_LABELS[selectedLead.stage]}
-                  </span>
-                )}
               </p>
             </div>
             <div className="flex items-center gap-1.5">
@@ -1060,9 +886,6 @@ function AtendimentosPage() {
       {/* ── DIREITA: Info do lead ── */}
       {!internalChatMode && selectedLead && (
         <div className="flex w-[275px] flex-none flex-col border-l border-border bg-card/50 overflow-y-auto">
-          {/* ── Etapa do Atendimento (DESTAQUE) ── */}
-          <StagePanel lead={selectedLead} />
-
           {/* Contact card */}
           <div className="px-4 pt-4 pb-4 border-b border-border text-center">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-primary/50 text-sm font-bold text-primary ring-4 ring-primary/10">
@@ -1215,13 +1038,6 @@ function AtendimentosPage() {
             )}
           </div>
 
-          {/* Lembrete */}
-          <ReminderPanel
-            reminders={reminders[selectedLead.id] ?? []}
-            onAdd={(d, t, n) => addReminder(selectedLead.id, d, t, n)}
-            onRemove={(id) => removeReminder(selectedLead.id, id)}
-          />
-
           {/* Notes */}
           {selectedLead.notes && (
             <div className="px-4 py-3 border-b border-border">
@@ -1235,35 +1051,8 @@ function AtendimentosPage() {
             </div>
           )}
 
-          {/* Resumo do Atendimento */}
-          {selectedLead.attendanceSummary && (
-            <div className="px-4 py-3">
-              <button
-                onClick={() => setShowSummary(!showSummary)}
-                className="flex w-full items-center justify-between"
-              >
-                <div className="flex items-center gap-1.5">
-                  <FileText className="h-3.5 w-3.5 text-primary" />
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                    Resumo do Atendimento
-                  </p>
-                </div>
-                <ChevronDown
-                  className={cn(
-                    "h-3.5 w-3.5 text-muted-foreground transition-transform",
-                    showSummary && "rotate-180",
-                  )}
-                />
-              </button>
-              {showSummary && (
-                <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-3">
-                  <p className="text-[12px] text-foreground leading-relaxed whitespace-pre-wrap">
-                    {selectedLead.attendanceSummary}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
+          {/* Lembretes */}
+          <LembretesPanel />
 
           <div className="h-4" />
         </div>

@@ -2,7 +2,13 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { tags, leads } from "@/data/mock";
 import { Tag as TagIcon, Plus, Pencil, Trash2, ChevronDown, Eye, EyeOff } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { PieChart, Pie } from "recharts";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/tags")({
@@ -90,6 +96,12 @@ function TagsPage() {
       color: tagColorMap[s.tag.color]?.hex ?? "#888",
     }));
 
+  const tagChartData = pieData.map((d) => ({ ...d, fill: d.color }));
+  const tagChartConfig: ChartConfig = {
+    value: { label: "Leads" },
+    ...Object.fromEntries(pieData.map((d) => [d.name, { label: d.name, color: d.color }])),
+  };
+
   function toggleTag(id: string) {
     setExpandedTags((prev) => {
       const next = new Set(prev);
@@ -152,36 +164,12 @@ function TagsPage() {
             <p className="text-[11px] text-muted-foreground mb-4">Uso de cada tag entre os leads</p>
             <div className="flex items-center gap-6">
               <div className="flex-none">
-                <ResponsiveContainer width={180} height={180}>
+                <ChartContainer config={tagChartConfig} className="h-[180px] w-[180px]">
                   <PieChart>
-                    <Pie
-                      data={pieData}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={45}
-                      outerRadius={80}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {pieData.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        background: "var(--color-popover)",
-                        border: "1px solid var(--color-border)",
-                        borderRadius: "0.5rem",
-                        fontSize: "12px",
-                        color: "var(--color-foreground)",
-                      }}
-                      formatter={(v: number, name: string) => [
-                        `${v} lead${v !== 1 ? "s" : ""}`,
-                        name,
-                      ]}
-                    />
+                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                    <Pie data={tagChartData} dataKey="value" nameKey="name" innerRadius={45} />
                   </PieChart>
-                </ResponsiveContainer>
+                </ChartContainer>
               </div>
               <div className="flex-1 grid grid-cols-2 gap-x-6 gap-y-2.5">
                 {pieData.map((d) => (

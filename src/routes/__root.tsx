@@ -1,9 +1,8 @@
-import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { Link, createRootRoute } from "@tanstack/react-router";
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
 import { DemoCrmProvider } from "@/lib/demo-crm";
 import { AppLayout } from "@/components/layout/AppLayout";
-import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
@@ -28,42 +27,9 @@ function NotFoundComponent() {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Clínica Renata Fiuza — CRM DEMO" },
-      { name: "description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
-      { property: "og:title", content: "Clínica Renata Fiuza — CRM DEMO" },
-      { name: "twitter:title", content: "Clínica Renata Fiuza — CRM DEMO" },
-      { property: "og:description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
-      { name: "twitter:description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
-      { name: "twitter:card", content: "summary" },
-      { property: "og:type", content: "website" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-    ],
-  }),
-  shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
-
-function RootShell({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="pt-BR">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  );
-}
 
 function RootComponent() {
   return (

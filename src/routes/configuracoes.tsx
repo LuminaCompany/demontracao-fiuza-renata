@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Settings, Bell, Shield, Palette, Building2, Save, User, Lock } from "lucide-react";
+import { Bell, Shield, Palette, Save, User } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
@@ -35,50 +35,6 @@ function ConfiguracoesPage() {
       </div>
 
       <div className="flex-1 overflow-auto px-6 py-5 max-w-3xl space-y-6">
-        {/* Empresa — gestores only */}
-        {isGestor && (
-          <section>
-            <div className="flex items-center gap-2 mb-3">
-              <Building2 className="h-4 w-4 text-primary" />
-              <h2 className="text-[14px] font-bold text-foreground">Empresa</h2>
-            </div>
-            <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-[12px] font-medium text-muted-foreground">
-                    Nome da empresa
-                  </label>
-                  <input
-                    defaultValue="Fiuza"
-                    className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                  />
-                </div>
-                <div>
-                  <label className="text-[12px] font-medium text-muted-foreground">Telefone</label>
-                  <input
-                    defaultValue="(61) 3344-5566"
-                    className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-[12px] font-medium text-muted-foreground">E-mail</label>
-                  <input
-                    defaultValue="contato@estruturalvidros.com.br"
-                    className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="text-[12px] font-medium text-muted-foreground">Endereço</label>
-                  <input
-                    defaultValue="Setor Industrial, Brasília - DF"
-                    className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* Minha Conta — atendentes */}
         {!isGestor && (
           <section>
@@ -164,11 +120,6 @@ function ConfiguracoesPage() {
                 enabled: true,
               },
               {
-                title: "Mensagem não respondida",
-                desc: "Alertar após 30 minutos sem resposta.",
-                enabled: true,
-              },
-              {
                 title: "Atendimento transferido",
                 desc: "Notificar quando um atendimento for transferido para você.",
                 enabled: false,
@@ -191,44 +142,6 @@ function ConfiguracoesPage() {
                 <Toggle defaultChecked={item.enabled} />
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Segurança da conta */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <Lock className="h-4 w-4 text-primary" />
-            <h2 className="text-[14px] font-bold text-foreground">Segurança</h2>
-          </div>
-          <div className="rounded-2xl border border-border bg-card p-5 space-y-4">
-            <div>
-              <label className="text-[12px] font-medium text-muted-foreground">Senha atual</label>
-              <input
-                type="password"
-                placeholder="••••••••"
-                className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="text-[12px] font-medium text-muted-foreground">Nova senha</label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                />
-              </div>
-              <div>
-                <label className="text-[12px] font-medium text-muted-foreground">
-                  Confirmar senha
-                </label>
-                <input
-                  type="password"
-                  placeholder="••••••••"
-                  className="mt-1.5 w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition"
-                />
-              </div>
-            </div>
           </div>
         </section>
 

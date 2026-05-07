@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import {
   Bot,
   MessageSquare,
@@ -7,16 +7,19 @@ import {
   Heart,
   ChevronDown,
   ChevronUp,
-  AlertCircle,
   Repeat2,
   Star,
-  Sparkles,
   PlusCircle,
   GripVertical,
   Trash2,
   Check,
   CalendarCheck,
   Bell,
+  TrendingUp,
+  Users,
+  BarChart2,
+  Sparkles,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -100,7 +103,7 @@ function ConfirmacaoConsultasSection() {
       label: "Lembrete — 2h antes",
       delay: "2 horas",
       message:
-        "Lembrete: sua consulta é *hoje* às [Horário] com [Médico] na Clínica Renata Fiuza! 🏥 Chegue 10 minutinhos antes. Até já! 🌸",
+        "Lembrete: sua consulta é *hoje* às [Horário] com [Médico] na Clínica Bem Estar! 🏥 Chegue 10 minutinhos antes. Até já! 🌸",
       enabled: true,
     },
     {
@@ -379,6 +382,77 @@ function FollowUpSection() {
   );
 }
 
+// ── Feriados Card ─────────────────────────────────────────────────
+const FERIADOS_LIST = [
+  { id: "natal", label: "Natal", date: "25 de dezembro" },
+  { id: "reveillon", label: "Réveillon", date: "1° de janeiro" },
+  { id: "carnaval", label: "Carnaval", date: "Fevereiro / Março" },
+  { id: "pascoa", label: "Páscoa", date: "Data variável" },
+  { id: "maes", label: "Dia das Mães", date: "2° domingo de maio" },
+  { id: "pais", label: "Dia dos Pais", date: "2° domingo de agosto" },
+];
+
+function FeriadosCard() {
+  const [enabled, setEnabled] = useState(true);
+  const [feriados, setFeriados] = useState(
+    FERIADOS_LIST.map((f) => ({
+      ...f,
+      active: true,
+      message: `Feliz ${f.label}, [Nome]! 🎉 A equipe da Clínica Bem Estar deseja a você e sua família saúde e alegria! 💙`,
+    })),
+  );
+
+  return (
+    <div className={cn("rounded-xl border p-4 space-y-3 transition-opacity", !enabled && "opacity-60")}>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+          </div>
+          <div>
+            <p className="text-[12px] font-semibold text-foreground">Feriados Nacionais</p>
+            <p className="text-[11px] text-muted-foreground">Mensagem automática em datas comemorativas</p>
+          </div>
+        </div>
+        <Toggle checked={enabled} onChange={setEnabled} />
+      </div>
+
+      {enabled && (
+        <div className="space-y-2 pt-1">
+          {feriados.map((f, idx) => (
+            <div
+              key={f.id}
+              className={cn(
+                "flex items-start gap-3 rounded-lg border p-3 transition-opacity",
+                f.active ? "border-border" : "border-border/50 opacity-50",
+              )}
+            >
+              <div className="flex-1 space-y-1.5">
+                <p className="text-[11px] font-semibold text-foreground">
+                  {f.label}
+                  <span className="ml-1.5 font-normal text-muted-foreground">{f.date}</span>
+                </p>
+                <textarea
+                  defaultValue={f.message}
+                  rows={2}
+                  disabled={!f.active}
+                  className="w-full resize-none rounded-lg border border-border bg-background px-2.5 py-1.5 text-[11px] text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 transition disabled:opacity-50"
+                />
+              </div>
+              <Toggle
+                checked={f.active}
+                onChange={(v) =>
+                  setFeriados((prev) => prev.map((x, i) => (i === idx ? { ...x, active: v } : x)))
+                }
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Fidelização de Pacientes ──────────────────────────────────────
 function FidelizacaoSection() {
   const [expanded, setExpanded] = useState(true);
@@ -390,7 +464,7 @@ function FidelizacaoSection() {
       desc: "Solicitação de avaliação enviada após encerramento do atendimento",
       delay: "1 dia",
       message:
-        "Olá, [Nome]! 🌟 Esperamos que sua consulta tenha sido ótima! Avalie nosso atendimento de 1 a 5 ⭐ — sua opinião é muito importante para nós. Clínica Renata Fiuza 💙",
+        "Olá, [Nome]! 🌟 Esperamos que sua consulta tenha sido ótima! Avalie nosso atendimento de 1 a 5 ⭐ — sua opinião é muito importante para nós. Clínica Bem Estar 💙",
       enabled: true,
     },
     {
@@ -404,24 +478,24 @@ function FidelizacaoSection() {
       enabled: true,
     },
     {
-      id: "f3",
-      icon: Heart,
-      label: "Aniversário da paciente",
-      desc: "Parabenize suas pacientes no dia do aniversário",
-      delay: "0 dias",
-      message:
-        "Feliz aniversário, [Nome]! 🎉🎂 Toda a equipe da Clínica Renata Fiuza deseja um dia maravilhoso! Com carinho, Dra. Renata ❤️",
-      enabled: false,
-    },
-    {
       id: "f4",
       icon: Bell,
       label: "Preventivo anual",
       desc: "Lembrete de exame preventivo para pacientes ativas há 1 ano",
       delay: "365 dias",
       message:
-        "Olá, [Nome]! 💙 Passou 1 ano desde sua última consulta. O exame preventivo anual é essencial para sua saúde! Agende agora com a Dra. Renata Fiuza. 🌸",
+        "Olá, [Nome]! 💙 Passou 1 ano desde sua última consulta. O exame preventivo anual é essencial para sua saúde! Agende agora na Clínica Bem Estar. 🌸",
       enabled: true,
+    },
+    {
+      id: "f3",
+      icon: Heart,
+      label: "Aniversário da paciente",
+      desc: "Parabenize suas pacientes no dia do aniversário",
+      delay: "0 dias",
+      message:
+        "Feliz aniversário, [Nome]! 🎉🎂 Toda a equipe da Clínica Bem Estar deseja um dia maravilhoso! Com carinho ❤️",
+      enabled: false,
     },
   ]);
 
@@ -463,14 +537,16 @@ function FidelizacaoSection() {
           <div className="space-y-4">
             {messages.map((msg, idx) => {
               const Icon = msg.icon;
+              const isLast = idx === messages.length - 1;
               return (
-                <div
-                  key={msg.id}
-                  className={cn(
-                    "rounded-xl border p-4 space-y-3 transition-opacity",
-                    msg.enabled ? "border-border" : "border-border/50 opacity-60",
-                  )}
-                >
+                <Fragment key={msg.id}>
+                  {isLast && <FeriadosCard />}
+                  <div
+                    className={cn(
+                      "rounded-xl border p-4 space-y-3 transition-opacity",
+                      msg.enabled ? "border-border" : "border-border/50 opacity-60",
+                    )}
+                  >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5">
                       <div
@@ -536,70 +612,12 @@ function FidelizacaoSection() {
                       </div>
                     </>
                   )}
-                </div>
+                  </div>
+                </Fragment>
               );
             })}
           </div>
         )}
-      </Card>
-    </section>
-  );
-}
-
-// ── Outras Automações ─────────────────────────────────────────────
-function OutrasAutomacoesSection() {
-  const [items, setItems] = useState([
-    {
-      id: "oa1",
-      title: "Resumo automático do atendimento",
-      desc: "Ao encerrar um atendimento, a IA gera um resumo completo do histórico da paciente.",
-      enabled: true,
-    },
-    {
-      id: "oa2",
-      title: "Classificação automática de pacientes",
-      desc: "A IA classifica pacientes como potencial, ativo ou finalizado com base nas mensagens.",
-      enabled: true,
-    },
-    {
-      id: "oa3",
-      title: "Confirmação de presença via IA",
-      desc: "A IA coleta automaticamente a confirmação de presença da paciente e atualiza o CRM.",
-      enabled: true,
-    },
-    {
-      id: "oa4",
-      title: "Triagem inicial de urgência",
-      desc: "A IA identifica mensagens com palavras de urgência e prioriza o atendimento.",
-      enabled: false,
-    },
-  ]);
-
-  return (
-    <section>
-      <SectionHeader
-        icon={Sparkles}
-        title="Outras Automações"
-        description="Recursos adicionais de inteligência artificial para a clínica"
-        color="text-violet-500"
-      />
-      <Card>
-        <div className="space-y-4">
-          {items.map((item, idx) => (
-            <div key={item.id} className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[13px] font-medium text-foreground">{item.title}</p>
-                <p className="text-[12px] text-muted-foreground mt-0.5">{item.desc}</p>
-              </div>
-              <Toggle
-                checked={item.enabled}
-                onChange={(v) =>
-                  setItems((prev) => prev.map((it, i) => (i === idx ? { ...it, enabled: v } : it)))
-                }
-              />
-            </div>
-          ))}
-        </div>
       </Card>
     </section>
   );
@@ -623,17 +641,61 @@ function AutomacaoPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto px-6 py-5 max-w-3xl space-y-8">
-        <ConfirmacaoConsultasSection />
-        <FollowUpSection />
-        <FidelizacaoSection />
-        <OutrasAutomacoesSection />
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-2 gap-6 px-6 py-5 min-h-full">
+          {/* Coluna esquerda — automações */}
+          <div className="space-y-8">
+            <ConfirmacaoConsultasSection />
+            <FollowUpSection />
 
-        <div className="flex justify-end pb-4">
-          <button className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
-            <Check className="h-4 w-4" />
-            Salvar configurações
-          </button>
+            <div className="flex justify-end pb-4">
+              <button className="flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
+                <Check className="h-4 w-4" />
+                Salvar configurações
+              </button>
+            </div>
+          </div>
+
+          {/* Coluna direita — fidelização + painel da IA */}
+          <div className="space-y-5 pb-8">
+            <FidelizacaoSection />
+            <IaStatsPanel />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── IA Stats Panel ────────────────────────────────────────────────
+function IaStatsPanel() {
+  return (
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-border bg-card p-5">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
+            <BarChart2 className="h-4.5 w-4.5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-[14px] font-bold text-foreground">Performance da IA</h2>
+            <p className="text-[12px] text-muted-foreground">Últimos 30 dias</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Atendimentos", value: "1.842", icon: MessageSquare, color: "text-primary", bg: "bg-primary/10" },
+            { label: "Taxa de resolução", value: "87%", icon: TrendingUp, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-500/10" },
+            { label: "Pacientes únicos", value: "634", icon: Users, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-500/10" },
+            { label: "Escalados", value: "13%", icon: Activity, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10" },
+          ].map((s) => (
+            <div key={s.label} className="rounded-xl border border-border bg-background p-3">
+              <div className={cn("flex h-7 w-7 items-center justify-center rounded-lg mb-2", s.bg)}>
+                <s.icon className={cn("h-3.5 w-3.5", s.color)} />
+              </div>
+              <p className="text-xl font-bold text-foreground leading-none">{s.value}</p>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -14,6 +14,7 @@ import {
   Bot,
   MessageCircle,
   Stethoscope,
+  CalendarDays,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
@@ -23,8 +24,8 @@ import { cn } from "@/lib/utils";
 
 const gestorNavItems = [
   { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
-  { to: "/whatsapp", icon: MessageCircle, label: "WhatsApp", badge: undefined, green: true },
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/agenda", icon: CalendarDays, label: "Agenda" },
   { to: "/contatos", icon: Users, label: "Pacientes" },
   { to: "/atendentes", icon: UserCheck, label: "Equipe" },
   { to: "/automacao-ia", icon: Bot, label: "Automação" },
@@ -36,7 +37,6 @@ const gestorNavItems = [
 
 const atendenteNavItems = [
   { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
-  { to: "/whatsapp", icon: MessageCircle, label: "WhatsApp", badge: undefined, green: true },
   { to: "/contatos", icon: Users, label: "Pacientes" },
   { to: "/tags", icon: Tag, label: "Tags" },
   { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
@@ -59,7 +59,7 @@ export function Sidebar() {
             <Stethoscope className="h-4.5 w-4.5 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-[12px] font-bold text-white leading-tight">Clínica Renata Fiuza</p>
+            <p className="truncate text-[12px] font-bold text-white leading-tight">Clínica Bem Estar</p>
             <p className="truncate text-[10px] text-sidebar-foreground/50 leading-tight">CRM</p>
           </div>
         </div>
@@ -106,14 +106,46 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Powered by Lumina */}
-        <div className="px-4 py-2 flex items-center justify-center gap-1.5">
-          <span className="text-[9px] text-sidebar-foreground/25 font-medium tracking-wide uppercase">
-            Powered by
-          </span>
-          <span className="text-[9px] font-bold text-sidebar-foreground/40 tracking-wider uppercase">
-            Lumina
-          </span>
+        {/* WhatsApp Demo links */}
+        <div className="px-3 pb-2 space-y-0.5">
+          <Link
+            to="/whatsapp"
+            className={cn(
+              "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+              location.pathname === "/whatsapp"
+                ? "bg-sidebar-primary/20 text-white ring-1 ring-sidebar-primary/30"
+                : "text-emerald-400 hover:bg-sidebar-accent hover:text-emerald-300",
+            )}
+          >
+            <MessageCircle className="h-4 w-4 flex-none text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+            <span className="flex-1 truncate">WhatsApp IA</span>
+            {location.pathname === "/whatsapp" ? (
+              <ChevronRight className="h-3 w-3 text-sidebar-primary/70" />
+            ) : (
+              <span className="text-[9px] rounded-full bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-medium">
+                DEMO
+              </span>
+            )}
+          </Link>
+          <Link
+            to="/whatsapp-humana"
+            className={cn(
+              "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150",
+              location.pathname === "/whatsapp-humana"
+                ? "bg-sidebar-primary/20 text-white ring-1 ring-sidebar-primary/30"
+                : "text-emerald-400 hover:bg-sidebar-accent hover:text-emerald-300",
+            )}
+          >
+            <MessageCircle className="h-4 w-4 flex-none text-emerald-400 group-hover:text-emerald-300 transition-colors" />
+            <span className="flex-1 truncate">WhatsApp IA Humana</span>
+            {location.pathname === "/whatsapp-humana" ? (
+              <ChevronRight className="h-3 w-3 text-sidebar-primary/70" />
+            ) : (
+              <span className="text-[9px] rounded-full bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 font-medium">
+                DEMO
+              </span>
+            )}
+          </Link>
         </div>
 
         {/* Bottom: theme toggle + account */}

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhatsappHumanaRouteImport } from './routes/whatsapp-humana'
 import { Route as WhatsappRouteImport } from './routes/whatsapp'
 import { Route as TagsRouteImport } from './routes/tags'
 import { Route as MensagensRapidasRouteImport } from './routes/mensagens-rapidas'
@@ -19,8 +20,14 @@ import { Route as ConfiguracoesRouteImport } from './routes/configuracoes'
 import { Route as AutomacaoIaRouteImport } from './routes/automacao-ia'
 import { Route as AtendimentosRouteImport } from './routes/atendimentos'
 import { Route as AtendentesRouteImport } from './routes/atendentes'
+import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as IndexRouteImport } from './routes/index'
 
+const WhatsappHumanaRoute = WhatsappHumanaRouteImport.update({
+  id: '/whatsapp-humana',
+  path: '/whatsapp-humana',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const WhatsappRoute = WhatsappRouteImport.update({
   id: '/whatsapp',
   path: '/whatsapp',
@@ -71,6 +78,11 @@ const AtendentesRoute = AtendentesRouteImport.update({
   path: '/atendentes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -79,6 +91,7 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
   '/automacao-ia': typeof AutomacaoIaRoute
@@ -89,9 +102,11 @@ export interface FileRoutesByFullPath {
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
   '/whatsapp': typeof WhatsappRoute
+  '/whatsapp-humana': typeof WhatsappHumanaRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
   '/automacao-ia': typeof AutomacaoIaRoute
@@ -102,10 +117,12 @@ export interface FileRoutesByTo {
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
   '/whatsapp': typeof WhatsappRoute
+  '/whatsapp-humana': typeof WhatsappHumanaRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/atendentes': typeof AtendentesRoute
   '/atendimentos': typeof AtendimentosRoute
   '/automacao-ia': typeof AutomacaoIaRoute
@@ -116,11 +133,13 @@ export interface FileRoutesById {
   '/mensagens-rapidas': typeof MensagensRapidasRoute
   '/tags': typeof TagsRoute
   '/whatsapp': typeof WhatsappRoute
+  '/whatsapp-humana': typeof WhatsappHumanaRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/agenda'
     | '/atendentes'
     | '/atendimentos'
     | '/automacao-ia'
@@ -131,9 +150,11 @@ export interface FileRouteTypes {
     | '/mensagens-rapidas'
     | '/tags'
     | '/whatsapp'
+    | '/whatsapp-humana'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/agenda'
     | '/atendentes'
     | '/atendimentos'
     | '/automacao-ia'
@@ -144,9 +165,11 @@ export interface FileRouteTypes {
     | '/mensagens-rapidas'
     | '/tags'
     | '/whatsapp'
+    | '/whatsapp-humana'
   id:
     | '__root__'
     | '/'
+    | '/agenda'
     | '/atendentes'
     | '/atendimentos'
     | '/automacao-ia'
@@ -157,10 +180,12 @@ export interface FileRouteTypes {
     | '/mensagens-rapidas'
     | '/tags'
     | '/whatsapp'
+    | '/whatsapp-humana'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
   AtendentesRoute: typeof AtendentesRoute
   AtendimentosRoute: typeof AtendimentosRoute
   AutomacaoIaRoute: typeof AutomacaoIaRoute
@@ -171,10 +196,18 @@ export interface RootRouteChildren {
   MensagensRapidasRoute: typeof MensagensRapidasRoute
   TagsRoute: typeof TagsRoute
   WhatsappRoute: typeof WhatsappRoute
+  WhatsappHumanaRoute: typeof WhatsappHumanaRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/whatsapp-humana': {
+      id: '/whatsapp-humana'
+      path: '/whatsapp-humana'
+      fullPath: '/whatsapp-humana'
+      preLoaderRoute: typeof WhatsappHumanaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/whatsapp': {
       id: '/whatsapp'
       path: '/whatsapp'
@@ -245,6 +278,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AtendentesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -257,6 +297,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
   AtendentesRoute: AtendentesRoute,
   AtendimentosRoute: AtendimentosRoute,
   AutomacaoIaRoute: AutomacaoIaRoute,
@@ -267,16 +308,8 @@ const rootRouteChildren: RootRouteChildren = {
   MensagensRapidasRoute: MensagensRapidasRoute,
   TagsRoute: TagsRoute,
   WhatsappRoute: WhatsappRoute,
+  WhatsappHumanaRoute: WhatsappHumanaRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
