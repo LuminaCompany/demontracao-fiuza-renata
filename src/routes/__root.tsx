@@ -1,6 +1,7 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { ThemeProvider } from "@/lib/theme";
 import { AuthProvider } from "@/lib/auth";
+import { DemoCrmProvider } from "@/lib/demo-crm";
 import { AppLayout } from "@/components/layout/AppLayout";
 import appCss from "../styles.css?url";
 
@@ -31,12 +32,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Fiuza — CRM DEMO" },
-      { name: "description", content: "CRM Fiuza — Gestão de Atendimentos" },
-      { property: "og:title", content: "Fiuza — CRM DEMO" },
-      { name: "twitter:title", content: "Fiuza — CRM DEMO" },
-      { property: "og:description", content: "CRM Fiuza — Gestão de Atendimentos" },
-      { name: "twitter:description", content: "CRM Fiuza — Gestão de Atendimentos" },
+      { title: "Clínica Renata Fiuza — CRM DEMO" },
+      { name: "description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
+      { property: "og:title", content: "Clínica Renata Fiuza — CRM DEMO" },
+      { name: "twitter:title", content: "Clínica Renata Fiuza — CRM DEMO" },
+      { property: "og:description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
+      { name: "twitter:description", content: "CRM Clínica Renata Fiuza — Gestão de Pacientes" },
       { name: "twitter:card", content: "summary" },
       { property: "og:type", content: "website" },
     ],
@@ -68,7 +69,9 @@ function RootComponent() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <AppLayout />
+        <DemoCrmProvider>
+          <AppLayout />
+        </DemoCrmProvider>
       </AuthProvider>
     </ThemeProvider>
   );

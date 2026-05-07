@@ -10,8 +10,10 @@ import {
   Sun,
   Moon,
   ChevronRight,
-  Building2,
   Clock,
+  Bot,
+  MessageCircle,
+  Stethoscope,
 } from "lucide-react";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/auth";
@@ -21,22 +23,25 @@ import { cn } from "@/lib/utils";
 
 const gestorNavItems = [
   { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
+  { to: "/whatsapp", icon: MessageCircle, label: "WhatsApp", badge: undefined, green: true },
   { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/contatos", icon: Users, label: "Contatos" },
-  { to: "/atendentes", icon: UserCheck, label: "Atendentes" },
+  { to: "/contatos", icon: Users, label: "Pacientes" },
+  { to: "/atendentes", icon: UserCheck, label: "Equipe" },
+  { to: "/automacao-ia", icon: Bot, label: "Automação" },
   { to: "/tags", icon: Tag, label: "Tags" },
   { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
   { to: "/horarios", icon: Clock, label: "Horários" },
   { to: "/configuracoes", icon: Settings, label: "Configurações" },
-];
+] as const;
 
 const atendenteNavItems = [
   { to: "/atendimentos", icon: MessageSquare, label: "Atendimentos", badge: 4 },
-  { to: "/contatos", icon: Users, label: "Contatos" },
+  { to: "/whatsapp", icon: MessageCircle, label: "WhatsApp", badge: undefined, green: true },
+  { to: "/contatos", icon: Users, label: "Pacientes" },
   { to: "/tags", icon: Tag, label: "Tags" },
   { to: "/mensagens-rapidas", icon: Zap, label: "Msgs Rápidas" },
   { to: "/configuracoes", icon: Settings, label: "Configurações" },
-];
+] as const;
 
 export function Sidebar() {
   const location = useLocation();
@@ -51,10 +56,10 @@ export function Sidebar() {
         {/* Logo */}
         <div className="flex items-center gap-2.5 px-5 py-5 border-b border-sidebar-border">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 ring-1 ring-primary/40">
-            <Building2 className="h-4.5 w-4.5 text-primary" />
+            <Stethoscope className="h-4.5 w-4.5 text-primary" />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-[13px] font-bold text-white leading-tight">Fiuza</p>
+            <p className="truncate text-[12px] font-bold text-white leading-tight">Clínica Renata Fiuza</p>
             <p className="truncate text-[10px] text-sidebar-foreground/50 leading-tight">CRM</p>
           </div>
         </div>
@@ -64,8 +69,9 @@ export function Sidebar() {
           <p className="px-2 mb-2 text-[10px] font-semibold uppercase tracking-widest text-sidebar-foreground/35">
             Menu
           </p>
-          {navItems.map(({ to, icon: Icon, label, badge }) => {
+          {navItems.map(({ to, icon: Icon, label, badge, ...rest }) => {
             const isActive = location.pathname === to;
+            const isGreen = "green" in rest && rest.green;
             return (
               <Link
                 key={to}
@@ -80,9 +86,11 @@ export function Sidebar() {
                 <Icon
                   className={cn(
                     "h-4 w-4 flex-none transition-colors",
-                    isActive
-                      ? "text-sidebar-primary"
-                      : "text-sidebar-foreground/50 group-hover:text-white",
+                    isGreen && !isActive
+                      ? "text-emerald-400 group-hover:text-emerald-300"
+                      : isActive
+                        ? "text-sidebar-primary"
+                        : "text-sidebar-foreground/50 group-hover:text-white",
                   )}
                 />
                 <span className="flex-1 truncate">{label}</span>

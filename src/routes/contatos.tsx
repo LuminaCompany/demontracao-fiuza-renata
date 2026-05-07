@@ -150,9 +150,9 @@ function ContatosPage() {
       <div className="px-6 pt-6 pb-4 border-b border-border bg-card/40">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Contatos</h1>
+            <h1 className="text-xl font-bold text-foreground">Pacientes</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {filtered.length} contato{filtered.length !== 1 ? "s" : ""}
+              {filtered.length} paciente{filtered.length !== 1 ? "s" : ""}
               {pendingCount > 0 && (
                 <span className="ml-2 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                   <AlertCircle className="h-3 w-3" />
@@ -176,7 +176,7 @@ function ContatosPage() {
             </button>
             <button className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors shadow-sm">
               <UserPlus className="h-4 w-4" />
-              Novo Contato
+              Novo Paciente
             </button>
           </div>
         </div>
