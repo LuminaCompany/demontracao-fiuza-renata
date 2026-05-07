@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { leads, type Lead, STAGE_LABELS } from "@/data/mock";
 import { X, MapPin, ArrowRight, Users } from "lucide-react";
@@ -92,7 +92,17 @@ export function GuarapuavaMap() {
 
   const totalLeads = leads.length;
 
-  const regionLeads = useCallback((id: string) => leads.filter((l) => l.region === id), []);
+  const regionLeadsMap = useMemo(() => {
+    const map = new Map<string, Lead[]>();
+    for (const lead of leads) {
+      const arr = map.get(lead.region) ?? [];
+      arr.push(lead);
+      map.set(lead.region, arr);
+    }
+    return map;
+  }, []);
+
+  const regionLeads = useCallback((id: string) => regionLeadsMap.get(id) ?? [], [regionLeadsMap]);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!containerRef.current) return;
